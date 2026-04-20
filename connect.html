@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProfitPulse Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+:root{
+  --bg:#fff5f7;
+  --surface:#ffffff;
+  --surface2:#fff0f4;
+  --surface3:#ffe4e8;
+  --border:#fbcfe8;
+  --accent:#db2777;
+  --accent2:#ec4899;
+  --accent3:#f43f5e;
+  --warn:#e11d48;
+  --gold:#f59e0b;
+  --text:#1f2937;
+  --muted:#9ca3af;
+  --table-header:#064e3b;
+  --ref-bg:#047857;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg);}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px;width:100%;max-width:450px;}
+.auth-logo{text-align:center;margin-bottom:28px;}
+.auth-logo-icon{width:64px;height:64px;background:var(--accent);border-radius:16px;display:grid;place-items:center;font-size:28px;margin:0 auto 12px;color:#fff;}
+.auth-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--accent);margin-bottom:4px;text-align:center;}
+.auth-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px;}
+.f-group{margin-bottom:16px;}
+.f-label{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;display:block;}
+.f-wrap{position:relative;}
+.f-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.f-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 42px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;}
+.f-input:focus{border-color:var(--accent);}
+.f-err{font-size:11px;color:var(--warn);margin-top:5px;display:none;}
+.f-err.show{display:block;}
+.eye-btn{position:absolute;right:14px;background:none;border:none;font-size:18px;cursor:pointer;padding:4px;color:var(--muted);}
+.eye-btn:hover{color:var(--accent);}
+input[type="password"]{padding-right:46px;}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--muted);}
+.auth-switch a{color:var(--accent);font-weight:700;cursor:pointer;text-decoration:none;}
+.submit-btn{width:100%;background:var(--accent);border:none;border-radius:14px;padding:15px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.submit-btn:active{transform:scale(.98);}
+.select-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;}
+.select-input:focus{border-color:var(--accent);}
+.phone-prefix-badge{background:var(--surface3);border-right:1px solid var(--border);padding:13px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:700;white-space:nowrap;}
+.admin-wrap{display:none;min-height:100vh;}
+.admin-wrap.active{display:flex;}
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);min-height:100vh;display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;}
+.sidebar-brand{padding:24px 20px 18px;border-bottom:1px solid var(--border);}
+.sidebar-brand-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--accent);}
+.sidebar-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;margin-bottom:4px;font-size:13px;font-weight:600;color:var(--muted);}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--surface3);color:var(--accent);}
+.nav-icon{font-size:18px;width:24px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--warn);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;display:none;}
+.sidebar-footer{padding:16px 12px;border-top:1px solid var(--border);}
+.logout-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--warn);cursor:pointer;}
+.logout-btn:active{transform:scale(.98);}
+.main-content{margin-left:240px;flex:1;padding:28px;min-height:100vh;}
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;margin-bottom:4px;color:var(--accent);}
+.page-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 16px;}
+.stat-card-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;}
+.stat-card-val{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;}
+.stat-card-val.green{color:var(--accent)}.stat-card-val.emerald{color:var(--accent3)}.stat-card-val.gold{color:var(--gold)}.stat-card-val.red{color:var(--warn)}.stat-card-val.amber{color:var(--accent2)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.table-title{font-size:14px;font-weight:800;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--table-header);}
+thead th{padding:12px 16px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent3);text-align:left;border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;}
+.badge-pending{background:var(--surface2);color:var(--gold);border:1px solid var(--gold);}
+.badge-approved{background:var(--surface2);color:var(--accent3);border:1px solid var(--accent3);}
+.badge-rejected{background:var(--surface2);color:var(--warn);border:1px solid var(--warn);}
+.badge-locked{background:var(--surface2);color:var(--warn);border:1px solid var(--warn);}
+.badge-active{background:var(--surface2);color:var(--accent3);border:1px solid var(--accent3);}
+.btn{border:none;border-radius:8px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.btn:active{transform:scale(.97);}
+.btn-approve{background:var(--surface2);color:var(--accent3);border:1px solid var(--accent3);}
+.btn-approve:hover{background:var(--surface3);}
+.btn-reject{background:var(--surface2);color:var(--warn);border:1px solid var(--warn);}
+.btn-reject:hover{background:var(--surface3);}
+.btn-edit{background:var(--surface2);color:var(--accent);border:1px solid var(--accent);}
+.btn-edit:hover{background:var(--surface3);}
+.btn-delete{background:var(--surface2);color:var(--warn);border:1px solid var(--warn);}
+.btn-delete:hover{background:var(--surface3);}
+.btn-save{background:var(--accent);color:#fff;padding:10px 24px;font-size:13px;font-weight:700;border:none;}
+.btn-danger{background:var(--warn);color:#fff;padding:10px 24px;font-size:13px;font-weight:700;border:none;}
+.btn-success{background:var(--accent3);color:#fff;padding:10px 24px;font-size:13px;font-weight:700;border:none;}
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;}
+.settings-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+.settings-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.settings-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+.settings-label{font-size:12px;font-weight:700;color:var(--muted);min-width:200px;}
+.settings-input{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;flex:1;min-width:200px;}
+.settings-input:focus{border-color:var(--accent);}
+.settings-input.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.pct-input{width:80px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);outline:none;text-align:center;}
+.pct-input:focus{border-color:var(--accent);}
+.pct-label{font-size:12px;color:var(--muted);}
+.ugx-group{display:flex;align-items:center;gap:8px;}
+.ugx-label{font-size:12px;color:var(--muted);font-weight:700;}
+.ugx-input{width:160px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);outline:none;text-align:right;}
+.ugx-input:focus{border-color:var(--accent);}
+.danger-zone{background:var(--surface2);border:1px solid var(--warn);border-radius:16px;padding:24px;margin-bottom:20px;}
+.danger-title{font-size:15px;font-weight:800;color:var(--warn);margin-bottom:4px;}
+.danger-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.api-key-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;}
+.api-key-toggle{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:14px;cursor:pointer;color:var(--muted);transition:.2s;flex-shrink:0;}
+.api-key-toggle:hover{color:var(--accent);}
+.api-status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.api-status-badge.set{background:rgba(244,63,94,.15);color:var(--accent3);}
+.api-status-badge.notset{background:rgba(225,29,72,.15);color:var(--warn);}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-ov.open{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:440px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;margin-bottom:18px;color:var(--accent);}
+.modal-row{margin-bottom:14px;}
+.modal-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+.modal-input:focus{border-color:var(--accent);}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+.modal-cancel{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;}
+.toast{position:fixed;top:24px;right:24px;background:var(--accent3);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:12px 24px;border-radius:12px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;transform:translateY(-10px);}
+.toast.show{opacity:1;transform:translateY(0);}
+.empty-row td{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+.tube-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.tube-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+.tube-avatar{width:52px;height:52px;background:var(--accent);border-radius:50%;display:grid;place-items:center;font-size:22px;margin:0 auto 10px;color:#fff;}
+.tube-name{font-size:14px;font-weight:800;margin-bottom:4px;}
+.tube-amt{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--accent3);}
+.pct-summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.pct-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;}
+.pct-pill span{color:var(--accent);font-weight:800;}
+.pw-cell{display:flex;align-items:center;gap:6px;}
+.pw-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pw-val:hover{background:var(--surface3);}
+.pw-edit-input{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);background:var(--surface2);border:1px solid var(--accent);border-radius:6px;padding:3px 8px;outline:none;width:120px;}
+.pw-save-btn{background:var(--surface2);border:1px solid var(--accent3);color:var(--accent3);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;}
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.notif-bell{position:fixed;bottom:28px;right:28px;width:54px;height:54px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;z-index:300;color:#fff;}
+.notif-bell:hover{transform:scale(1.08);}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:var(--warn);color:#fff;font-size:10px;font-weight:800;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid var(--bg);}
+.notif-badge.show{display:flex;}
+.notif-drawer{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:400;transition:right .35s;display:flex;flex-direction:column;}
+.notif-drawer.open{right:0;}
+.notif-drawer-header{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notif-drawer-title{font-size:16px;font-weight:800;}
+.notif-close{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.notif-list{flex:1;overflow-y:auto;padding:16px;}
+.notif-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;position:relative;}
+.notif-item.unread{border-color:var(--warn);background:var(--surface2);}
+.notif-item-msg{font-size:13px;line-height:1.6;margin-bottom:6px;}
+.notif-item-date{font-size:10px;color:var(--muted);}
+.notif-item-dismiss{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:2px 6px;border-radius:4px;}
+.notif-item-dismiss:hover{color:var(--warn);}
+.notif-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+.notif-clear-btn{margin:12px 16px;width:calc(100% - 32px);background:var(--surface2);border:1px solid var(--warn);border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--warn);cursor:pointer;}
+.notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:350;display:none;}
+.notif-overlay.open{display:block;}
+@media(max-width:900px){.sidebar{width:60px;}.sidebar-brand,.sidebar-sub,.nav-item span:not(.nav-icon){display:none;}.main-content{margin-left:60px;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading-screen">
+  <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--accent);margin-bottom:8px;">ProfitPulse</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- AUTH CONTAINER (Login/Register) -->
+<div class="auth-wrap" id="auth-wrap">
+  <!-- LOGIN FORM -->
+  <div class="auth-card" id="login-form" style="display:block;">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">⚙️</div>
+      <div class="auth-title">ProfitPulse</div>
+      <div class="auth-sub">Command Center Login</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Username</label>
+      <div class="f-wrap"><span class="f-icon">👤</span><input type="text" class="f-input" id="login-username" placeholder="Enter username"></div>
+      <div class="f-err" id="login-user-err">Please enter username</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Password</label>
+      <div class="f-wrap"><span class="f-icon">🔒</span><input type="password" class="f-input" id="login-password" placeholder="Enter password"><button class="eye-btn" onclick="toggleLoginPw()" id="login-eye">👁️</button></div>
+      <div class="f-err" id="login-pw-err">Please enter password</div>
+    </div>
+    <div class="f-err" id="login-general-err" style="text-align:center;margin-bottom:10px;"></div>
+    <button class="submit-btn" onclick="adminLogin()">Sign In →</button>
+    <div class="auth-switch">Don't have access? <a onclick="showRegisterForm()">Register New Admin</a></div>
+  </div>
+
+  <!-- REGISTER FORM -->
+  <div class="auth-card" id="register-form" style="display:none;">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">📝</div>
+      <div class="auth-title">Admin Registration</div>
+      <div class="auth-sub">Limited to 3 members only</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Phone Number</label>
+      <div class="phone-prefix-wrap" style="display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div class="phone-prefix-badge">+256</div>
+        <input type="tel" id="reg-phone" placeholder="7XXXXXXXX" maxlength="9" style="background:transparent;border:none;padding:13px 14px;flex:1;outline:none;color:var(--text);">
+      </div>
+      <div class="field-hint" style="font-size:10px;color:var(--muted);margin-top:5px;">9 digits starting with 7 (Uganda)</div>
+      <div class="f-err" id="reg-phone-err">Enter valid phone number</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Admin Position</label>
+      <div class="f-wrap"><span class="f-icon">👔</span>
+        <select class="select-input" id="reg-position">
+          <option value="">Select Position</option>
+          <option value="Financial Manager">Financial Manager</option>
+          <option value="Manager">Manager</option>
+          <option value="Head Admin">Head Admin</option>
+          <option value="Supervisor">Supervisor</option>
+        </select>
+      </div>
+      <div class="f-err" id="reg-position-err">Please select position</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Username</label>
+      <div class="f-wrap"><span class="f-icon">👤</span><input type="text" class="f-input" id="reg-username" placeholder="Choose username"></div>
+      <div class="f-err" id="reg-username-err">Username required</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Password (min. 9 characters)</label>
+      <div class="f-wrap"><span class="f-icon">🔒</span><input type="password" class="f-input" id="reg-password" placeholder="Create password"><button class="eye-btn" onclick="toggleRegPw()" id="reg-eye">👁️</button></div>
+      <div class="f-err" id="reg-pw-err">Password must be at least 9 characters</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Confirm Password</label>
+      <div class="f-wrap"><span class="f-icon">🔐</span><input type="password" class="f-input" id="reg-confirm" placeholder="Confirm password"><button class="eye-btn" onclick="toggleRegConfirm()" id="reg-confirm-eye">👁️</button></div>
+      <div class="f-err" id="reg-confirm-err">Passwords do not match</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Second Password (For recovery)</label>
+      <div class="f-wrap"><span class="f-icon">🔑</span><input type="password" class="f-input" id="reg-second-pw" placeholder="Second password for recovery"><button class="eye-btn" onclick="toggleRegSecond()" id="reg-second-eye">👁️</button></div>
+      <div class="f-err" id="reg-second-pw-err">Second password must be at least 9 characters</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Confirm Second Password</label>
+      <div class="f-wrap"><span class="f-icon">🔑</span><input type="password" class="f-input" id="reg-second-confirm" placeholder="Confirm second password"><button class="eye-btn" onclick="toggleRegSecondConfirm()" id="reg-second-confirm-eye">👁️</button></div>
+      <div class="f-err" id="reg-second-confirm-err">Second passwords do not match</div>
+    </div>
+    <div class="f-err" id="reg-general-err" style="text-align:center;margin-bottom:10px;"></div>
+    <button class="submit-btn" onclick="adminRegister()">Register →</button>
+    <div class="auth-switch">Already have access? <a onclick="showLoginForm()">Sign In</a></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (COMMAND CENTER) -->
+<div class="admin-wrap" id="admin-wrap">
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">ProfitPulse</div>
+      <div class="sidebar-sub">Command Center</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" onclick="showPage('pg-dashboard')"><span class="nav-icon">📊</span><span>Dashboard</span></div>
+      <div class="nav-item" onclick="showPage('pg-users')"><span class="nav-icon">👥</span><span>Users</span></div>
+      <div class="nav-item" onclick="showPage('pg-tube')"><span class="nav-icon">📈</span><span>Investors</span></div>
+      <div class="nav-item" onclick="showPage('pg-transactions')"><span class="nav-icon">💰</span><span>Transactions</span></div>
+      <div class="nav-item" onclick="showPage('pg-withdrawals')"><span class="nav-icon">💸</span><span>Withdrawals</span><span class="nav-badge" id="withdrawals-nav-badge">0</span></div>
+      <div class="nav-item" onclick="showPage('pg-debit')"><span class="nav-icon">💳</span><span>Debit User</span></div>
+      <div class="nav-item" onclick="showPage('pg-sog')"><span class="nav-icon">🗑️</span><span>SOG</span></div>
+      <div class="nav-item" onclick="showPage('pg-settings')"><span class="nav-icon">⚙️</span><span>Settings</span></div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="page active" id="pg-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Real-time platform overview</div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-label">Total Users</div><div class="stat-card-val green" id="d-total-users">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Invested</div><div class="stat-card-val gold" id="d-total-invested">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Balance</div><div class="stat-card-val emerald" id="d-total-balance">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Balance</div><div class="stat-card-val blue" id="d-total-balance">—</div></div>
+      </div>
+      <div class="pct-summary" id="pct-summary"></div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-card-label">Locked Users</div><div class="stat-card-val red" id="d-locked">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Min Deposit</div><div class="stat-card-val gold" id="d-min-deposit">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Pending Deposits</div><div class="stat-card-val amber" id="d-pending-dep">—</div></div>
+      </div>
+    </div>
+
+    <div class="page" id="pg-users">
+      <div class="page-title">Users</div>
+      <div class="page-sub">Manage all registered users</div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">👥 All Users</div>
+          <input type="text" class="f-input" style="width:220px;padding:8px 14px;" placeholder="🔍 Search username..." oninput="filterUsers(this.value)">
+        </div>
+        <table>
+          <thead>
+            <tr><th>Username</th><th>Phone</th><th>Password</th><th>Invested</th><th>Withdrawn</th><th>Available</th><th>Referrals</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="users-table-body"><tr class="empty-row"><td colspan="9">Loading...<\/tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-tube">
+      <div class="page-title">Active Investors</div>
+      <div class="page-sub">Users who have made deposits and are earning</div>
+      <div class="tube-grid" id="tube-grid"><p style="color:var(--muted);font-size:13px">Loading...</p></div>
+    </div>
+
+    <div class="page" id="pg-transactions">
+      <div class="page-title">Transactions</div>
+      <div class="page-sub">All deposits and withdrawals across all users - Deposits are automatically processed by MarzPay</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-save" onclick="filterTx('all')">All</button>
+        <button class="btn btn-edit" onclick="filterTx('deposit')">Deposits</button>
+        <button class="btn btn-edit" onclick="filterTx('withdrawal')">Withdrawals</button>
+        <button class="btn btn-edit" onclick="filterTx('pending')">⏳ Pending</button>
+        <button class="btn btn-success" onclick="filterTx('successful')">✅ Successful</button>
+        <button class="btn btn-reject" onclick="filterTx('failed')">❌ Failed</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">💰 All Transactions</div>
+          <span id="tx-count" style="font-size:12px;color:var(--muted);"></span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Username</th><th>Type</th><th>Amount</th><th>Deposit Phone</th><th>Note</th><th>Status</th></tr>
+          </thead>
+          <tbody id="tx-table-body"><tr class="empty-row"><td colspan="7">Loading...<\/tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-withdrawals">
+      <div class="page-title">💸 Withdrawals</div>
+      <div class="page-sub">Pending withdrawal requests — approve or reject</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+        <div class="stat-card"><div class="stat-card-label">Pending</div><div class="stat-card-val gold" id="wd-stat-pending">0</div></div>
+        <div class="stat-card"><div class="stat-card-label">Approved</div><div class="stat-card-val emerald" id="wd-stat-approved">0</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Pending Amount</div><div class="stat-card-val red" id="wd-stat-amount">UGX 0</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-save" onclick="filterWithdrawals('pending')">⏳ Pending</button>
+        <button class="btn btn-approve" onclick="filterWithdrawals('approved')">✅ Approved</button>
+        <button class="btn btn-reject" onclick="filterWithdrawals('rejected')">❌ Rejected</button>
+        <button class="btn btn-edit" onclick="filterWithdrawals('all')">📋 All</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Withdrawal Requests</div>
+          <span id="wd-count" style="font-size:12px;color:var(--muted);">0 requests</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Username</th><th>Phone</th><th>Amount</th><th>Net Amount</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="wd-table-body"><tr class="empty-row"><td colspan="7">No withdrawal requests yet<\/tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-debit">
+      <div class="page-title">Debit User</div>
+      <div class="page-sub">Deduct an amount from a user's balance</div>
+      <div class="table-wrap" style="max-width:520px;">
+        <div class="table-header"><div class="table-title">💳 Debit User Account</div></div>
+        <div style="padding:24px;">
+          <div style="margin-bottom:16px;">
+            <label class="f-label">Search Username</label>
+            <input type="text" class="f-input" style="padding:11px 14px;" id="debit-search" placeholder="Enter exact username..." oninput="searchDebitUser()">
+          </div>
+          <div id="debit-user-info" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div><div style="font-size:15px;font-weight:800;" id="debit-user-name">—</div><div style="font-size:12px;color:var(--muted);" id="debit-user-phone">—</div></div>
+              <div style="text-align:right;"><div style="font-size:11px;color:var(--muted);">Current Balance</div><div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;" id="debit-user-balance">—</div></div>
+            </div>
+          </div>
+          <div id="debit-not-found" style="display:none;color:var(--warn);font-size:13px;margin-bottom:12px;">❌ User not found</div>
+          <div style="margin-bottom:16px;"><label class="f-label">Amount to Debit (UGX)</label><input type="number" class="f-input" style="padding:11px 14px;" id="debit-amount" placeholder="Enter amount" min="1" oninput="updateDebitPreview()"></div>
+          <div id="debit-preview" style="display:none;background:var(--surface2);border:1px solid var(--warn);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--warn);"></div>
+          <button class="btn btn-danger" style="width:100%;padding:14px;font-size:14px;" onclick="processDebit()">💳 PROCESS DEBIT</button>
+        </div>
+      </div>
+      <div class="table-wrap" style="max-width:520px;margin-top:20px;">
+        <div class="table-header"><div class="table-title">📋 Recent Debits</div></div>
+        <table>
+          <thead><tr><th>Username</th><th>Amount Debited</th><th>Balance After</th><th>Date & Time</th></tr></thead>
+          <tbody id="debit-history-body"><tr class="empty-row"><td colspan="4">No debits yet<\/tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="pg-sog">
+      <div class="page-title">🗑️ SOG - Search & Obliterate</div>
+      <div class="page-sub">Wipe user financial data (keeps account structure) - Account becomes brand new</div>
+      <div style="background:#fff0f4;border:1px solid var(--border);padding:16px;border-radius:12px;margin-bottom:20px;"><strong style="color:var(--warn);">⚠️ WARNING:</strong> This will reset ALL user financial data to zero. The user account will look brand new but username, password, phone, country, joined date, referral list, and referrer info will remain. This cannot be undone.</div>
+      <div style="display:flex;gap:12px;margin-bottom:20px;">
+        <input type="text" class="f-input" id="sog-username-search" placeholder="Enter username to search..." oninput="searchSOGUser()" style="flex:1;padding:11px 14px;">
+        <button class="btn btn-approve" onclick="clearSOGSearch()">Clear</button>
+      </div>
+      <div id="sog-user-found" style="display:none;background:#fff0f4;padding:16px;border-radius:12px;margin-bottom:20px;border-left:4px solid var(--accent);">
+        <div style="font-weight:700;margin-bottom:8px;">User Found:</div>
+        <div id="sog-user-display" style="font-size:14px;color:var(--muted);margin-bottom:12px;"></div>
+        <button class="btn btn-reject" style="background:var(--warn);" onclick="obliterateUserData()">🗑️ OBLITERATE ALL FINANCIAL DATA (Make Account New)</button>
+      </div>
+      <div id="sog-not-found" style="display:none;color:var(--muted);text-align:center;padding:40px 20px;">No user found. Try again.</div>
+    </div>
+
+    <div class="page" id="pg-settings">
+      <div class="page-title">Settings</div>
+      <div class="page-sub">Configure platform settings</div>
+      <div class="settings-section">
+        <div class="settings-title">💬 WhatsApp Customer Care</div>
+        <div class="settings-sub">Set the WhatsApp number for customer support</div>
+        <div class="settings-row">
+          <span class="settings-label">WhatsApp Number</span>
+          <div class="ugx-group"><span class="ugx-label">+256</span><input type="text" class="ugx-input" id="wa-number-input" placeholder="712345678" maxlength="9" style="width:140px;"></div>
+          <button class="btn btn-save" onclick="saveWaNumber()">Save</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">🔑 MarzPay Payment API</div>
+        <div class="settings-sub">Paste your MarzPay Base64 Authorization Header here.</div>
+        <div class="settings-row">
+          <span class="settings-label">Base64 Auth Header</span>
+          <div class="api-key-wrap">
+            <input type="password" class="settings-input mono" id="marz-api-key-input" placeholder="Paste Base64 Authorization Header...">
+            <button class="api-key-toggle" onclick="toggleApiKeyVis()" id="api-key-eye">👁️</button>
+          </div>
+          <button class="btn btn-save" onclick="saveMarzApiKey()">Save</button>
+        </div>
+        <div class="settings-row"><span class="settings-label">Status</span><div id="api-status-display"><span class="api-status-badge notset" id="api-status-badge">⚠️ Not Set</span></div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">💬 WhatsApp Links</div>
+        <div class="settings-row"><span class="settings-label">WhatsApp Group Link</span><input type="url" class="settings-input" id="wa-group-input" placeholder="https://chat.whatsapp.com/..."><button class="btn btn-save" onclick="saveWaGroup()">Save</button></div>
+        <div class="settings-row"><span class="settings-label">WhatsApp Support Link</span><input type="url" class="settings-input" id="wa-support-input" placeholder="https://wa.me/..."><button class="btn btn-save" onclick="saveWaSupport()">Save</button></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">💰 Deposit & Withdrawal Settings</div>
+        <div class="settings-row"><span class="settings-label">Minimum Deposit (UGX)</span><div class="ugx-group"><span class="ugx-label">UGX</span><input type="number" class="ugx-input" id="min-deposit-input" min="500" step="500" placeholder="10000"></div><button class="btn btn-save" onclick="saveMinDeposit()">Save</button></div>
+        <div class="settings-row"><span class="settings-label">Minimum Withdrawal (UGX)</span><div class="ugx-group"><span class="ugx-label">UGX</span><input type="number" class="ugx-input" id="min-withdraw-input" min="500" step="500" placeholder="5000"></div><button class="btn btn-save" onclick="saveMinWithdraw()">Save</button></div>
+        <div class="settings-row"><span class="settings-label">Withdrawal Service Charge (%)</span><div style="display:flex;align-items:center;gap:8px;"><input type="number" class="pct-input" id="with-charge-input" min="0" max="50" step="0.5" placeholder="10"><span class="pct-label">%</span></div><button class="btn btn-save" onclick="saveWithCharge()">Save</button></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">🔗 Referral Commissions</div>
+        <div class="settings-row"><span class="settings-label">Level 1 Commission</span><div style="display:flex;align-items:center;gap:8px;"><input type="number" class="pct-input" id="ref-l1-input" min="0" max="100" step="0.5" placeholder="10"><span class="pct-label">%</span></div><button class="btn btn-save" onclick="saveRefPct()">Save All Levels</button></div>
+        <div class="settings-row"><span class="settings-label">Level 2 Commission</span><div style="display:flex;align-items:center;gap:8px;"><input type="number" class="pct-input" id="ref-l2-input" min="0" max="100" step="0.5" placeholder="4"><span class="pct-label">%</span></div></div>
+        <div class="settings-row"><span class="settings-label">Level 3 Commission</span><div style="display:flex;align-items:center;gap:8px;"><input type="number" class="pct-input" id="ref-l3-input" min="0" max="100" step="0.5" placeholder="2"><span class="pct-label">%</span></div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">🔒 Withdrawal Control</div>
+        <div class="settings-row"><span class="settings-label">Withdrawal Status</span><button class="btn btn-danger" onclick="lockWithdrawals(true)">🔒 Lock All Withdrawals</button><button class="btn btn-success" onclick="lockWithdrawals(false)">🔓 Unlock Withdrawals</button></div>
+        <div id="lock-status" style="font-size:13px;font-weight:700;color:var(--accent3);margin-top:8px;"></div>
+        <div class="settings-row"><span class="settings-label">Manual Approval Mode</span><button class="btn btn-danger" onclick="setWithdrawManual(true)">🔴 Enable Manual Mode</button><button class="btn btn-success" onclick="setWithdrawManual(false)">🟢 Auto-Process (MarzPay)</button></div>
+        <div id="manual-status" style="font-size:13px;font-weight:700;color:var(--accent3);margin-top:8px;"></div>
+      </div>
+      <div class="danger-zone">
+        <div class="danger-title">⚠️ Danger Zone</div>
+        <div class="danger-sub">Permanently delete platform data. These actions cannot be undone.</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;"><button class="btn btn-danger" onclick="deleteAllUsers()">🗑️ Delete All Users</button><button class="btn btn-danger" style="background:var(--warn);" onclick="deleteAllData()">💥 Delete ALL Data</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="edit-modal"><div class="modal-box"><div class="modal-title">✏️ Edit User</div><input type="hidden" id="edit-username"><div class="modal-row"><label class="modal-label">Password</label><input type="text" class="modal-input" id="edit-password"></div><div class="modal-row"><label class="modal-label">Phone Number</label><input type="text" class="modal-input" id="edit-phone-modal" placeholder="+256..."></div><div class="modal-row"><label class="modal-label">Available Balance (UGX)</label><input type="number" class="modal-input" id="edit-balance" min="0"></div><div class="modal-row"><label class="modal-label">Investment (UGX)</label><input type="number" class="modal-input" id="edit-invested" min="0"></div><div class="modal-actions"><button class="modal-cancel" onclick="closeEditModal()">Cancel</button><button class="btn btn-save" onclick="saveEditUser()">Save Changes</button></div></div></div>
+<div class="modal-ov" id="edit-phone-modal"><div class="modal-box"><div class="modal-title">📱 Edit Phone Number</div><input type="hidden" id="edit-phone-username"><div class="modal-row"><label class="modal-label">Username</label><input type="text" class="modal-input" id="edit-phone-user-display" disabled></div><div class="modal-row"><label class="modal-label">Phone Number (with prefix)</label><input type="text" class="modal-input" id="edit-phone-value" placeholder="+256712345678"></div><div class="modal-actions"><button class="modal-cancel" onclick="closeEditPhoneModal()">Cancel</button><button class="btn btn-save" onclick="saveEditPhone()">Save Phone</button></div></div></div>
+
+<div class="toast" id="toast"></div>
+<div class="notif-overlay" id="notif-overlay" onclick="closeNotifDrawer()"></div>
+<div class="notif-bell" onclick="openNotifDrawer()">🔔<div class="notif-badge" id="notif-badge">0</div></div>
+<div class="notif-drawer" id="notif-drawer"><div class="notif-drawer-header"><div class="notif-drawer-title">🔔 Notifications</div><button class="notif-close" onclick="closeNotifDrawer()">✕ Close</button></div><div class="notif-list" id="notif-list"><div class="notif-empty">No notifications yet</div></div><button class="notif-clear-btn" onclick="clearAllNotifications()">🗑️ Clear All</button></div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyB8K-mas2kutV0h9ZcBamCx0uECdb0uvv4",
+  authDomain: "profitpulse-investments.firebaseapp.com",
+  projectId: "profitpulse-investments",
+  storageBucket: "profitpulse-investments.firebasestorage.app",
+  messagingSenderId: "148120862641",
+  appId: "1:148120862641:web:74951ab084b6bd4e36c790"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const dbGet = async (collection, doc) => {
+  const snap = await db.collection(collection).doc(doc).get();
+  return snap.exists ? snap.data() : null;
+};
+const dbSet = (collection, doc, val) => db.collection(collection).doc(doc).set(val);
+const dbUpdate = (collection, doc, val) => db.collection(collection).doc(doc).update(val);
+const dbAdd = (collection, val) => db.collection(collection).add(val);
+const dbDelete = (collection, doc) => db.collection(collection).doc(doc).delete();
+
+let currentAdmin = null;
+let allUsers = {};
+let allSettings = { withdrawCharge:10, refL1:10, refL2:3, refL3:1, waGroup:'', waSupport:'', withdrawLocked:false, withdrawManual:false, minDeposit:10000, minWithdraw:5000, marzApiKey:'', waNumber:'700000000' };
+let searchFilter = '';
+let txFilter = 'all';
+let wdFilter = 'pending';
+let debitTargetUser = null;
+let debitHistory = [];
+
+function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
+function safeKey(u){ return (u||'').replace(/[.#$\[\]/]/g,'_'); }
+function toast(msg,color){ const t=document.getElementById('toast'); t.textContent=msg; t.style.background=color||'var(--accent3)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
+
+function checkAdminSession(){
+  const session = localStorage.getItem('pp_admin_session');
+  const savedAdmin = localStorage.getItem('pp_current_admin');
+  if(session === 'true' && savedAdmin){
+    try{
+      currentAdmin = JSON.parse(savedAdmin);
+      document.getElementById('auth-wrap').style.display='none';
+      document.getElementById('admin-wrap').classList.add('active');
+      startRealtimeListeners();
+      toast('Welcome back, '+currentAdmin.username);
+    } catch(e){ console.warn(e); }
+  } else {
+    localStorage.removeItem('pp_admin_session');
+    localStorage.removeItem('pp_current_admin');
+    currentAdmin = null;
+    document.getElementById('auth-wrap').style.display='flex';
+    document.getElementById('admin-wrap').classList.remove('active');
+    document.getElementById('loading-screen').style.display='none';
+  }
+}
+
+async function adminLogin(){
+  clearErrors('login-user-err','login-pw-err');
+  document.getElementById('login-general-err').classList.remove('show');
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  if(!username){ setErr('login-user-err',true); return; }
+  if(!password){ setErr('login-pw-err',true); return; }
+  
+  const admins = await dbGet('admins');
+  if(!admins){
+    document.getElementById('login-general-err').textContent = '❌ No admin accounts found. Please register first.';
+    document.getElementById('login-general-err').classList.add('show');
+    return;
+  }
+  
+  let foundAdmin = null;
+  for(const key in admins){
+    if(admins[key].username === username && admins[key].password === password){
+      foundAdmin = admins[key];
+      break;
+    }
+  }
+  
+  if(!foundAdmin){
+    document.getElementById('login-general-err').textContent = '❌ Invalid username or password';
+    document.getElementById('login-general-err').classList.add('show');
+    return;
+  }
+  
+  currentAdmin = foundAdmin;
+  localStorage.setItem('pp_admin_session', 'true');
+  localStorage.setItem('pp_current_admin', JSON.stringify(foundAdmin));
+  document.getElementById('auth-wrap').style.display='none';
+  document.getElementById('admin-wrap').classList.add('active');
+  startRealtimeListeners();
+  toast('✅ Welcome, '+foundAdmin.username+' ('+foundAdmin.position+')');
+}
+
+async function adminRegister(){
+  clearErrors('reg-phone-err','reg-position-err','reg-username-err','reg-pw-err','reg-confirm-err','reg-second-pw-err','reg-second-confirm-err','reg-general-err');
+  
+  const phoneDigits = document.getElementById('reg-phone').value.trim();
+  const position = document.getElementById('reg-position').value;
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+  const secondPw = document.getElementById('reg-second-pw').value;
+  const secondConfirm = document.getElementById('reg-second-confirm').value;
+  
+  let ok=true;
+  if(!phoneDigits || phoneDigits.length!==9 || !phoneDigits.startsWith('7')){ setErr('reg-phone-err',true,'Enter 9 digits starting with 7'); ok=false; }
+  if(!position){ setErr('reg-position-err',true,'Please select your position'); ok=false; }
+  if(!username){ setErr('reg-username-err',true,'Username is required'); ok=false; }
+  if(!password || password.length<9){ setErr('reg-pw-err',true,'Password must be at least 9 characters'); ok=false; }
+  if(password !== confirm){ setErr('reg-confirm-err',true,'Passwords do not match'); ok=false; }
+  if(!secondPw || secondPw.length<9){ setErr('reg-second-pw-err',true,'Second password must be at least 9 characters'); ok=false; }
+  if(secondPw !== secondConfirm){ setErr('reg-second-confirm-err',true,'Second passwords do not match'); ok=false; }
+  if(!ok) return;
+  
+  const fullPhone = '+256' + phoneDigits;
+  const existingAdmins = await dbGet('admins');
+  const adminCount = existingAdmins ? Object.keys(existingAdmins).length : 0;
+  
+  if(adminCount >= 3){
+    document.getElementById('reg-general-err').textContent = '❌ Maximum 3 admin accounts allowed. Cannot register more.';
+    document.getElementById('reg-general-err').classList.add('show');
+    return;
+  }
+  
+  if(existingAdmins){
+    for(const key in existingAdmins){
+      if(existingAdmins[key].username === username){
+        document.getElementById('reg-general-err').textContent = '❌ Username already taken';
+        document.getElementById('reg-general-err').classList.add('show');
+        return;
+      }
+    }
+  }
+  
+  const adminKey = 'admin_' + Date.now();
+  const newAdmin = { username, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr() };
+  await dbSet('admins/'+adminKey, newAdmin);
+  toast('✅ Admin registered successfully! You can now login.');
+  showLoginForm();
+  document.getElementById('reg-phone').value='';
+  document.getElementById('reg-position').value='';
+  document.getElementById('reg-username').value='';
+  document.getElementById('reg-password').value='';
+  document.getElementById('reg-confirm').value='';
+  document.getElementById('reg-second-pw').value='';
+  document.getElementById('reg-second-confirm').value='';
+}
+
+function showRegisterForm(){ document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block'; }
+function showLoginForm(){ document.getElementById('login-form').style.display='block'; document.getElementById('register-form').style.display='none'; }
+function toggleLoginPw(){ const inp=document.getElementById('login-password'); const btn=document.getElementById('login-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
+function toggleRegPw(){ const inp=document.getElementById('reg-password'); const btn=document.getElementById('reg-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
+function toggleRegConfirm(){ const inp=document.getElementById('reg-confirm'); const btn=document.getElementById('reg-confirm-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
+function toggleRegSecond(){ const inp=document.getElementById('reg-second-pw'); const btn=document.getElementById('reg-second-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
+function toggleRegSecondConfirm(){ const inp=document.getElementById('reg-second-confirm'); const btn=document.getElementById('reg-second-confirm-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
+function toggleApiKeyVis(){ const inp=document.getElementById('marz-api-key-input'); const btn=document.getElementById('api-key-eye'); if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; } else { inp.type='password'; btn.textContent='👁️'; } }
+
+function adminLogout(){
+  localStorage.removeItem('pp_admin_session');
+  localStorage.removeItem('pp_current_admin');
+  currentAdmin = null;
+  document.getElementById('admin-wrap').classList.remove('active');
+  document.getElementById('auth-wrap').style.display='flex';
+  showLoginForm();
+  document.getElementById('login-username').value='';
+  document.getElementById('login-password').value='';
+  toast('Signed out');
+}
+
+function startRealtimeListeners(){
+  db.ref('users').on('value', snap=>{ allUsers = snap.val()||{}; renderDashboard(); renderUsersTable(); renderTube(); });
+  db.ref('settings').on('value', snap=>{ if(snap.exists()) allSettings=snap.val(); loadSettingsUI(); renderDashboard(); });
+  startNotifListener();
+  startPendingWithdrawalsListener();
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map={'pg-dashboard':0,'pg-users':1,'pg-tube':2,'pg-transactions':3,'pg-withdrawals':4,'pg-debit':5,'pg-sog':6,'pg-settings':7};
+  if(map[id]!==undefined) document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
+  if(id==='pg-transactions'){ renderTransactions(); }
+  if(id==='pg-withdrawals') renderWithdrawalsTable();
+}
+
+let sogTargetUser=null;
+function searchSOGUser(){ const q=document.getElementById('sog-username-search').value.trim().toLowerCase(); const found=document.getElementById('sog-user-found'); const notFound=document.getElementById('sog-not-found'); sogTargetUser=null; found.style.display='none'; notFound.style.display='none'; if(!q) return; const user=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); if(user){ sogTargetUser=user; const userDisplay='Username: <strong>'+user.username+'</strong><br>Phone: '+(user.phone||'—')+'<br>Current Balance: '+fmt(user.balance||0)+' | Invested: '+fmt(user.invested||0); document.getElementById('sog-user-display').innerHTML=userDisplay; found.style.display='block'; } else { notFound.style.display='block'; } }
+function clearSOGSearch(){ sogTargetUser=null; document.getElementById('sog-username-search').value=''; document.getElementById('sog-user-found').style.display='none'; document.getElementById('sog-not-found').style.display='none'; }
+
+function obliterateUserData(){ 
+  if(!sogTargetUser){ toast('No user selected','#f87171'); return; } 
+  confirmAction('🗑️ OBLITERATE ALL FINANCIAL DATA?', 'Delete ALL financial data for ' + sogTargetUser.username + '? Account will become brand new. THIS CANNOT BE UNDONE.').then(confirmed=>{ 
+    if(confirmed){ 
+      const updates = {}; 
+      updates['users/'+safeKey(sogTargetUser.username)+'/balance'] = 0;
+      updates['users/'+safeKey(sogTargetUser.username)+'/invested'] = 0;
+      updates['users/'+safeKey(sogTargetUser.username)+'/activated'] = false;
+      updates['users/'+safeKey(sogTargetUser.username)+'/transactions'] = {};
+      updates['users/'+safeKey(sogTargetUser.username)+'/deposits'] = {};
+      db.ref().update(updates); 
+      toast('🗑️ All financial data obliterated for ' + sogTargetUser.username, '#f87171'); 
+      clearSOGSearch(); 
+    } 
+  }); 
+}
+
+function confirmAction(title, text){ return Swal.fire({title, text, icon:'warning', showCancelButton:true, confirmButtonColor:'#db2777', confirmButtonText:'Yes, proceed!'}).then(result=>result.isConfirmed); }
+
+function renderDashboard(){
+  const users=Object.values(allUsers);
+  let invested=0,balance=0,locked=0,pendingDep=0;
+  users.forEach(u=>{ 
+    invested+=u.invested||0; 
+    balance+=u.balance||0; 
+    if(u.locked)locked++; 
+    if(u.transactions){ Object.values(u.transactions).forEach(tx=>{ if(tx.type==='Deposit'&&tx.status==='pending')pendingDep++; }); } 
+  });
+  document.getElementById('d-total-users').textContent=users.length;
+  document.getElementById('d-total-invested').textContent=fmt(invested);
+  document.getElementById('d-total-balance').textContent=fmt(balance);
+  document.getElementById('d-locked').textContent=locked;
+  document.getElementById('d-min-deposit').textContent=fmt(allSettings.minDeposit||10000);
+  document.getElementById('d-pending-dep').textContent=pendingDep;
+  const s=allSettings;
+  document.getElementById('pct-summary').innerHTML='<div class="pct-pill">Min Deposit <span>'+fmt(s.minDeposit||10000)+'</span></div><div class="pct-pill">Withdrawal Charge <span>'+(s.withdrawCharge||10)+'%</span></div><div class="pct-pill">Ref L1 <span>'+(s.refL1||10)+'%</span></div><div class="pct-pill">Ref L2 <span>'+(s.refL2||3)+'%</span></div><div class="pct-pill">Ref L3 <span>'+(s.refL3||1)+'%</span></div><div class="pct-pill">MarzPay API <span style="color:'+(s.marzApiKey?'var(--accent3)':'var(--warn)')+';">'+(s.marzApiKey?'✅ Set':'⚠️ Not Set')+'</span></div><div class="pct-pill">Withdrawals <span style="color:'+(s.withdrawLocked?'var(--warn)':'var(--accent3)')+';">'+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN')+'</span></div>';
+}
+
+function filterUsers(val){ searchFilter=val; renderUsersTable(); }
+function renderUsersTable(){
+  const users=Object.values(allUsers);
+  const filtered=searchFilter?users.filter(u=>u.username&&u.username.toLowerCase().includes(searchFilter.toLowerCase())):users;
+  const tbody=document.getElementById('users-table-body');
+  if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="9">No users found<\/tr>'; return; }
+  tbody.innerHTML=filtered.map(u=>{ const sk=safeKey(u.username||''); const availColor=(u.balance||0)>0?'var(--accent3)':'var(--warn)'; return '<tr><td><strong>'+ (u.username||'—') +'</strong></td><td class="mono">'+ (u.phone||'—') +'</strong></td><td><div class="pw-cell" id="pwcell_'+sk+'"><span class="pw-val" onclick="editPw(\''+sk+'\')">'+ (u.password||'—') +'</span></div></td><td class="mono" style="color:var(--gold)">'+fmt(u.invested)+'</td><td class="mono" style="color:'+availColor+';font-weight:700">'+fmt(u.balance)+'</td><td class="mono">'+ (u.referrals?Object.keys(u.referrals).length:0) +'</td><td><span class="badge '+(u.locked?'badge-locked':'badge-active')+'">'+(u.locked?'Locked':'Active')+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-edit" onclick="openEditModal(\''+u.username+'\')">✏️ Edit</button><button class="btn btn-edit" onclick="openEditPhoneModal(\''+u.username+'\')">📱 Phone</button><button class="btn '+(u.locked?'btn-approve':'btn-reject')+'" onclick="toggleLock(\''+u.username+'\','+(!u.locked)+')">'+(u.locked?'🔓 Unlock':'🔒 Lock')+'</button><button class="btn btn-delete" onclick="deleteUser(\''+u.username+'\')">🗑️</button></td></tr>'; }).join('');
+}
+
+function editPw(sk){ const cell=document.getElementById('pwcell_'+sk); if(!cell) return; const cur=cell.querySelector('.pw-val'); const currentPw=cur?cur.textContent:''; cell.innerHTML='<input class="pw-edit-input" id="pwinput_'+sk+'" value="'+currentPw+'" type="text"><button class="pw-save-btn" onclick="savePw(\''+sk+'\')">✓</button>'; const inp=document.getElementById('pwinput_'+sk); if(inp){inp.focus();inp.onkeydown=e=>{if(e.key==='Enter')savePw(sk);if(e.key==='Escape')renderUsersTable();};} }
+function savePw(sk){ const inp=document.getElementById('pwinput_'+sk); if(!inp) return; const newPw=inp.value.trim(); if(!newPw){toast('Password cannot be empty','#f87171');return;} const u=Object.values(allUsers).find(u=>safeKey(u.username||'')==sk); if(!u) return; db.ref('users/'+sk+'/password').set(newPw); toast('✅ Password updated for '+u.username); }
+
+function openEditModal(username){ const u=allUsers[safeKey(username)]; if(!u) return; document.getElementById('edit-username').value=username; document.getElementById('edit-password').value=u.password||''; document.getElementById('edit-phone-modal').value=u.phone||''; document.getElementById('edit-balance').value=u.balance||0; document.getElementById('edit-invested').value=u.invested||0; document.getElementById('edit-modal').classList.add('open'); }
+function closeEditModal(){ document.getElementById('edit-modal').classList.remove('open'); }
+async function saveEditUser(){
+  const username=document.getElementById('edit-username').value;
+  const newPassword=document.getElementById('edit-password').value;
+  const newPhone=document.getElementById('edit-phone-modal').value;
+  const oldInvested = allUsers[safeKey(username)]?.invested || 0;
+  const newInvested=parseInt(document.getElementById('edit-invested').value)||0;
+  const newBalance=parseInt(document.getElementById('edit-balance').value)||0;
+  const updates={};
+  updates['users/'+safeKey(username)+'/password'] = newPassword;
+  updates['users/'+safeKey(username)+'/phone'] = newPhone;
+  updates['users/'+safeKey(username)+'/balance'] = newBalance;
+  updates['users/'+safeKey(username)+'/invested'] = newInvested;
+  updates['users/'+safeKey(username)+'/activated'] = newInvested > 0;
+  if(newInvested > oldInvested){
+    const addedAmount = newInvested - oldInvested;
+    const instantProfit = Math.floor(addedAmount * 0.10);
+    const creditedBalance = newBalance + instantProfit;
+    const depKey = 'dep_' + Date.now();
+    const tx1Key = 'tx_' + Date.now() + 'a';
+    const tx2Key = 'tx_' + (Date.now()+1) + 'b';
+    updates['users/'+safeKey(username)+'/balance'] = creditedBalance;
+    updates['users/'+safeKey(username)+'/deposits/'+depKey] = { amount: addedAmount, startDate: new Date().toISOString(), daysRun: 0, lastPaidDate: dateStr() };
+    updates['users/'+safeKey(username)+'/transactions/'+tx1Key] = { type:'Deposit', amount:addedAmount, note:'Admin credited — Investment set to '+fmt(newInvested), date: dateStr(), status:'completed' };
+    updates['users/'+safeKey(username)+'/transactions/'+tx2Key] = { type:'Profit', amount:instantProfit, note:'10% instant profit on credited amount', date: dateStr(), status:'completed' };
+  }
+  await db.ref().update(updates);
+  closeEditModal();
+  toast('✅ User '+username+' updated');
+}
+function toggleLock(username, lock){ db.ref('users/'+safeKey(username)+'/locked').set(lock); toast(lock?'🔒 User locked':'🔓 User unlocked', lock?'#f87171':undefined); }
+function deleteUser(username){ confirmAction('Delete User?', 'Delete user "'+username+'"? This cannot be undone.').then(confirmed=>{ if(confirmed){ db.ref('users/'+safeKey(username)).remove(); toast('🗑️ User deleted','#f87171'); } }); }
+function openEditPhoneModal(username){ const u=allUsers[safeKey(username)]; if(!u) return; document.getElementById('edit-phone-username').value=username; document.getElementById('edit-phone-user-display').value=username; document.getElementById('edit-phone-value').value=u.phone||''; document.getElementById('edit-phone-modal').classList.add('open'); }
+function closeEditPhoneModal(){ document.getElementById('edit-phone-modal').classList.remove('open'); }
+function saveEditPhone(){ const username=document.getElementById('edit-phone-username').value; const phone=document.getElementById('edit-phone-value').value.trim(); if(!phone){ toast('Please enter a valid phone number','#f87171'); return; } db.ref('users/'+safeKey(username)+'/phone').set(phone); closeEditPhoneModal(); toast('✅ Phone number updated for '+username); }
+
+function renderTube(){ const investors=Object.values(allUsers).filter(u=>(u.invested||0)>0); const grid=document.getElementById('tube-grid'); if(!investors.length){ grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">No investors yet.</div>'; return; } grid.innerHTML=investors.map(u=>'<div class="tube-card"><div class="tube-avatar">📈</div><div class="tube-name">'+u.username+'</div><div class="tube-amt">'+fmt(u.invested)+'</div></div>').join(''); }
+
+function filterTx(type){ txFilter=type; renderTransactions(); }
+function renderTransactions(){ 
+  const tbody=document.getElementById('tx-table-body'); 
+  const countEl=document.getElementById('tx-count'); 
+  if(!tbody) return; 
+  const allTxs=[]; 
+  Object.values(allUsers).forEach(u=>{ 
+    if(!u.transactions) return; 
+    Object.values(u.transactions).forEach(tx=>{ 
+      if(tx.type==='Deposit'||tx.type==='Withdrawal') allTxs.push({...tx,username:u.username}); 
+    }); 
+  }); 
+  allTxs.sort((a,b)=>(b.date||'').localeCompare(a.date||'')); 
+  let filtered=allTxs; 
+  if(txFilter==='deposit') filtered=allTxs.filter(t=>t.type==='Deposit'); 
+  else if(txFilter==='withdrawal') filtered=allTxs.filter(t=>t.type==='Withdrawal'); 
+  else if(txFilter==='pending') filtered=allTxs.filter(t=>t.status==='pending'); 
+  else if(txFilter==='successful') filtered=allTxs.filter(t=>t.status==='completed'||t.status==='successful'); 
+  else if(txFilter==='failed') filtered=allTxs.filter(t=>t.status==='failed'); 
+  if(countEl) countEl.textContent=filtered.length+' transactions'; 
+  if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="7">No transactions found<\/tr>'; return; } 
+  tbody.innerHTML=filtered.map(tx=>{ 
+    const isDeposit=tx.type==='Deposit'; 
+    let statusColor='var(--gold)'; 
+    let statusText='⏳ Pending'; 
+    if(tx.status==='completed' || tx.status==='successful'){ statusColor='var(--accent3)'; statusText='✅ Successful'; } 
+    else if(tx.status==='failed'){ statusColor='var(--warn)'; statusText='❌ Failed'; } 
+    const amountColor=isDeposit?'var(--accent3)':'var(--warn)'; 
+    const depositPhone = tx.depositPhone ? tx.depositPhone : '—';
+    const noteText = tx.note || '—';
+    return '<tr><td class="mono" style="font-size:11px;">'+(tx.date||'—')+'</td><td><strong>'+(tx.username||'—')+'</strong></td><td><span class="badge '+(isDeposit?'badge-approved':'badge-pending')+'">'+tx.type+'</span></td><td class="mono" style="color:'+amountColor+';">'+fmt(Math.abs(tx.amount||0))+'</td><td class="mono" style="font-size:11px;">'+depositPhone+'</td><td style="font-size:11px;color:var(--muted);max-width:200px;">'+noteText+'</td><td><span style="font-size:11px;font-weight:700;color:'+statusColor+';">'+statusText+'</span></td></tr>'; 
+  }).join(''); 
+}
+
+function startPendingWithdrawalsListener(){ db.ref('pendingWithdrawals').on('value', snap=>{ allWithdrawals = snap.val()||{}; updateWithdrawalsBadge(); renderWithdrawalsStats(); renderWithdrawalsTable(); }); }
+let allWithdrawals = {};
+function updateWithdrawalsBadge(){ const count=Object.values(allWithdrawals).filter(v=>v.status==='pending').length; const badge=document.getElementById('withdrawals-nav-badge'); if(!badge) return; if(count>0){ badge.textContent=count; badge.style.display='inline-flex'; } else { badge.style.display='none'; } }
+function renderWithdrawalsStats(){ const vals=Object.values(allWithdrawals); const pending=vals.filter(v=>v.status==='pending'); const approved=vals.filter(v=>v.status==='approved'); const pendingAmt=pending.reduce((s,v)=>s+(v.amount||0),0); const e1=document.getElementById('wd-stat-pending'); const e2=document.getElementById('wd-stat-approved'); const e3=document.getElementById('wd-stat-amount'); if(e1)e1.textContent=pending.length; if(e2)e2.textContent=approved.length; if(e3)e3.textContent=fmt(pendingAmt); }
+function filterWithdrawals(f){ wdFilter=f; renderWithdrawalsTable(); }
+function renderWithdrawalsTable(){ const tbody=document.getElementById('wd-table-body'); const countEl=document.getElementById('wd-count'); if(!tbody) return; let entries=Object.entries(allWithdrawals); if(wdFilter!=='all') entries=entries.filter(([k,v])=>v.status===wdFilter); entries.sort((a,b)=>b[0].localeCompare(a[0])); if(countEl) countEl.textContent=entries.length+' requests'; if(!entries.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="7">No withdrawal requests yet<\/tr>'; return; } tbody.innerHTML=entries.map(([k,v])=>{ const sc=v.status==='approved'?'var(--accent3)':v.status==='rejected'?'var(--warn)':'var(--gold)'; const si=v.status==='approved'?'✅ Approved':v.status==='rejected'?'❌ Rejected':'⏳ Pending'; const fee=Math.round((v.amount||0)*0.10); const sendAmt=v.sendAmount||(v.amount-fee); const actions=v.status==='pending'?'<button class="btn btn-approve" onclick="approveWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+','+sendAmt+',\''+(v.txKey||k)+'\')">✅ Approve</button><button class="btn btn-reject" onclick="rejectWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+',\''+(v.txKey||k)+'\')">❌ Reject</button>':'—'; return '<tr><td class="mono" style="font-size:11px;">'+(v.date||'—')+'</td><td><strong>'+(v.username||'—')+'</strong></td><td class="mono">'+(v.phone||(allUsers[safeKey(v.username||'')]?.phone||'—'))+'</td><td class="mono" style="color:var(--warn);font-weight:800;">'+fmt(v.amount)+'</td><td class="mono" style="color:var(--accent3);">'+fmt(sendAmt)+'</td><td><span style="font-size:11px;font-weight:700;color:'+sc+';">'+si+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</td></tr>'; }).join(''); }
+function deleteAllUsers(){ if(!confirm('⚠️ DELETE ALL USERS?')) return; if(!confirm('Are you absolutely sure?')) return; db.ref('users').remove(); toast('🗑️ All users deleted','#f87171'); }
+function loadSettingsUI(){ const s=allSettings; document.getElementById('wa-group-input').value=s.waGroup||''; document.getElementById('wa-support-input').value=s.waSupport||''; document.getElementById('wa-number-input').value=s.waNumber||'700000000'; document.getElementById('with-charge-input').value=s.withdrawCharge||10; document.getElementById('ref-l1-input').value=s.refL1||10; document.getElementById('ref-l2-input').value=s.refL2||3; document.getElementById('ref-l3-input').value=s.refL3||1; document.getElementById('min-deposit-input').value=s.minDeposit||10000; document.getElementById('min-withdraw-input').value=s.minWithdraw||5000; const apiKeyInp=document.getElementById('marz-api-key-input'); if(s.marzApiKey && !apiKeyInp.value) apiKeyInp.value=s.marzApiKey; const badge=document.getElementById('api-status-badge'); if(s.marzApiKey && s.marzApiKey.length>5){ badge.className='api-status-badge set'; badge.textContent='✅ API Key Set'; } else { badge.className='api-status-badge notset'; badge.textContent='⚠️ Not Set — Payments Disabled'; } const ls=document.getElementById('lock-status'); if(ls){ ls.textContent='Status: Withdrawals are '+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN'); ls.style.color=s.withdrawLocked?'var(--warn)':'var(--accent3)'; } const ms=document.getElementById('manual-status'); if(ms){ ms.textContent='Mode: '+(s.withdrawManual?'🔴 Manual Approval — Admin must approve each withdrawal':'🟢 Auto-Process — MarzPay handles payouts automatically'); ms.style.color=s.withdrawManual?'var(--warn)':'var(--accent3)'; } }
+function saveWaNumber(){ const val=document.getElementById('wa-number-input').value.trim().replace(/\D/g,''); if(val && val.length>=9){ db.ref('settings/waNumber').set(val); toast('✅ WhatsApp number saved'); } else { toast('Enter a valid phone number (9 digits)','#f87171'); } }
+function saveMarzApiKey(){ const val=document.getElementById('marz-api-key-input').value.trim(); if(!val){ toast('Please enter a valid API key','#f87171'); return; } db.ref('settings/marzApiKey').set(val); toast('✅ MarzPay API key saved — Payments enabled!'); }
+function saveMinDeposit(){ const v=parseInt(document.getElementById('min-deposit-input').value)||10000; if(v<500){toast('Min deposit must be at least UGX 500','#f87171');return;} db.ref('settings/minDeposit').set(v); toast('✅ Minimum deposit set to '+fmt(v)); }
+function saveMinWithdraw(){ const v=parseInt(document.getElementById('min-withdraw-input').value)||5000; if(v<500){toast('Min withdrawal must be at least UGX 500','#f87171');return;} db.ref('settings/minWithdraw').set(v); toast('✅ Minimum withdrawal set to '+fmt(v)); }
+function saveWaGroup(){ db.ref('settings/waGroup').set(document.getElementById('wa-group-input').value.trim()); toast('✅ WhatsApp Group link saved'); }
+function saveWaSupport(){ db.ref('settings/waSupport').set(document.getElementById('wa-support-input').value.trim()); toast('✅ WhatsApp Support link saved'); }
+function saveWithCharge(){ const v=parseFloat(document.getElementById('with-charge-input').value)||10; db.ref('settings/withdrawCharge').set(v); toast('✅ Withdrawal charge updated to '+v+'%'); }
+function saveRefPct(){ db.ref('settings').update({refL1:parseFloat(document.getElementById('ref-l1-input').value)||10, refL2:parseFloat(document.getElementById('ref-l2-input').value)||3, refL3:parseFloat(document.getElementById('ref-l3-input').value)||1}); toast('✅ Referral percentages updated'); }
+function setWithdrawManual(manual){ db.ref('settings/withdrawManual').set(manual); toast(manual?'🔴 Manual approval mode enabled':'🟢 Auto-process mode enabled', manual?'#f87171':undefined); }
+function lockWithdrawals(lock){ db.ref('settings/withdrawLocked').set(lock); toast(lock?'🔒 Withdrawals LOCKED':'🔓 Withdrawals UNLOCKED',lock?'#f87171':undefined); }
+
+async function callMarzSendAdmin(phone, amount, reference, description){
+  const apiKey = allSettings.marzApiKey||'';
+  if(!apiKey) throw new Error('MarzPay API key not set');
+  const fd = new FormData();
+  fd.append('phone_number', phone);
+  fd.append('amount', String(amount));
+  fd.append('country', 'UG');
+  fd.append('reference', reference);
+  fd.append('description', description);
+  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/send-money', {
+    method:'POST',
+    headers:{ 'Authorization':'Basic '+apiKey },
+    body: fd
+  });
+  const data = await res.json();
+  if(!res.ok || data.status !== 'success') throw new Error(data.message||'MarzPay error');
+  return true;
+}
+
+async function approveWithdrawal(reqKey, username, amount, sendAmount, txKey){
+  confirmAction('Approve Withdrawal?', 'Approve withdrawal for '+username+'? MarzPay will send '+fmt(sendAmount)+' to '+( allUsers[safeKey(username)]?.phone||username )+' automatically.').then(async confirmed=>{
+    if(!confirmed) return;
+    const phone = allUsers[safeKey(username)]?.phone||'';
+    const reference = allWithdrawals[reqKey]?.reference || ('ref_'+Date.now());
+    try {
+      await callMarzSendAdmin(phone, sendAmount, reference, 'ProfitPulse Withdrawal — '+username);
+      // ON SUCCESS: Just mark as completed, balance already deducted
+      db.ref().update({
+        ['users/'+safeKey(username)+'/transactions/'+txKey+'/status']: 'completed',
+        ['users/'+safeKey(username)+'/transactions/'+txKey+'/note']: 'Withdrawal Successful ✅ — sent to '+phone,
+        ['pendingWithdrawals/'+reqKey+'/status']: 'approved'
+      });
+      toast('✅ Withdrawal successful — MarzPay sent '+fmt(sendAmount)+' to '+username);
+    } catch(err){
+      // ON FAILURE: REFUND the amount back to balance
+      const curBal = allUsers[safeKey(username)]?.balance||0;
+      db.ref().update({
+        ['users/'+safeKey(username)+'/balance']: curBal+amount,
+        ['users/'+safeKey(username)+'/transactions/'+txKey+'/status']: 'failed',
+        ['users/'+safeKey(username)+'/transactions/'+txKey+'/note']: 'Withdrawal failed ❌ — MarzPay error: '+err.message,
+        ['pendingWithdrawals/'+reqKey+'/status']: 'failed'
+      });
+      const notifKey = 'notif_wd_fail_'+Date.now();
+      db.ref('adminNotifications/'+notifKey).set({ type: 'withdrawal_failed', username: username, amount: amount, reason: 'MarzPay error: '+err.message, timestamp: new Date().toISOString(), read: false, message: '❌ Withdrawal failed for '+username+' ('+fmt(amount)+'). Reason: MarzPay error: '+err.message+'. Funds refunded.' });
+      toast('❌ MarzPay failed: '+err.message+' — funds refunded to '+username,'#f87171');
+    }
+  });
+}
+
+function rejectWithdrawal(reqKey, username, amount, txKey){ 
+  confirmAction('Reject Withdrawal?', 'Reject withdrawal of '+fmt(amount)+' for '+username+'? Full amount will be refunded to their profits.').then(confirmed=>{ 
+    if(confirmed){ 
+      const curBal = allUsers[safeKey(username)]?.profitEarned||0;
+      db.ref().update({
+        ['users/'+safeKey(username)+'/profitEarned']: curBal+amount,
+        ['users/'+safeKey(username)+'/transactions/'+txKey+'/status']: 'failed',
+        ['users/'+safeKey(username)+'/transactions/'+txKey+'/note']: 'Withdrawal Rejected ❌ by Admin',
+        ['pendingWithdrawals/'+reqKey+'/status']: 'rejected'
+      });
+      const notifKey = 'notif_wd_reject_'+Date.now();
+      db.ref('adminNotifications/'+notifKey).set({ type: 'withdrawal_rejected', username: username, amount: amount, reason: 'Rejected by Admin', timestamp: new Date().toISOString(), read: false, message: '❌ Withdrawal rejected for '+username+' ('+fmt(amount)+'). Reason: Rejected by Admin. Funds refunded.' });
+      toast('✅ Rejected — full amount refunded to '+username);
+    } 
+  }); 
+}
+
+function deleteAllData(){ confirmAction('💥 DELETE ALL DATA?', 'This will wipe everything! This cannot be undone. Are you 100% sure?').then(confirmed=>{ if(confirmed){ db.ref('users').remove(); db.ref('pendingWithdrawals').remove(); db.ref('adminNotifications').remove(); db.ref('admins').remove(); toast('💥 All data deleted','#f87171'); } }); }
+
+function searchDebitUser(){ const q=document.getElementById('debit-search').value.trim().toLowerCase(); const infoBox=document.getElementById('debit-user-info'); const notFound=document.getElementById('debit-not-found'); debitTargetUser=null; infoBox.style.display='none'; notFound.style.display='none'; document.getElementById('debit-preview').style.display='none'; if(!q) return; const found=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); if(found){ debitTargetUser=found; document.getElementById('debit-user-name').textContent=found.username; document.getElementById('debit-user-phone').textContent=found.phone||'—'; const bal=found.balance||0; const balEl=document.getElementById('debit-user-balance'); balEl.textContent=fmt(bal); balEl.style.color=bal<0?'var(--warn)':'var(--accent3)'; infoBox.style.display='block'; } else { notFound.style.display='block'; } }
+function updateDebitPreview(){ const amt=parseInt(document.getElementById('debit-amount').value)||0; const prev=document.getElementById('debit-preview'); if(!debitTargetUser||amt<=0){ prev.style.display='none'; return; } const newBal=(debitTargetUser.balance||0)-amt; prev.style.display='block'; prev.innerHTML='Balance: '+fmt(debitTargetUser.balance||0)+' → After debit: <strong>'+fmt(newBal)+'</strong>'; prev.style.color=newBal<0?'var(--warn)':'var(--muted)'; }
+function processDebit(){ if(!debitTargetUser){ toast('Search and select a user first','#f87171'); return; } const amt=parseInt(document.getElementById('debit-amount').value)||0; if(amt<=0){ toast('Enter a valid amount','#f87171'); return; } confirmAction('Debit Balance?', 'Debit '+fmt(amt)+' from '+debitTargetUser.username+'?').then(confirmed=>{ if(confirmed){ const oldBal=debitTargetUser.balance||0; const newBal=oldBal-amt; const txKey='tx_debit_'+Date.now(); const updates={}; updates['users/'+safeKey(debitTargetUser.username)+'/balance']=newBal; updates['users/'+safeKey(debitTargetUser.username)+'/transactions/'+txKey]={type:'Withdrawal',amount:-amt,note:'Admin Debit',date:dateStr(),status:'approved'}; db.ref().update(updates); debitHistory.unshift({username:debitTargetUser.username,amount:amt,balAfter:newBal,date:dateStr()}); document.getElementById('debit-search').value=''; document.getElementById('debit-amount').value=''; document.getElementById('debit-user-info').style.display='none'; document.getElementById('debit-preview').style.display='none'; debitTargetUser=null; renderDebitHistory(); toast('✅ Debit of '+fmt(amt)+' processed',''); } }); }
+function renderDebitHistory(){ const tbody=document.getElementById('debit-history-body'); if(!tbody) return; if(!debitHistory.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="4">No debits yet<\/tr>'; return; } tbody.innerHTML=debitHistory.slice(0,20).map(d=>'<tr><td><strong>'+d.username+'</strong></td><td class="mono" style="color:var(--warn);">-'+fmt(d.amount)+'</td><td class="mono" style="color:'+(d.balAfter<0?'var(--warn)':'var(--accent3)')+';">'+fmt(d.balAfter)+'</td><td class="mono" style="font-size:11px;">'+d.date+'</td></tr>').join(''); }
+
+function addNotification(type, username, amount, message){ const notifKey='notif_'+Date.now(); db.ref('adminNotifications/'+notifKey).set({type,username,amount,message,date:dateStr(),read:false}); }
+function openNotifDrawer(){ document.getElementById('notif-drawer').classList.add('open'); document.getElementById('notif-overlay').classList.add('open'); db.ref('adminNotifications').once('value', snap=>{ if(!snap.exists()) return; const updates={}; Object.keys(snap.val()).forEach(k=>{ updates[k+'/read']=true; }); db.ref('adminNotifications').update(updates); }); }
+function closeNotifDrawer(){ document.getElementById('notif-drawer').classList.remove('open'); document.getElementById('notif-overlay').classList.remove('open'); }
+function clearAllNotifications(){ confirmAction('Clear All Notifications?', 'Clear all notifications?').then(confirmed=>{ if(confirmed){ db.ref('adminNotifications').remove(); toast('🗑️ All notifications cleared'); } }); }
+function dismissNotification(key){ db.ref('adminNotifications/'+key).remove(); }
+function startNotifListener(){ db.ref('adminNotifications').on('value', snap=>{ const notifs = snap.val()||{}; const keys = Object.keys(notifs).sort().reverse(); const unread = keys.filter(k=>!notifs[k].read).length; const badge = document.getElementById('notif-badge'); if(unread>0){ badge.textContent=unread; badge.classList.add('show'); } else { badge.classList.remove('show'); } const list = document.getElementById('notif-list'); if(!keys.length){ list.innerHTML='<div class="notif-empty">No notifications yet</div>'; return; } list.innerHTML=keys.map(k=>{ const n=notifs[k]; const isUnread=!n.read; return '<div class="notif-item '+(isUnread?'unread':'')+'"><button class="notif-item-dismiss" onclick="dismissNotification(\''+k+'\')">✕</button><div class="notif-item-msg">'+(n.message||'Notification')+'</div><div class="notif-item-date">'+(n.date||'')+' · '+(n.username||'')+' · '+(n.amount?fmt(n.amount):'')+'</div></div>'; }).join(''); }); }
+
+function setErr(id,show,msg){ const el=document.getElementById(id); if(!el)return; if(show){el.classList.add('show');if(msg)el.textContent=msg;} else{el.classList.remove('show');} }
+function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
+
+document.getElementById('loading-screen').style.display='none';
+checkAdminSession();
+</script>
+</body>
+</html>

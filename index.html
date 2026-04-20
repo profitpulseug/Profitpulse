@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>ProfitPulse — Grow Your Wealth</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="ProfitPulse — Grow Your Wealth">
+<meta property="og:description" content="Uganda's Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors growing their money today!">
+<meta property="og:site_name" content="ProfitPulse">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ProfitPulse — Grow Your Wealth">
+<meta name="twitter:description" content="Uganda's Premium Investment Wallet. Earn 10% daily returns for 72 days!">
+<meta name="description" content="Uganda's Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors today!">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --bg:#fff5f7;
+  --surface:#ffffff;
+  --surface2:#fff0f4;
+  --surface3:#ffe4e8;
+  --border:#fbcfe8;
+  --accent:#db2777;
+  --accent2:#ec4899;
+  --accent3:#f43f5e;
+  --warn:#e11d48;
+  --gold:#f59e0b;
+  --text:#1f2937;
+  --muted:#9ca3af;
+  --table-header:#064e3b;
+  --table-border:#166534;
+  --avatar-bg:#831843;
+  --ref-bg:#047857;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:500px;margin:0 auto;position:relative;overflow-x:hidden;}
+
+/* Avatar Styles */
+.avatar{
+  background:var(--avatar-bg);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  color:#ffffff;
+  text-transform:uppercase;
+  flex-shrink:0;
+}
+.avatar-sm{width:32px;height:32px;font-size:14px;}
+.avatar-lg{width:72px;height:72px;font-size:28px;margin:0 auto 14px;}
+.avatar-md{width:40px;height:40px;font-size:16px;}
+
+/* Auth Pages */
+.auth-page{display:none;flex-direction:column;min-height:100vh;padding:40px 24px;}
+.auth-page.active{display:flex;}
+.auth-hero{text-align:center;margin-bottom:28px;}
+.auth-logo{width:72px;height:72px;background:var(--accent);border-radius:22px;display:grid;place-items:center;font-size:34px;margin:0 auto 14px;color:#fff;}
+.auth-brand{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--accent);margin-bottom:4px;}
+.auth-tagline{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px 22px;}
+.auth-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:800;margin-bottom:4px;color:var(--accent);}
+.auth-subtitle{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.field-group{margin-bottom:14px;}
+.field-label{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;display:block;}
+.field-wrap{position:relative;display:flex;align-items:center;}
+.field-icon{position:absolute;left:14px;font-size:16px;pointer-events:none;z-index:2;}
+input,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 42px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;}
+input:focus,select:focus{border-color:var(--accent);}
+select{cursor:pointer;}select option{background:var(--surface2);}
+.eye-btn{position:absolute;right:14px;background:none;border:none;font-size:18px;cursor:pointer;padding:4px;color:var(--muted);}
+.eye-btn:hover{color:var(--accent);}
+input[type="password"]{padding-right:46px;}
+.field-hint{font-size:10px;color:var(--muted);margin-top:5px;padding-left:4px;}
+.field-error{font-size:10px;color:var(--warn);margin-top:5px;padding-left:4px;display:none;}
+.field-error.show{display:block;}
+.pw-strength{display:flex;gap:4px;margin-top:8px;}
+.pw-bar{flex:1;height:3px;border-radius:3px;background:var(--surface2);}
+.pw-bar.weak{background:var(--warn)}.pw-bar.medium{background:var(--gold)}.pw-bar.strong{background:var(--accent3)}
+.submit-btn{width:100%;background:var(--accent);border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:6px;}
+.submit-btn:active{transform:scale(.98);}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--muted);}
+.auth-switch a{color:var(--accent);font-weight:700;cursor:pointer;text-decoration:none;}
+
+/* Phone Prefix */
+.phone-prefix-wrap{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.phone-prefix-wrap:focus-within{border-color:var(--accent);}
+.phone-prefix-badge{background:var(--surface3);border-right:1px solid var(--border);padding:13px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);font-weight:700;white-space:nowrap;flex-shrink:0;}
+.phone-prefix-wrap input{background:transparent;border:none;border-radius:0;padding:13px 14px;flex:1;}
+.phone-prefix-wrap input:focus{border:none;}
+
+/* Dashboard */
+.dashboard-page{display:none;min-height:100vh;padding-bottom:90px;position:relative;z-index:1;}
+.dashboard-page.active{display:block;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;background:var(--bg);position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.menu-btn{width:38px;height:38px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;}
+.menu-btn span{display:block;width:18px;height:2px;background:var(--accent);border-radius:2px;}
+.menu-btn span:nth-child(2){width:12px;}
+.brand{display:flex;align-items:center;gap:8px;}
+.brand-icon{width:34px;height:34px;background:var(--accent);border-radius:10px;display:grid;place-items:center;font-size:16px;color:#fff;}
+.brand-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--accent);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.username-top{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--accent3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;opacity:0;pointer-events:none;transition:opacity .3s;}
+.menu-overlay.open{opacity:1;pointer-events:all;}
+.side-menu{position:fixed;top:0;left:-280px;width:270px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:600;transition:left .35s;display:flex;flex-direction:column;overflow-y:auto;}
+.side-menu.open{left:0;}
+.side-menu-header{display:flex;align-items:center;justify-content:space-between;padding:20px;border-bottom:1px solid var(--border);}
+.side-menu-brand{font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:var(--accent);}
+.close-menu{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:18px;cursor:pointer;display:grid;place-items:center;}
+.side-menu-items{flex:1;padding:16px;}
+.menu-item{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;cursor:pointer;margin-bottom:4px;font-size:14px;font-weight:600;color:var(--text);}
+.menu-item:hover{background:var(--surface2);}
+.menu-item.active-menu{background:var(--surface3);color:var(--accent);}
+.menu-item-icon{font-size:20px;width:28px;}
+.menu-divider{height:1px;background:var(--border);margin:10px 0;}
+.menu-logout{margin:12px;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;background:var(--warn);color:#fff;border:none;width:calc(100% - 24px);font-family:'DM Sans',sans-serif;}
+.menu-logout:active{transform:scale(.98);}
+
+/* Sections */
+.section{padding:0 16px;margin-bottom:14px;}
+.dash-section{display:none;}
+.dash-section.active{display:block;}
+.stats-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 20px;}
+.balance-big{text-align:center;padding:8px 0 16px;}
+.balance-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
+.balance-amount{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:var(--accent);}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.stat-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 6px;text-align:center;}
+.stat-label{font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
+.stat-value{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.stat-value.dep{color:var(--gold)}.stat-value.earn{color:var(--accent3)}.stat-value.with{color:var(--warn)}.stat-value.total{color:var(--accent)}
+.ref-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.ref-url{flex:1;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.copy-btn{background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;padding:7px 14px;cursor:pointer;}
+.copy-btn:active{transform:scale(.95);}
+.action-grid{display:flex;flex-direction:column;gap:12px;padding-left:16px;}
+.action-btn{border:none;border-radius:14px;padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;width:fit-content;}
+.action-btn:active{transform:scale(.96);}
+.btn-icon{font-size:20px;}
+.btn-deposit{background:var(--accent3);color:#fff;}
+.btn-withdraw{background:var(--gold);color:#fff;}
+.btn-reinvest{background:var(--accent);color:#fff;}
+.btn-transactions{background:var(--accent2);color:#fff;}
+
+/* Floating WhatsApp Icon */
+.whatsapp-float{
+  position:fixed;
+  bottom:80px;
+  right:20px;
+  width:55px;
+  height:55px;
+  background:#25D366;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(37,211,102,.4);
+  z-index:300;
+  transition:transform .2s;
+  color:#fff;
+  text-decoration:none;
+}
+.whatsapp-float:hover{transform:scale(1.08);}
+
+/* Table (Scrollable) - CORRECTED CALCULATIONS */
+.plan-wrap{background:var(--surface);border:2px solid var(--accent);border-radius:16px;overflow:hidden;}
+.plan-header{background:var(--table-header);padding:12px 14px;text-align:center;}
+.plan-header-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:800;color:var(--accent3);}
+.table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0;}
+.plan-table{width:100%;border-collapse:collapse;min-width:380px;}
+.plan-table thead tr{background:var(--table-header);}
+.plan-table thead th{padding:12px 10px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);text-align:center;border-bottom:2px solid var(--accent);border-right:1px solid var(--table-border);}
+.plan-table thead th:last-child{border-right:none;}
+.plan-table tbody tr{border-bottom:1px solid var(--table-border);}
+.plan-table tbody tr:nth-child(odd){background:var(--ref-bg);}
+.plan-table tbody tr:nth-child(even){background:#065f46;}
+.plan-table tbody td{padding:10px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;text-align:center;border-right:1px solid var(--table-border);color:#fff;}
+.plan-table tbody td:last-child{border-right:none;}
+.plan-table tbody td:first-child{color:var(--gold);font-weight:700;}
+.plan-table tbody td:nth-child(2){color:var(--accent3);}
+.plan-table tbody td:nth-child(3){color:#fff;font-weight:700;}
+.scroll-hint{text-align:center;padding:8px;font-size:9px;color:var(--muted);background:var(--surface);border-top:1px solid var(--border);}
+.plan-footer{padding:12px;background:var(--surface2);}
+.start-invest-btn{width:100%;background:var(--accent);border:none;border-radius:12px;padding:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
+.start-invest-btn:active{transform:scale(.98);}
+
+/* Inner Pages */
+.inner-header{display:flex;align-items:center;gap:12px;padding:16px 16px 8px;}
+.inner-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:var(--accent);}
+.inner-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-icon{font-size:48px;margin-bottom:14px;}
+.empty-title{font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text);}
+.empty-text{font-size:13px;}
+.profile-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px 20px;text-align:center;}
+.profile-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+.profile-country{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.profile-detail{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:12px;padding:12px 16px;margin-bottom:10px;font-size:13px;}
+.profile-detail-label{color:var(--muted);}
+.profile-detail-val{font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.profile-avatar-container{display:flex;justify-content:center;margin-bottom:14px;}
+
+/* New Profile Redesign Styles */
+.profile-header-section{background:linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:16px;color:#fff;}
+.profile-avatar-lg{width:90px;height:90px;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px;font-weight:700;}
+.profile-name-header{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;margin-bottom:4px;}
+.profile-country-header{font-size:12px;opacity:.9;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:12px;}
+.profile-status-badge{display:inline-block;background:rgba(74,222,128,.3);border:1px solid rgba(74,222,128,.6);color:#fff;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.profile-info-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;}
+.profile-section-title{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;padding:14px 16px;background:var(--surface2);border-bottom:1px solid var(--border);margin:0;}
+.profile-info-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);}
+.profile-info-item:last-child{border-bottom:none;}
+.profile-info-label{font-size:12px;color:var(--muted);font-weight:600;}
+.profile-info-value{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.profile-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px;}
+.profile-stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+.profile-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;font-weight:700;}
+.profile-stat-value{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent);}
+.logout-dash-new{width:100%;background:var(--warn);border:none;border-radius:14px;color:#fff;padding:15px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+.logout-dash-new:active{transform:scale(.98);}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 0 14px;z-index:200;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.nav-icon{font-size:20px;}
+.nav-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.nav-item.active .nav-label{color:var(--accent);}
+
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--accent3);color:#fff;font-size:13px;font-weight:700;padding:10px 22px;border-radius:100px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Forms */
+.action-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 18px;}
+.green-btn{width:100%;background:#16a34a;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.green-btn:active{transform:scale(.98);}
+.green-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.red-btn{width:100%;background:#dc2626;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.red-btn:active{transform:scale(.98);}
+.red-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.amber-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.amber-btn:active{transform:scale(.98);}
+/* Popup Banner */
+.popup-banner{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-10px);background:#1e293b;color:#fff;font-size:13px;font-weight:600;padding:14px 22px;border-radius:16px;opacity:0;transition:.35s;z-index:9998;pointer-events:none;text-align:center;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.25);line-height:1.5;}
+.popup-banner.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* Deposit polling spinner */
+.dep-polling{display:none;align-items:center;gap:10px;justify-content:center;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-top:10px;font-size:12px;color:var(--muted);}
+.dep-polling.active{display:flex;}
+.dep-spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:#16a34a;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+.readonly-field{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 42px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+.charge-note{background:var(--surface2);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--warn);margin-bottom:12px;line-height:1.6;}
+.deposit-note{background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--accent);margin-bottom:12px;line-height:1.6;}
+.locked-banner{background:var(--surface2);border:1px solid var(--warn);border-radius:12px;padding:12px 16px;font-size:12px;color:var(--warn);text-align:center;margin-bottom:12px;font-weight:700;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:30px 24px;text-align:center;max-width:340px;width:100%;}
+.modal-icon{font-size:48px;margin-bottom:14px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;margin-bottom:10px;color:var(--accent);}
+.modal-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.modal-close{background:var(--accent);border:none;border-radius:12px;padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
+.modal-close:active{transform:scale(.97);}
+
+/* Transaction List */
+.tx-table-wrapper{width:100%;overflow-x:auto;border-radius:14px;border:1px solid var(--border);background:var(--surface);}
+.tx-table{width:100%;border-collapse:collapse;font-size:12px;}
+.tx-table thead{background:var(--surface3);border-bottom:1px solid var(--border);}
+.tx-table th{padding:12px 10px;text-align:left;font-weight:700;font-size:11px;letter-spacing:0.5px;color:var(--accent);text-transform:uppercase;}
+.tx-table tbody tr{border-bottom:1px solid var(--border);}
+.tx-table tbody tr:last-child{border-bottom:none;}
+.tx-table tbody tr:hover{background:var(--surface2);}
+.tx-table td{padding:11px 10px;vertical-align:middle;}
+.tx-table .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+.tx-table .amount.positive{color:var(--accent3);font-weight:700;}
+.tx-table .amount.negative{color:var(--warn);font-weight:700;}
+.tx-table .amount.gold{color:var(--gold);font-weight:700;}
+.tx-table .status{font-size:11px;font-weight:600;white-space:nowrap;}
+.tx-filter-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none;}
+.tx-filter-tabs::-webkit-scrollbar{display:none;}
+.tx-tab{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.tx-tab.active{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
+
+/* Referral Page - Pure Green */
+.ref-main-card{background:var(--ref-bg);border:1px solid var(--table-border);border-radius:20px;padding:20px;margin-bottom:14px;}
+.ref-total-card{background:#065f46;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;}
+.ref-total-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#a7f3d0;margin-bottom:8px;}
+.ref-total-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:#fff;}
+.ref-program-table{width:100%;border-collapse:collapse;background:#065f46;border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.ref-program-table thead tr{background:var(--table-header);}
+.ref-program-table thead th{padding:14px 12px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent3);text-align:left;}
+.ref-program-table tbody tr{border-top:1px solid var(--table-border);}
+.ref-program-table tbody td{padding:12px;font-size:13px;font-family:'JetBrains Mono',monospace;color:#fff;}
+.ref-program-table tbody td:nth-child(1){color:var(--gold);font-weight:700;}
+.ref-program-table tbody td:nth-child(2){color:var(--accent3);font-weight:700;}
+.ref-list-table{width:100%;border-collapse:collapse;background:#065f46;border-radius:16px;overflow:hidden;}
+.ref-list-table thead tr{background:var(--table-header);}
+.ref-list-table thead th{padding:12px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent3);text-align:left;}
+.ref-list-table tbody tr{border-top:1px solid var(--table-border);}
+.ref-list-table tbody td{padding:12px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#fff;}
+.section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
+
+/* WA Button */
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#25D366;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
+.wa-btn:active{transform:scale(.98);}
+
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;}
+.loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading-screen">
+  <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--accent);margin-bottom:10px;">ProfitPulse</div>
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading your wallet...</div>
+</div>
+
+<!-- LOGIN -->
+<div class="auth-page" id="login-page">
+  <div class="auth-hero">
+    <div class="auth-logo">📈</div>
+    <div class="auth-brand">ProfitPulse</div>
+    <div class="auth-tagline">Grow Your Wealth Daily</div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-title">Welcome Back</div>
+    <div class="auth-subtitle">Sign in to your investment account</div>
+    <div class="field-group">
+      <label class="field-label">Username</label>
+      <div class="field-wrap"><span class="field-icon">👤</span><input type="text" id="login-username" placeholder="Enter username" autocomplete="username"></div>
+      <div class="field-error" id="login-user-err">Please enter your username</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Password</label>
+      <div class="field-wrap"><span class="field-icon">🔒</span><input type="password" id="login-password" placeholder="Enter password" autocomplete="current-password"><button class="eye-btn" onclick="toggleEye('login-password',this)">👁️</button></div>
+      <div class="field-error" id="login-pw-err">Please enter your password</div>
+    </div>
+    <div class="field-error" id="login-general-err" style="text-align:center;margin-bottom:10px;font-size:12px;"></div>
+    <button class="submit-btn" onclick="doLogin()">Sign In →</button>
+    <div class="auth-switch">Don't have an account? <a onclick="showAuth('register-page')">Register Now</a></div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="auth-page" id="register-page">
+  <div class="auth-hero">
+    <div class="auth-logo">📈</div>
+    <div class="auth-brand">ProfitPulse</div>
+    <div class="auth-tagline">Start Earning Today</div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-title">Create Account</div>
+    <div class="auth-subtitle">Get UGX 4,000 registration bonus 🎁</div>
+    <div class="field-group">
+      <label class="field-label">Username</label>
+      <div class="field-wrap"><span class="field-icon">👤</span><input type="text" id="reg-username" placeholder="Choose a username" autocomplete="off"></div>
+      <div class="field-error" id="reg-user-err">Username is required</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Country</label>
+      <div class="field-wrap"><span class="field-icon">🌍</span>
+        <select id="reg-country" onchange="updateRegPrefix()">
+          <option value="">Select your country</option>
+          <option value="UG">🇺🇬 Uganda</option>
+          <option value="KE">🇰🇪 Kenya</option>
+        </select>
+      </div>
+      <div class="field-error" id="reg-country-err">Please select your country</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Phone Number</label>
+      <div class="phone-prefix-wrap" id="reg-phone-wrap">
+        <div class="phone-prefix-badge" id="reg-prefix">+256</div>
+        <input type="tel" id="reg-phone" placeholder="7XXXXXXXX" maxlength="9" oninput="regPhoneInput(this)">
+      </div>
+      <div class="field-hint">9 digits starting with 7</div>
+      <div class="field-error" id="reg-phone-err">Enter 9 digits starting with 7</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Password</label>
+      <div class="field-wrap"><span class="field-icon">🔒</span><input type="password" id="reg-password" placeholder="Min. 6 characters" oninput="checkStrength(this.value)" autocomplete="new-password"><button class="eye-btn" onclick="toggleEye('reg-password',this)">👁️</button></div>
+      <div class="pw-strength"><div class="pw-bar" id="pw-b1"></div><div class="pw-bar" id="pw-b2"></div><div class="pw-bar" id="pw-b3"></div></div>
+      <div class="field-error" id="reg-pw-err">Password must be at least 6 characters</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Confirm Password</label>
+      <div class="field-wrap"><span class="field-icon">🔐</span><input type="password" id="reg-confirm" placeholder="Repeat password" autocomplete="new-password"><button class="eye-btn" onclick="toggleEye('reg-confirm',this)">👁️</button></div>
+      <div class="field-error" id="reg-confirm-err">Passwords do not match</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Referred By</label>
+      <div style="background:#fff0f4;padding:12px 14px;border-radius:8px;border:1px solid var(--border);color:var(--accent);font-weight:600;" id="reg-referrer-display">John</div>
+    </div>
+    <div class="field-error" id="reg-general-err" style="text-align:center;margin-bottom:10px;font-size:12px;"></div>
+    <button class="submit-btn" onclick="doRegister()">Create Account & Earn 🎁</button>
+    <div class="auth-switch">Already have an account? <a onclick="showAuth('login-page')">Sign In</a></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard-page" id="dashboard-page">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="menu-btn" onclick="openMenu()"><span></span><span></span><span></span></div>
+      <div class="brand"><div class="brand-icon">📈</div><div class="brand-name">ProfitPulse</div></div>
+    </div>
+    <div class="topbar-right">
+      <div id="topbar-avatar" class="avatar avatar-sm"></div>
+      <div class="username-top" id="dash-username">—</div>
+    </div>
+  </div>
+
+  <!-- HOME / DASHBOARD -->
+  <div class="dash-section active" id="sec-home">
+    <div class="section">
+      <div class="stats-card">
+        <div class="balance-big">
+          <div class="balance-label">Available Balance</div>
+          <div class="balance-amount" id="stat-balance">UGX 0</div>
+        </div>
+        <div class="stats-grid" style="display:flex;justify-content:space-between;gap:20px;">
+          <div class="stat-box"><div class="stat-label">INVESTMENT</div><div class="stat-value dep" id="stat-invested">UGX 0</div></div>
+
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="ref-box">
+        <span style="font-size:16px;">🔗</span>
+        <div class="ref-url" id="ref-url">Loading referral link...</div>
+        <button class="copy-btn" onclick="copyRef()">Copy</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="action-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0;">
+        <button class="action-btn" style="background:#22c55e;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('deposit')"><span class="btn-icon">💳</span>Top-up</button>
+        <button class="action-btn" style="background:#a855f7;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('reinvest')"><span class="btn-icon">🔄</span>Re-Invest</button>
+        <button class="action-btn" style="background:#ef4444;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('withdraw')"><span class="btn-icon">💸</span>Withdraw</button>
+        <button class="action-btn" style="background:#0ea5e9;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('history')"><span class="btn-icon">📋</span>Transactions</button>
+      </div>
+    </div>
+    <div class="section">
+      <button class="wa-btn" onclick="openWaGroup()">💬 Join Our WhatsApp Community</button>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp Icon -->
+  <a href="#" id="whatsapp-float-btn" class="whatsapp-float" target="_blank">💬</a>
+
+  <!-- TNS (History) -->
+  <div class="dash-section" id="sec-history">
+    <div class="inner-header"><span style="font-size:22px">📋</span><div><div class="inner-title">TNS</div><div class="inner-sub">All your transactions</div></div></div>
+    <div class="tx-filter-tabs">
+      <div class="tx-tab active" onclick="filterHistory('Deposit',this)">💳 Deposits</div>
+      <div class="tx-tab" onclick="filterHistory('Withdrawal',this)">💸 Withdrawals</div>
+      <div class="tx-tab" onclick="filterHistory('Profit',this)">📈 Profits</div>
+      <div class="tx-tab" onclick="filterHistory('Bonus',this)">🎁 Bonuses</div>
+      <div class="tx-tab" onclick="filterHistory('Referral',this)">🔗 Referral</div>
+    </div>
+    <div class="section" id="history-list"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No Records Yet</div><div class="empty-text">Your transaction history will appear here.</div></div></div>
+  </div>
+
+  <!-- REFER (Team) - Updated -->
+  <div class="dash-section" id="sec-team">
+    <div class="inner-header"><span style="font-size:22px">👥</span><div><div class="inner-title">REFER</div><div class="inner-sub">Your referral network</div></div></div>
+    <div class="section">
+      <div class="ref-main-card">
+        <div class="ref-total-card">
+          <div class="ref-total-label">TOTAL REFERRAL BONUSES</div>
+          <div class="ref-total-value" id="total-ref-earned">UGX 0</div>
+        </div>
+        
+        <table class="ref-program-table">
+          <thead>
+            <tr><th>Level</th><th>Commission</th><th>Condition</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Level 1</th><td id="ref-pct-l1-display">10%</td><td>Direct referrals</td></tr>
+            <tr><th>Level 2</th><td id="ref-pct-l2-display">4%</td><td>Their referrals</td></tr>
+            <tr><th>Level 3</th><td id="ref-pct-l3-display">2%</td><td>3rd level network</td></tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section-title">Your Referral Link</div>
+      <div class="ref-box" style="margin-bottom:14px">
+        <span style="font-size:16px;">🔗</span>
+        <div class="ref-url" id="ref-url2">—</div>
+        <button class="copy-btn" onclick="copyRef()">Copy</button>
+      </div>
+      
+      <div class="section-title">Team Members</div>
+      <div id="ref-list-wrap"><div class="empty-state" style="padding:30px 20px"><div class="empty-icon">🤝</div><div class="empty-title">No Referrals Yet</div><div class="empty-text">Share your referral link to grow your team.</div></div></div>
+    </div>
+  </div>
+
+  <!-- TABLE (Plan) - CORRECTED CALCULATIONS -->
+  <div class="dash-section" id="sec-plan">
+    <div class="inner-header"><span style="font-size:22px">📈</span><div><div class="inner-title">TABLE</div><div class="inner-sub">10% daily for 72 days (720% total)</div></div></div>
+    <div class="section">
+      <div class="plan-wrap">
+        <div class="plan-header"><div class="plan-header-title">📈 ProfitPulse Growth Plan — 10% Daily × 72 Days = 720% Total Return</div></div>
+        <div class="table-wrapper">
+          <table class="plan-table">
+            <thead>
+              <tr><th>DEPOSIT (UGX)</th><th>DAILY PROFIT (10%)</th><th>72-DAY TOTAL (UGX)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>10,000</td><td>1,000</td><td>72,000</td></tr>
+              <tr><td>20,000</td><td>2,000</td><td>144,000</td></tr>
+              <tr><td>50,000</td><td>5,000</td><td>360,000</td></tr>
+              <tr><td>100,000</td><td>10,000</td><td>720,000</td></tr>
+              <tr><td>200,000</td><td>20,000</td><td>1,440,000</td></tr>
+              <tr><td>500,000</td><td>50,000</td><td>3,600,000</td></tr>
+              <tr><td>1,000,000</td><td>100,000</td><td>7,200,000</td></tr>
+              <tr><td>2,000,000</td><td>200,000</td><td>14,400,000</td></tr>
+              <tr><td>5,000,000</td><td>500,000</td><td>36,000,000</td></tr>
+              <tr><td>10,000,000</td><td>1,000,000</td><td>72,000,000</td></tr>
+              <tr><td>20,000,000</td><td>2,000,000</td><td>144,000,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="scroll-hint">← Swipe horizontally to see all columns →</div>
+        <div class="plan-footer"><button class="start-invest-btn" onclick="switchTab('deposit')">🚀 Start Investing Now</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MYSELF (Profile) -->
+  <div class="dash-section" id="sec-profile">
+    <div class="inner-header"><span style="font-size:22px">👤</span><div><div class="inner-title">MYSELF</div><div class="inner-sub">Your account details</div></div></div>
+    <div class="section">
+      <!-- Profile Header Section -->
+      <div class="profile-header-section">
+        <div class="profile-avatar-lg" id="profile-avatar-lg-main">—</div>
+        <div class="profile-name-header" id="profile-name-header">—</div>
+        <div class="profile-country-header" id="profile-country-header-main">🌍 —</div>
+        <div class="profile-status-badge" id="profile-status-badge">🟢 Active Investor</div>
+      </div>
+
+      <!-- Personal Information Card -->
+      <div class="profile-info-section">
+        <div class="profile-section-title">📝 Personal Information</div>
+        <div class="profile-info-item">
+          <span class="profile-info-label">Username</span>
+          <span class="profile-info-value" id="profile-user-new">—</span>
+        </div>
+        <div class="profile-info-item">
+          <span class="profile-info-label">Country</span>
+          <span class="profile-info-value" id="profile-ctry-new">—</span>
+        </div>
+      </div>
+
+      <!-- Account Information Card -->
+      <div class="profile-info-section">
+        <div class="profile-section-title">🔐 Account Information</div>
+        <div class="profile-info-item">
+          <span class="profile-info-label">Phone Number</span>
+          <span class="profile-info-value" id="profile-phone-new">—</span>
+        </div>
+        <div class="profile-info-item">
+          <span class="profile-info-label">Member Since</span>
+          <span class="profile-info-value" id="profile-since-new">2025</span>
+        </div>
+      </div>
+
+      <!-- Investment Statistics -->
+      <div class="profile-stats-grid">
+        <div class="profile-stat-card">
+          <div class="profile-stat-label">Total Invested</div>
+          <div class="profile-stat-value" id="profile-stat-invested">0</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-label">Total Earned</div>
+          <div class="profile-stat-value" id="profile-stat-earned">0</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-label">Days Active</div>
+          <div class="profile-stat-value" id="profile-stat-days">0</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-label">Active Deposits</div>
+          <div class="profile-stat-value" id="profile-stat-deposits">0</div>
+        </div>
+      </div>
+
+      <!-- Sign Out Button -->
+      <button class="logout-dash-new" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+  </div>
+
+  <!-- DEPOSIT -->
+  <div class="dash-section" id="sec-deposit">
+    <div class="inner-header"><span style="font-size:22px">💳</span><div><div class="inner-title">Deposit</div><div class="inner-sub">Add funds to your wallet</div></div></div>
+    <div class="section">
+      <div class="action-card">
+        <div class="deposit-note" id="dep-min-note">✅ Minimum deposit: <strong>UGX 10,000</strong>. Enter your MTN/Airtel number and amount below.</div>
+        <div class="field-group">
+          <label class="field-label">Mobile Money Phone Number</label>
+          <div class="phone-prefix-wrap" id="dep-phone-wrap">
+            <div class="phone-prefix-badge" id="dep-prefix">+256</div>
+            <input type="tel" id="dep-phone" placeholder="7XXXXXXXX" maxlength="9" oninput="depPhoneInput(this)">
+          </div>
+          <div class="field-hint">9 digits starting with 7 (MTN or Airtel)</div>
+          <div class="field-error" id="dep-phone-err">Enter 9 digits starting with 7</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Amount (UGX)</label>
+          <div class="field-wrap"><span class="field-icon">💰</span><input type="number" id="dep-amount" placeholder="Min 10,000 — Max 2,350,000" min="10000" max="2350000"></div>
+          <div class="field-error" id="dep-amount-err">Please check the amount limits</div>
+        </div>
+        <button class="green-btn" id="dep-submit-btn" onclick="doDeposit()">💳 SUBMIT DEPOSIT</button>
+        <div class="dep-polling" id="dep-polling"><div class="dep-spin"></div><span id="dep-polling-msg">Waiting for payment confirmation...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITHDRAW -->
+  <div class="dash-section" id="sec-withdraw">
+    <div class="inner-header"><span style="font-size:22px">💰</span><div><div class="inner-title">Withdraw</div><div class="inner-sub">Cash out your earnings</div></div></div>
+    <div class="section">
+      <div id="withdraw-locked-msg" class="locked-banner" style="display:none">🔒 Withdrawals are currently disabled. Please contact support.</div>
+      <div class="action-card">
+        <div class="deposit-note">📱 Funds will be sent to your registered mobile money number.</div>
+        <div class="field-group">
+          <label class="field-label">Sending To</label>
+          <div class="field-wrap"><span class="field-icon">📱</span><div class="readonly-field" id="with-phone-display">—</div></div>
+          <div class="field-hint">🔒 Locked to your registered number</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Amount (UGX)</label>
+          <div class="field-wrap"><span class="field-icon">💸</span><input type="number" id="with-amount" placeholder="Enter amount" min="5000"></div>
+          <div class="field-error" id="with-amount-err">Minimum withdrawal is <span id="with-min-display">UGX 5,000</span></div>
+        </div>
+        <button class="red-btn" id="with-submit-btn" onclick="doWithdraw()">💸 CASHOUT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REINVEST -->
+  <div class="dash-section" id="sec-reinvest">
+    <div class="inner-header"><span style="font-size:22px">🔄</span><div><div class="inner-title">Re-Invest</div><div class="inner-sub">Compound your earnings</div></div></div>
+    <div class="section">
+      <div class="action-card">
+        <div class="deposit-note">🔄 Re-invest from your <strong>Balance</strong>. Minimum <strong>UGX 10,000</strong>. Earns 10% instant profit + restarts daily profits.</div>
+        <div class="field-group">
+          <label class="field-label">Available Balance</label>
+          <div class="field-wrap"><span class="field-icon">💼</span><div class="readonly-field" id="reinvest-balance-display">UGX 0</div></div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Amount to Re-Invest (UGX)</label>
+          <div class="field-wrap"><span class="field-icon">🔄</span><input type="number" id="reinvest-amount" placeholder="Minimum 10,000" min="10000"></div>
+          <div class="field-error" id="reinvest-amount-err">Minimum re-invest is UGX 10,000</div>
+        </div>
+        <button class="green-btn" onclick="doReinvest()">🔄 RE-INVEST NOW</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">DASHBOARD</span></div>
+    <div class="nav-item" onclick="switchTab('history')"><span class="nav-icon">📋</span><span class="nav-label">TNS</span></div>
+    <div class="nav-item" onclick="switchTab('team')"><span class="nav-icon">👥</span><span class="nav-label">REFER</span></div>
+    <div class="nav-item" onclick="switchTab('plan')"><span class="nav-icon">📊</span><span class="nav-label">TABLE</span></div>
+    <div class="nav-item" onclick="switchTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">MYSELF</span></div>
+  </nav>
+</div>
+
+<!-- MENU -->
+<div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-menu-header"><span class="side-menu-brand">ProfitPulse</span><button class="close-menu" onclick="closeMenu()">✕</button></div>
+  <div class="side-menu-items">
+    <div class="menu-item active-menu" onclick="menuNav('home')"><span class="menu-item-icon">🏠</span>Dashboard</div>
+    <div class="menu-item" onclick="menuNav('deposit')"><span class="menu-item-icon">💳</span>Deposit</div>
+    <div class="menu-item" onclick="menuNav('withdraw')"><span class="menu-item-icon">💰</span>Withdraw</div>
+    <div class="menu-item" onclick="menuNav('reinvest')"><span class="menu-item-icon">🔄</span>Re-Invest</div>
+    <div class="menu-item" onclick="menuNav('team')"><span class="menu-item-icon">🔗</span>Referral</div>
+    <div class="menu-divider"></div>
+    <div class="menu-item" onclick="menuNav('history')"><span class="menu-item-icon">📋</span>TNS</div>
+    <div class="menu-item" onclick="menuNav('profile')"><span class="menu-item-icon">👤</span>Myself</div>
+  </div>
+  <button class="menu-logout" onclick="doLogout()"><span style="font-size:18px">🚪</span>Logout</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">📱</div>
+    <div class="modal-title" id="modal-title">Notice</div>
+    <div class="modal-msg" id="modal-msg">Please wait...</div>
+    <button class="modal-close" onclick="closeModal()">OK, Got It</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Done!</div>
+<div class="popup-banner" id="popup-banner"></div>
+
+<script>
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB8K-mas2kutV0h9ZcBamCx0uECdb0uvv4",
+  authDomain: "profitpulse-investments.firebaseapp.com",
+  projectId: "profitpulse-investments",
+  storageBucket: "profitpulse-investments.firebasestorage.app",
+  messagingSenderId: "148120862641",
+  appId: "1:148120862641:web:74951ab084b6bd4e36c790"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Firestore Helpers
+const dbGet = async (collection, doc) => {
+  const snap = await db.collection(collection).doc(doc).get();
+  return snap.exists ? snap.data() : null;
+};
+const dbSet = (collection, doc, val) => db.collection(collection).doc(doc).set(val);
+const dbUpdate = (collection, doc, val) => db.collection(collection).doc(doc).update(val);
+const dbAdd = (collection, val) => db.collection(collection).add(val);
+const dbDelete = (collection, doc) => db.collection(collection).doc(doc).delete();
+
+let currentUser = null;
+let currentUsername = null;
+let userListener = null;
+let settingsData = {
+  withdrawCharge: 10,
+  refL1: 10, refL2: 3, refL3: 1,
+  waGroup: '', waSupport: '',
+  withdrawLocked: false,
+  withdrawManual: false,
+  minDeposit: 10000,
+  minWithdraw: 5000,
+  waNumber: '700000000',
+  marzApiKey: ''
+};
+
+// Store active polling intervals per transaction
+let activePollingIntervals = {};
+
+const tabMap = {home:'sec-home',history:'sec-history',team:'sec-team',plan:'sec-plan',profile:'sec-profile',deposit:'sec-deposit',withdraw:'sec-withdraw',reinvest:'sec-reinvest'};
+const navOrder = ['home','history','team','plan','profile'];
+
+function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
+function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
+function safeKey(u){ return (u||'').replace(/[.#$\[\]/]/g,'_'); }
+
+let currentHistoryFilter = 'Deposit';
+
+// Avatar Generation
+function generateAvatarInitials(username){
+  if(!username) return '?';
+  const parts = username.split(/[\s._-]+/);
+  if(parts.length >= 2){
+    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+  }
+  return username.substring(0,2).toUpperCase();
+}
+
+function createAvatarElement(username, sizeClass){
+  const initials = generateAvatarInitials(username);
+  const div = document.createElement('div');
+  div.className = `avatar ${sizeClass}`;
+  div.textContent = initials;
+  div.title = username;
+  return div;
+}
+
+function updateAvatarInUI(username){
+  const topbarAvatar = document.getElementById('topbar-avatar');
+  if(topbarAvatar){
+    topbarAvatar.innerHTML = '';
+    const avatar = createAvatarElement(username, 'avatar-sm');
+    topbarAvatar.appendChild(avatar);
+  }
+  const profileAvatarContainer = document.getElementById('profile-avatar-container');
+  if(profileAvatarContainer){
+    profileAvatarContainer.innerHTML = '';
+    const avatar = createAvatarElement(username, 'avatar-lg');
+    profileAvatarContainer.appendChild(avatar);
+  }
+}
+
+// Update WhatsApp floating button
+function updateWhatsAppButton(){
+  const waBtn = document.getElementById('whatsapp-float-btn');
+  if(waBtn && currentUser){
+    const phone = settingsData.waNumber || '700000000';
+    const message = `Hey, I'm ${currentUser.username}, I need assistance with my ProfitPulse investment account. Please help me! 📈`;
+    waBtn.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  }
+}
+
+// UI Helpers
+function showAuth(id){
+  document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+  const t=document.getElementById(id); t.style.display='flex'; t.classList.add('active');
+  if(id==='register-page'){
+    const urlParams=new URLSearchParams(window.location.search);
+    const refCode=urlParams.get('ref')||'John';
+    const refDisplay=document.getElementById('reg-referrer-display');
+    if(refDisplay) refDisplay.textContent=refCode;
+  }
+}
+function showDashboard(){
+  document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+  document.getElementById('dashboard-page').style.display='block';
+  document.getElementById('dashboard-page').classList.add('active');
+  updateWhatsAppButton();
+}
+function hideLoading(){ document.getElementById('loading-screen').style.display='none'; }
+function switchTab(tab){
+  if(tab==='withdraw' && settingsData.withdrawLocked){ showModal('🔒','Withdrawals Locked','Withdrawals are currently disabled. Please contact support.'); return; }
+  Object.values(tabMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  const t=document.getElementById(tabMap[tab]); if(t)t.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const idx=navOrder.indexOf(tab); if(idx>=0)document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  closeMenu();
+}
+function menuNav(tab){ switchTab(tab); }
+function openMenu(){ document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').classList.add('open'); }
+function closeMenu(){ document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').classList.remove('open'); }
+function showModal(icon,title,msg){ document.getElementById('modal-icon').textContent=icon; document.getElementById('modal-title').textContent=title; document.getElementById('modal-msg').textContent=msg; document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+function showToast(msg,color){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=color||'var(--accent3)';
+  t.style.color=color?'#fff':'#fff';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function setErr(id,show,msg){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(show){el.classList.add('show');if(msg)el.textContent=msg;}
+  else{el.classList.remove('show');}
+}
+function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
+function toggleEye(inputId,btn){
+  const inp=document.getElementById(inputId);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁️';}
+}
+function checkStrength(pw){
+  const b=[document.getElementById('pw-b1'),document.getElementById('pw-b2'),document.getElementById('pw-b3')];
+  b.forEach(x=>{if(x){x.className='pw-bar';}});
+  if(!pw){ return; }
+  if(pw.length>=6){b[0].classList.add('weak');}
+  if(pw.length>=8&&/[0-9]/.test(pw)){b[0].classList.add('strong');b[1].classList.add('medium');}
+  if(pw.length>=10&&/[^A-Za-z0-9]/.test(pw)){b[0].classList.add('strong');b[1].classList.add('strong');b[2].classList.add('strong');}
+}
+function applyWithdrawLock(){
+  const msg=document.getElementById('withdraw-locked-msg');
+  if(msg) msg.style.display=settingsData.withdrawLocked?'block':'none';
+}
+function updateDepMinNote(){
+  const minDep=settingsData.minDeposit||10000;
+  const note=document.getElementById('dep-min-note');
+  if(note) note.innerHTML=`✅ Minimum deposit is <strong>${fmt(minDep)}</strong>. Enter your phone number and amount.`;
+}
+function updateRegPrefix(){
+  const c=document.getElementById('reg-country').value;
+  const pr=document.getElementById('reg-prefix');
+  if(pr) pr.textContent=c==='KE'?'+254':'+256';
+}
+function regPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
+function depPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
+function copyRef(){
+  const url=document.getElementById('ref-url');
+  if(url&&url.textContent&&url.textContent!=='Loading referral link...'){
+    navigator.clipboard.writeText(url.textContent).then(()=>showToast('✓ Referral link copied!')).catch(()=>showToast('✓ Link ready to share!'));
+  }
+}
+function openWaGroup(){ if(settingsData.waGroup) window.open(settingsData.waGroup,'_blank'); else showModal('💬','Coming Soon','WhatsApp group link will be available soon. Contact support for now.'); }
+
+function updateBalanceUI(){
+  if(!currentUser) return;
+  const invested = currentUser.invested || 0;
+  const balance = currentUser.balance || 0;
+  
+  document.getElementById('stat-invested').textContent=fmt(invested);
+  document.getElementById('stat-balance').textContent=fmt(Math.max(0, balance));
+  const el=document.getElementById('reinvest-balance-display'); if(el)el.textContent=fmt(Math.max(0, balance));
+}
+
+function filterHistory(type, tabEl){
+  currentHistoryFilter = type;
+  document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));
+  if(tabEl) tabEl.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory(){
+  const wrap=document.getElementById('history-list');
+  if(!currentUser){ wrap.innerHTML=''; return; }
+  const allTxs=currentUser.transactions?Object.values(currentUser.transactions).reverse():[];
+  const txs=allTxs.filter(tx=>tx.type===currentHistoryFilter);
+  if(!txs.length){ wrap.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No '+currentHistoryFilter+' Records</div><div class="empty-text">Your '+currentHistoryFilter.toLowerCase()+' history will appear here.</div></div>'; return; }
+  const icons={Deposit:'💳',Withdrawal:'💸',Bonus:'🎁',Referral:'🔗',Profit:'📈','Re-Invest':'🔄'};
+  wrap.innerHTML='<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody>'+txs.map((tx,idx)=>{
+    const pos=tx.amount>=0; 
+    const isPending=tx.status==='pending';
+    const isFailed=tx.status==='failed';
+    const isCompleted=tx.status==='completed';
+    const timeStr=tx.date?tx.date.split(' ')[1]||'':' ';
+    const statusBadge=isPending?'⏳ Pending':isFailed?'❌ Failed':'✅ Completed';
+    const amountColor=isPending?'gold':isFailed?'negative':'positive';
+    return `<tr><td class="mono">${idx+1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type]||'💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending?'⏳':isFailed?'':pos?'+'+fmt(tx.amount):fmt(tx.amount)}</td><td class="status">${statusBadge}</td></tr>`;
+  }).join('')+'</tbody> </table></div>';
+}
+
+function renderTeam(){
+  if(!currentUser) return;
+  document.getElementById('ref-pct-l1-display').textContent=settingsData.refL1+'%';
+  document.getElementById('ref-pct-l2-display').textContent=settingsData.refL2+'%';
+  document.getElementById('ref-pct-l3-display').textContent=settingsData.refL3+'%';
+  
+  let totalRefBonus = 0;
+  if(currentUser.transactions){
+    Object.values(currentUser.transactions).forEach(tx => {
+      if(tx.type === 'Referral') totalRefBonus += tx.amount;
+    });
+  }
+  document.getElementById('total-ref-earned').textContent=fmt(totalRefBonus);
+  
+  const refs=currentUser.referrals?Object.values(currentUser.referrals):[];
+  const wrap=document.getElementById('ref-list-wrap');
+  if(!refs.length){ wrap.innerHTML='<div class="empty-state" style="padding:30px 20px"><div class="empty-icon">🤝</div><div class="empty-title">No Referrals Yet</div><div class="empty-text">Share your referral link to grow your team.</div></div>'; return; }
+  wrap.innerHTML='<table class="ref-list-table"><thead><tr><th>#</th><th>Username</th><th>Status</th><th>Level</th></tr></thead><tbody>'+refs.map((r,i)=>{
+    const isActive=(r.invested||0)>0;
+    const statusBadge=isActive?'<span style="background:rgba(74,222,128,.2);color:#4ade80;padding:2px 8px;border-radius:20px;font-size:10px;">ACTIVE</span>':'<span style="background:rgba(248,113,113,.2);color:#f87171;padding:2px 8px;border-radius:20px;font-size:10px;">INACTIVE</span>';
+    return `<tr><td>${i+1}</td><td>${r.username}</td><td>${statusBadge}</td><td>L${r.level}</td></tr>`;
+  }).join('')+'</tbody></table>';
+}
+
+function startUserListener(username){
+  if(userListener){ db.ref('users/'+safeKey(username)).off('value',userListener); }
+  userListener = db.ref('users/'+safeKey(username)).on('value', snap=>{
+    if(!snap.exists()) return;
+    currentUser = snap.val();
+    updateBalanceUI();
+    renderHistory();
+    renderTeam();
+    applyWithdrawLock();
+    updateWhatsAppButton();
+    // Check for any pending deposits on user load
+    checkPendingDeposits();
+  });
+}
+
+function startSettingsListener(){
+  db.ref('settings').on('value', snap=>{
+    if(snap.exists()){ settingsData=snap.val(); }
+    if(currentUser){ renderTeam(); }
+    applyWithdrawLock();
+    updateDepMinNote();
+    updateWhatsAppButton();
+  });
+}
+
+// Check all pending deposits on login/reload and recover if MarzPay shows completed
+async function checkPendingDeposits(){
+  if(!currentUser || !currentUser.transactions) return;
+  
+  const pendingTxs = [];
+  for(const [txKey, tx] of Object.entries(currentUser.transactions)){
+    if(tx.type === 'Deposit' && tx.status === 'pending' && tx.marzRef){
+      pendingTxs.push({txKey, tx});
+    }
+  }
+  
+  if(pendingTxs.length === 0) return;
+  
+  for(const {txKey, tx} of pendingTxs){
+    try {
+      const status = await pollMarzStatus(tx.marzRef);
+      if(status === 'successful' || status === 'success' || status === 'completed'){
+        await recoverPendingDeposit(txKey, tx);
+      } else if(status === 'failed' || status === 'cancelled'){
+        await dbUpdate('users/'+safeKey(currentUsername), {
+          ['transactions/'+txKey+'/status']: 'failed',
+          ['transactions/'+txKey+'/note']: 'Deposit failed ❌ — funds not credited'
+        });
+      }
+    } catch(e){
+      console.warn('Recovery check failed for', txKey, e);
+    }
+  }
+}
+
+async function recoverPendingDeposit(txKey, tx){
+  const amount = tx.amount;
+  const profit = Math.floor(amount * 0.10);
+  const freshUser = await dbGet('users/'+safeKey(currentUsername));
+  if(!freshUser) return;
+  
+  if(tx.credited === true){
+    await dbUpdate('users/'+safeKey(currentUsername), {
+      ['transactions/'+txKey+'/status']: 'completed',
+      ['transactions/'+txKey+'/note']: 'Deposit confirmed ✅'
+    });
+    return;
+  }
+  
+  const newInvested = (freshUser.invested || 0) + amount;
+  const newBalance = (freshUser.balance || 0) + profit;
+  const depKey = 'dep_'+Date.now();
+  const profitTxKey = 'txp_recover_'+Date.now();
+  
+  const updates = {};
+  updates['invested'] = newInvested;
+  updates['balance'] = newBalance;
+  updates['activated'] = true;
+  updates['transactions/'+txKey+'/status'] = 'completed';
+  updates['transactions/'+txKey+'/note'] = 'Deposit confirmed ✅ (recovered)';
+  updates['transactions/'+txKey+'/credited'] = true;
+  updates['transactions/'+profitTxKey] = {type:'Profit',amount:profit,note:'10% instant profit on deposit',date:dateStr()};
+  updates['deposits/'+depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:getDateKey(new Date()), bonusPaid: false};
+  
+  await dbUpdate('users/'+safeKey(currentUsername), updates);
+  await creditReferralBonuses(currentUsername, amount);
+  await dbUpdate('users/'+safeKey(currentUsername)+'/deposits/'+depKey+'/bonusPaid', true);
+  
+  showToast('✓ Deposit recovered! +'+fmt(profit)+' profit added. 📈');
+}
+
+function initApp(){
+  startSettingsListener();
+  const savedUser = localStorage.getItem('pp_current_user');
+  if(savedUser){
+    currentUsername = savedUser;
+    dbGet('users/'+safeKey(savedUser)).then(userData => {
+      if(userData && !userData.locked){
+        currentUser = userData;
+        loadDashboard();
+        showDashboard();
+        switchTab('home');
+        startUserListener(savedUser);
+        runDailyProfits();
+        startInactivityWatcher();
+      } else {
+        localStorage.removeItem('pp_current_user');
+        hideLoading();
+        showAuth('login-page');
+      }
+    });
+  } else {
+    hideLoading();
+    const openReg=sessionStorage.getItem('pp_open_register');
+    if(openReg){ sessionStorage.removeItem('pp_open_register'); showAuth('register-page'); }
+    else showAuth('login-page');
+  }
+}
+
+function doLogin(){
+  clearErrors('login-user-err','login-pw-err'); setErr('login-general-err',false);
+  const username=document.getElementById('login-username').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!username){setErr('login-user-err',true);return;}
+  if(!password){setErr('login-pw-err',true);return;}
+  dbGet('users/'+safeKey(username)).then(userData => {
+    if(!userData||userData.password!==password){ setErr('login-general-err',true,'❌ Invalid username or password'); return; }
+    if(userData.locked){ setErr('login-general-err',true,'🔒 Your account has been locked. Contact support.'); return; }
+    currentUser=userData; currentUsername=username;
+    localStorage.setItem('pp_current_user',username);
+    loadDashboard(); showDashboard(); switchTab('home');
+    startUserListener(username);
+    runDailyProfits();
+    startInactivityWatcher();
+  });
+}
+
+function doRegister(){
+  clearErrors('reg-user-err','reg-country-err','reg-phone-err','reg-pw-err','reg-confirm-err','reg-general-err');
+  const username=document.getElementById('reg-username').value.trim();
+  const country=document.getElementById('reg-country').value;
+  const phoneDigits=document.getElementById('reg-phone').value.trim();
+  const password=document.getElementById('reg-password').value;
+  const confirm=document.getElementById('reg-confirm').value;
+  const urlParams=new URLSearchParams(window.location.search);
+  const refCode=urlParams.get('ref')||'John';
+  let ok=true;
+  if(!username){setErr('reg-user-err',true,'Username is required');ok=false;}
+  if(!country){setErr('reg-country-err',true,'Please select your country');ok=false;}
+  if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){setErr('reg-phone-err',true,'Enter 9 digits starting with 7');ok=false;}
+  if(!password||password.length<6){setErr('reg-pw-err',true,'Password must be at least 6 characters');ok=false;}
+  if(!confirm||confirm!==password){setErr('reg-confirm-err',true,'Passwords do not match');ok=false;}
+  if(!ok)return;
+  const prefix=country==='KE'?'+254':'+256';
+  const fullPhone=prefix+phoneDigits;
+  dbGet('users/'+safeKey(username)).then(existing => {
+    if(existing){setErr('reg-user-err',true,'Username already taken');return;}
+    const now=dateStr();
+    const newUser={
+      username, password, country,
+      phone: fullPhone,
+      balance:0, invested:0, withdrawn:0, profitEarned:4000,
+      activated:false, locked:false,
+      referredBy:refCode,
+      joinedDate:new Date().getFullYear().toString(),
+      transactions:{ t0:{type:'Bonus',amount:4000,note:'Registration Bonus 🎁',date:now} },
+      referrals:{}, deposits:{}
+    };
+    dbSet('users/'+safeKey(username), newUser);
+    if(refCode && refCode!=='John'){
+      dbGet('users/'+safeKey(refCode)).then(ref1 => {
+        if(ref1){
+          dbUpdate('users/'+safeKey(refCode)+'/referrals/'+safeKey(username), {username,invested:0,level:1});
+          if(ref1.referredBy){
+            dbGet('users/'+safeKey(ref1.referredBy)).then(ref2 => {
+              if(ref2){
+                dbUpdate('users/'+safeKey(ref1.referredBy)+'/referrals/'+safeKey(username), {username,invested:0,level:2});
+                if(ref2.referredBy){
+                  dbUpdate('users/'+safeKey(ref2.referredBy)+'/referrals/'+safeKey(username), {username,invested:0,level:3});
+                }
+              }
+            });
+          }
+        }
+      });
+    } else if(refCode==='John'){
+      dbUpdate('users/John/referrals/'+safeKey(username), {username,invested:0,level:1});
+    }
+    ['reg-username','reg-phone','reg-password','reg-confirm'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('reg-country').value=''; updateRegPrefix(); checkStrength('');
+    setTimeout(()=>showAuth('login-page'),1200);
+  });
+}
+
+function loadDashboard(){
+  const u=currentUser;
+  const ctry=u.country==='KE'?'🇰🇪 Kenya':'🇺🇬 Uganda';
+  document.getElementById('dash-username').textContent=u.username;
+  updateAvatarInUI(u.username);
+  const siteBase=window.location.origin+window.location.pathname.replace(/\/[^\/]*$/,'/');
+  const refLink=siteBase+'?ref='+encodeURIComponent(u.username);
+  document.getElementById('ref-url').textContent=refLink;
+  document.getElementById('ref-url2').textContent=refLink;
+  
+  const avatarInitials=u.username.substring(0,2).toUpperCase();
+  document.getElementById('profile-avatar-lg-main').textContent=avatarInitials;
+  document.getElementById('profile-name-header').textContent=u.username;
+  document.getElementById('profile-country-header-main').innerHTML=`${ctry==='-'?'🌍':ctry} ${ctry==='-'?'Unknown':ctry}`;
+  document.getElementById('profile-user-new').textContent=u.username;
+  document.getElementById('profile-phone-new').textContent=u.phone;
+  document.getElementById('profile-ctry-new').textContent=ctry;
+  document.getElementById('profile-since-new').textContent=u.joinedDate||'2025';
+  document.getElementById('profile-status-badge').textContent=u.activated?'🟢 Active Investor':'⏳ Pending Deposit';
+  
+  const deposits=u.deposits?Object.values(u.deposits):[];
+  const totalInvested=deposits.reduce((sum,d)=>sum+(d.amount||0),0);
+  const totalEarned=u.profitEarned||0;
+  const daysActive=u.daysActive||0;
+  const activeDeposits=deposits.filter(d=>d.status!=='completed').length;
+  
+  document.getElementById('profile-stat-invested').textContent=fmt(totalInvested);
+  document.getElementById('profile-stat-earned').textContent=fmt(totalEarned);
+  document.getElementById('profile-stat-days').textContent=daysActive;
+  document.getElementById('profile-stat-deposits').textContent=activeDeposits;
+  
+  document.getElementById('with-phone-display').textContent=u.phone;
+  const minWith=settingsData.minWithdraw||5000;
+  const minWithDisplay=document.getElementById('with-min-display');
+  if(minWithDisplay) minWithDisplay.textContent='UGX '+Number(minWith).toLocaleString();
+  hideLoading();
+  updateBalanceUI(); renderHistory(); renderTeam();
+  updateDepMinNote();
+  updateWhatsAppButton();
+}
+
+function getDateKey(d){ return d.toISOString().slice(0,10); }
+function addDays(d,n){ const r=new Date(d); r.setUTCDate(r.getUTCDate()+n); return r; }
+
+function runDailyProfits(){
+  if(!currentUser||!currentUsername) return;
+  const deposits=currentUser.deposits?Object.entries(currentUser.deposits):[];
+  if(!deposits.length) return;
+  const todayKey=getDateKey(new Date());
+  let totalProfit=0;
+  let anyPaid=false;
+  const updates = {};
+  for(const [key,dep] of deposits){
+    let daysRun=dep.daysRun||0;
+    if(daysRun>=72) continue;
+    const startDate=new Date(dep.startDate);
+    const lastPaid=dep.lastPaidDate||getDateKey(startDate);
+    let cursor=addDays(new Date(lastPaid),1);
+    while(getDateKey(cursor)<=todayKey && daysRun<72){
+      const dateKey=getDateKey(cursor);
+      const profit=Math.floor(dep.amount*0.10);
+      totalProfit+=profit;
+      const txKey='txp_'+dateKey.replace(/-/g,'')+'_'+key.slice(-5);
+      updates['transactions/'+txKey]={type:'Profit',amount:profit,note:'Daily 10% profit — Day '+(daysRun+1)+'/72',date:dateKey+' 00:00'};
+      updates['deposits/'+key+'/daysRun']=daysRun+1;
+      updates['deposits/'+key+'/lastPaidDate']=dateKey;
+      daysRun++; anyPaid=true;
+      cursor=addDays(cursor,1);
+    }
+  }
+  if(anyPaid){
+    updates['balance']=(currentUser.balance||0)+totalProfit;
+    dbUpdate('users/'+safeKey(currentUsername), updates);
+    currentUser.balance=(currentUser.balance||0)+totalProfit;
+    updateBalanceUI();
+    renderHistory();
+  }
+}
+
+function doLogout(){
+  if(inactivityTimer){ clearTimeout(inactivityTimer); inactivityTimer=null; }
+  for(const txKey in activePollingIntervals){
+    if(activePollingIntervals[txKey]){
+      clearInterval(activePollingIntervals[txKey]);
+    }
+  }
+  activePollingIntervals = {};
+  if(userListener&&currentUsername){ db.ref('users/'+safeKey(currentUsername)).off('value',userListener); userListener=null; }
+  localStorage.removeItem('pp_current_user');
+  currentUser=null; currentUsername=null;
+  closeMenu();
+  showToast('Signed out','#f87171');
+  setTimeout(()=>{
+    document.getElementById('dashboard-page').style.display='none';
+    document.getElementById('dashboard-page').classList.remove('active');
+    document.getElementById('login-username').value='';
+    document.getElementById('login-password').value='';
+    showAuth('login-page');
+  },800);
+}
+
+let popupTimer = null;
+function showPopup(msg, durationMs){
+  const el = document.getElementById('popup-banner');
+  if(!el) return;
+  el.innerHTML = msg;
+  el.classList.add('show');
+  if(popupTimer) clearTimeout(popupTimer);
+  popupTimer = setTimeout(()=>{ el.classList.remove('show'); }, durationMs||5000);
+}
+
+function genUUID(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{
+    const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
+async function callMarzCollect(phone, amount, reference, description){
+  const apiKey = settingsData.marzApiKey||'';
+  if(!apiKey) throw new Error('MarzPay API key not configured');
+  const fd = new FormData();
+  fd.append('phone_number', phone);
+  fd.append('amount', String(amount));
+  fd.append('country', 'UG');
+  fd.append('reference', reference);
+  fd.append('description', description);
+  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/collect-money', {
+    method:'POST',
+    headers:{ 'Authorization':'Basic '+apiKey },
+    body: fd
+  });
+  const data = await res.json();
+  if(!res.ok || data.status !== 'success') throw new Error(data.message||'MarzPay error');
+  return data.data.transaction.uuid;
+}
+
+async function pollMarzStatus(txUUID){
+  const apiKey = settingsData.marzApiKey||'';
+  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/collect-money/'+txUUID, {
+    headers:{ 'Authorization':'Basic '+apiKey }
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error('Poll error');
+  return (data.data?.transaction?.status||data.data?.status||'processing').toLowerCase();
+}
+
+async function callMarzSend(phone, amount, reference, description){
+  const apiKey = settingsData.marzApiKey||'';
+  if(!apiKey) throw new Error('MarzPay API key not configured');
+  const fd = new FormData();
+  fd.append('phone_number', phone);
+  fd.append('amount', String(amount));
+  fd.append('country', 'UG');
+  fd.append('reference', reference);
+  fd.append('description', description);
+  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/send-money', {
+    method:'POST',
+    headers:{ 'Authorization':'Basic '+apiKey },
+    body: fd
+  });
+  const data = await res.json();
+  if(!res.ok || data.status !== 'success') throw new Error(data.message||'MarzPay disbursement error');
+  return data.data?.transaction?.uuid||'sent';
+}
+
+async function doDeposit(){
+  clearErrors('dep-phone-err','dep-amount-err');
+  const phoneDigits = document.getElementById('dep-phone').value.trim();
+  if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){ setErr('dep-phone-err',true,'Enter 9 digits starting with 7'); return; }
+  const minDep = settingsData.minDeposit||10000;
+  const maxDep = 2350000;
+  const amount = parseInt(document.getElementById('dep-amount').value)||0;
+  if(amount<minDep){ setErr('dep-amount-err',true,'Minimum deposit is '+fmt(minDep)); return; }
+  if(amount>maxDep){ setErr('dep-amount-err',true,'Maximum deposit per transaction is '+fmt(maxDep)); return; }
+  if(!settingsData.marzApiKey){ showModal('⚠️','Payments Unavailable','Payment processing is not configured. Please contact support.'); return; }
+
+  const btn = document.getElementById('dep-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Processing...';
+
+  const markedAmount = Math.round(amount * 1.037);
+  const fullPhone = '+256' + phoneDigits;
+  const reference = genUUID();
+  const now = dateStr();
+  const txKey = 'tx_dep_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+
+  const updates = {};
+  updates['transactions/'+txKey] = {type:'Deposit', amount:amount, depositPhone: fullPhone, note:'Awaiting your PIN confirmation', date:now, status:'pending', marzRef:reference, credited: false};
+  dbUpdate('users/'+safeKey(currentUsername), updates);
+  renderHistory();
+
+  showPopup('📲 Check your phone and confirm with your PIN', 5000);
+
+  try {
+    const marzUUID = await callMarzCollect(fullPhone, markedAmount, reference, 'ProfitPulse Deposit');
+    startDepositPolling(marzUUID, txKey, amount, fullPhone);
+  } catch(err){
+    dbUpdate('users/'+safeKey(currentUsername), {
+      ['transactions/'+txKey+'/status']: 'failed',
+      ['transactions/'+txKey+'/note']: 'Deposit failed ❌ — funds not credited'
+    });
+    renderHistory();
+    btn.disabled = false;
+    btn.textContent = '💳 SUBMIT DEPOSIT';
+    showModal('❌','Deposit Failed', err.message||'Could not initiate payment. Please try again.');
+  }
+}
+
+function startDepositPolling(marzUUID, txKey, amount, depositPhone){
+  const btn = document.getElementById('dep-submit-btn');
+  const polling = document.getElementById('dep-polling');
+  
+  if(polling) polling.classList.add('active');
+
+  let attempts = 0;
+  const maxAttempts = 120;
+
+  const intervalId = setInterval(async ()=>{
+    attempts++;
+    try {
+      const status = await pollMarzStatus(marzUUID);
+      if(status === 'successful' || status === 'success' || status === 'completed'){
+        clearInterval(intervalId);
+        delete activePollingIntervals[txKey];
+        
+        if(polling) polling.classList.remove('active');
+        
+        const txCheck = await db.ref('users/'+safeKey(currentUsername)+'/transactions/'+txKey).once('value');
+        const transaction = txCheck.val();
+        
+        if(transaction && (transaction.status === 'completed' || transaction.credited === true)){
+          btn.disabled = false;
+          btn.textContent = '💳 SUBMIT DEPOSIT';
+          return;
+        }
+        
+        if(transaction && transaction.status === 'failed'){
+          btn.disabled = false;
+          btn.textContent = '💳 SUBMIT DEPOSIT';
+          return;
+        }
+        
+        btn.disabled = false;
+        btn.textContent = '💳 SUBMIT DEPOSIT';
+        document.getElementById('dep-phone').value='';
+        document.getElementById('dep-amount').value='';
+        
+        const freshUserSnapshot = await db.ref('users/'+safeKey(currentUsername)).once('value');
+        const freshUser = freshUserSnapshot.val();
+        if(!freshUser) return;
+        
+        const profit = Math.floor(amount * 0.10);
+        const newInvested = (freshUser.invested || 0) + amount;
+        const newBalance = (freshUser.balance || 0) + profit;
+        const depKey = 'dep_'+Date.now();
+        const profitTxKey = 'txp_inst_'+Date.now();
+        const credUpdates = {};
+        credUpdates['invested'] = newInvested;
+        credUpdates['balance'] = newBalance;
+        credUpdates['activated'] = true;
+        credUpdates['transactions/'+txKey+'/status'] = 'completed';
+        credUpdates['transactions/'+txKey+'/note'] = 'Deposit confirmed ✅';
+        credUpdates['transactions/'+txKey+'/credited'] = true;
+        credUpdates['transactions/'+profitTxKey] = {type:'Profit',amount:profit,note:'10% instant profit on deposit',date:dateStr()};
+        credUpdates['deposits/'+depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:getDateKey(new Date()), bonusPaid: false};
+        
+        if(amount >= 300000){
+          if(freshUser.referredBy && freshUser.referredBy !== 'John'){
+            credUpdates['referredBy'] = 'John';
+          }
+        }
+        
+        await dbUpdate('users/'+safeKey(currentUsername), credUpdates);
+        await creditReferralBonuses(currentUsername, amount);
+        await dbUpdate('users/'+safeKey(currentUsername)+'/deposits/'+depKey+'/bonusPaid', true);
+        
+        showToast('✓ Deposit of '+fmt(amount)+' confirmed! +'+fmt(profit)+' profit added. 📈');
+        setTimeout(()=>{ window.location.hash=''; window.location.reload(); }, 1500);
+        
+      } else if(status === 'failed' || status === 'cancelled' || status === 'auto-failed'){
+        clearInterval(intervalId);
+        delete activePollingIntervals[txKey];
+        if(polling) polling.classList.remove('active');
+        btn.disabled = false;
+        btn.textContent = '💳 SUBMIT DEPOSIT';
+        
+        const txCheck = await db.ref('users/'+safeKey(currentUsername)+'/transactions/'+txKey).once('value');
+        const transaction = txCheck.val();
+        if(transaction && transaction.status !== 'failed'){
+          dbUpdate('users/'+safeKey(currentUsername), {
+            ['transactions/'+txKey+'/status']:'failed',
+            ['transactions/'+txKey+'/note']:'Deposit failed ❌ — funds not credited'
+          });
+          renderHistory();
+        }
+        setTimeout(()=>{ window.location.hash=''; window.location.reload(); }, 1500);
+        
+      } else if(attempts >= maxAttempts){
+        clearInterval(intervalId);
+        delete activePollingIntervals[txKey];
+        if(polling) polling.classList.remove('active');
+        btn.disabled = false;
+        btn.textContent = '💳 SUBMIT DEPOSIT';
+        
+        const txCheck = await db.ref('users/'+safeKey(currentUsername)+'/transactions/'+txKey).once('value');
+        const transaction = txCheck.val();
+        if(transaction && transaction.status !== 'failed'){
+          dbUpdate('users/'+safeKey(currentUsername), {
+            ['transactions/'+txKey+'/status']:'failed',
+            ['transactions/'+txKey+'/note']:'Deposit timed out ❌ — funds not credited'
+          });
+          renderHistory();
+        }
+        setTimeout(()=>{ window.location.hash=''; window.location.reload(); }, 1500);
+      }
+    } catch(e){ 
+      console.warn('Polling error:', e);
+    }
+  }, 5000);
+  
+  activePollingIntervals[txKey] = intervalId;
+}
+
+async function creditReferralBonuses(depositorUsername, amount){
+  try {
+    const depositor = await dbGet('users/'+safeKey(depositorUsername));
+    if(!depositor) return;
+    if(!depositor.referredBy || depositor.referredBy === 'John') return;
+    
+    const pctL1 = (settingsData.refL1 || 10) / 100;
+    const pctL2 = (settingsData.refL2 || 3) / 100;
+    const pctL3 = (settingsData.refL3 || 1) / 100;
+    
+    let upline1 = depositor.referredBy;
+    if(upline1 && upline1 !== 'John'){
+      const upline1Data = await dbGet('users/'+safeKey(upline1));
+      if(upline1Data){
+        const bonus1 = Math.floor(amount * pctL1);
+        if(bonus1 > 0){
+          const txKey1 = 'tx_ref_' + Date.now() + '_l1_' + Math.random().toString(36).slice(2,6);
+          const updates1 = {};
+          updates1['users/'+safeKey(upline1)+'/balance'] = (upline1Data.balance || 0) + bonus1;
+          updates1['users/'+safeKey(upline1)+'/transactions/'+txKey1] = {
+            type: 'Referral',
+            amount: bonus1,
+            note: 'Level 1 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
+            date: dateStr()
+          };
+          if(upline1Data.referrals && upline1Data.referrals[safeKey(depositorUsername)]){
+            updates1['users/'+safeKey(upline1)+'/referrals/'+safeKey(depositorUsername)+'/invested'] = 
+              (upline1Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+          }
+          await db.ref().update(updates1);
+        }
+        
+        let upline2 = upline1Data.referredBy;
+        if(upline2 && upline2 !== 'John'){
+          const upline2Data = await dbGet('users/'+safeKey(upline2));
+          if(upline2Data){
+            const bonus2 = Math.floor(amount * pctL2);
+            if(bonus2 > 0){
+              const txKey2 = 'tx_ref_' + Date.now() + '_l2_' + Math.random().toString(36).slice(2,6);
+              const updates2 = {};
+              updates2['users/'+safeKey(upline2)+'/balance'] = (upline2Data.balance || 0) + bonus2;
+              updates2['users/'+safeKey(upline2)+'/transactions/'+txKey2] = {
+                type: 'Referral',
+                amount: bonus2,
+                note: 'Level 2 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
+                date: dateStr()
+              };
+              if(upline2Data.referrals && upline2Data.referrals[safeKey(depositorUsername)]){
+                updates2['users/'+safeKey(upline2)+'/referrals/'+safeKey(depositorUsername)+'/invested'] = 
+                  (upline2Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+              }
+              await db.ref().update(updates2);
+              
+              let upline3 = upline2Data.referredBy;
+              if(upline3 && upline3 !== 'John'){
+                const upline3Data = await dbGet('users/'+safeKey(upline3));
+                if(upline3Data){
+                  const bonus3 = Math.floor(amount * pctL3);
+                  if(bonus3 > 0){
+                    const txKey3 = 'tx_ref_' + Date.now() + '_l3_' + Math.random().toString(36).slice(2,6);
+                    const updates3 = {};
+                    updates3['users/'+safeKey(upline3)+'/balance'] = (upline3Data.balance || 0) + bonus3;
+                    updates3['users/'+safeKey(upline3)+'/transactions/'+txKey3] = {
+                      type: 'Referral',
+                      amount: bonus3,
+                      note: 'Level 3 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
+                      date: dateStr()
+                    };
+                    if(upline3Data.referrals && upline3Data.referrals[safeKey(depositorUsername)]){
+                      updates3['users/'+safeKey(upline3)+'/referrals/'+safeKey(depositorUsername)+'/invested'] = 
+                        (upline3Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+                    }
+                    await db.ref().update(updates3);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch(e){ 
+    console.warn('Referral bonus error:', e); 
+  }
+}
+
+async function doWithdraw(){
+  clearErrors('with-amount-err');
+  if(settingsData.withdrawLocked){ showModal('🔒','Locked','Withdrawals are currently disabled.'); return; }
+  if(!currentUser.activated){ showModal('🔒','Account Not Activated','Make a deposit first to activate your account.'); return; }
+  const minWith = settingsData.minWithdraw||5000;
+  const amount = parseInt(document.getElementById('with-amount').value)||0;
+  if(amount<minWith){ setErr('with-amount-err',true,'Minimum withdrawal is '+fmt(minWith)); return; }
+  
+  const balance = currentUser.balance || 0;
+  
+  if(balance < amount){ setErr('with-amount-err',true,'Insufficient balance.'); return; }
+
+  if(!settingsData.marzApiKey){ showModal('⚠️','Payments Unavailable','Payment processing is not configured. Please contact support.'); return; }
+
+  const chargeRate = (settingsData.withdrawCharge||10)/100;
+  const sendAmount = Math.floor(amount*(1-chargeRate));
+  const phone = currentUser.phone;
+  const now = dateStr();
+  const txKey = 'tx_wd_'+Date.now();
+  const reqKey = 'wreq_'+Date.now();
+  const reference = genUUID();
+
+  const btn = document.getElementById('with-submit-btn');
+  btn.disabled = true; btn.textContent = '⏳ Processing...';
+
+  // DEDUCT ONLY ONCE - when user requests withdrawal
+  const updates = {};
+  updates['balance'] = (currentUser.balance||0) - amount;
+  updates['transactions/'+txKey] = {type:'Withdrawal', amount:-amount, note:'Processing... Will be sent to '+phone, date:now, status:'pending', marzRef:reference};
+  dbUpdate('users/'+safeKey(currentUsername), updates);
+  updateBalanceUI();
+  renderHistory();
+
+  btn.disabled = false; btn.textContent = '💸 CASHOUT';
+  document.getElementById('with-amount').value='';
+  showPopup('💸 You will receive your funds shortly', 5000);
+
+  const isManual = settingsData.withdrawManual||false;
+
+  if(isManual){
+    dbSet('pendingWithdrawals/'+reqKey, {
+      username:currentUsername, phone, amount, sendAmount, txKey, reqKey, date:now, status:'pending', reference
+    });
+  } else {
+    try {
+      await callMarzSend(phone, sendAmount, reference, 'ProfitPulse Withdrawal');
+      // ON SUCCESS: Just mark as successful, balance already deducted
+      const wUpdates = {};
+      wUpdates['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/status'] = 'successful';
+      wUpdates['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/note'] = 'Withdrawal Successful ✅ — sent to '+phone;
+      db.ref().update(wUpdates);
+    } catch(err){
+      // ON FAILURE: REFUND the amount back to balance
+      db.ref('users/'+safeKey(currentUsername)+'/balance').once('value', snap => {
+        const curBalance = snap.val() || 0;
+        db.ref().update({
+          ['users/'+safeKey(currentUsername)+'/balance']: curBalance + amount,
+          ['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/status']: 'failed',
+          ['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/note']: 'Withdrawal failed'
+        });
+      });
+      const notifKey = 'notif_wd_fail_'+Date.now();
+      db.ref('adminNotifications/'+notifKey).set({
+        type: 'withdrawal_failed',
+        username: currentUsername,
+        amount: amount,
+        reason: err.message,
+        timestamp: new Date().toISOString(),
+        read: false,
+        message: '❌ Withdrawal failed for '+currentUsername+' ('+fmt(amount)+'). Reason: '+err.message+'. Funds refunded.'
+      });
+    }
+  }
+}
+
+function doReinvest(){
+  clearErrors('reinvest-amount-err');
+  const amount=parseInt(document.getElementById('reinvest-amount').value)||0;
+  if(amount<10000){setErr('reinvest-amount-err',true,'Minimum re-invest is UGX 10,000');return;}
+  
+  const balance = currentUser.balance || 0;
+  
+  if(balance < amount){setErr('reinvest-amount-err',true,'Insufficient balance.');return;}
+  
+  const profit=Math.floor(amount*0.10);
+  const newInvested=(currentUser.invested||0)+amount;
+  const depKey='dep_'+Date.now();
+  const now=dateStr();
+  const tx1Key='tx_'+Date.now()+'a';
+  const tx2Key='tx_'+Date.now()+'b';
+  const todayKey=getDateKey(new Date());
+  const updates = {};
+  updates['balance']=(currentUser.balance||0)-amount+profit;
+  updates['invested']=newInvested;
+  updates['activated']=true;
+  updates['deposits/'+depKey]={amount,startDate:new Date().toISOString(),daysRun:0,lastPaidDate:todayKey, bonusPaid: true};
+  updates['transactions/'+tx1Key]={type:'Re-Invest',amount:-amount,note:'Moved from Available Balance to Invested',date:now};
+  updates['transactions/'+tx2Key]={type:'Profit',amount:profit,note:'10% instant profit on re-invest (72 days)',date:now};
+  dbUpdate('users/'+safeKey(currentUsername), updates);
+  document.getElementById('reinvest-amount').value='';
+  updateBalanceUI();
+  renderHistory();
+  showToast('✓ Re-invested! +'+fmt(profit)+' profit added. 📈');
+}
+
+let inactivityTimer = null;
+const INACTIVITY_LIMIT = 60 * 60 * 1000;
+function resetInactivityTimer(){
+  if(!currentUser) return;
+  if(inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(()=>{ if(currentUser){ doLogout(); } }, INACTIVITY_LIMIT);
+}
+function startInactivityWatcher(){
+  ['click','touchstart','scroll','keydown'].forEach(evt=>{
+    document.addEventListener(evt, resetInactivityTimer, {passive:true});
+  });
+  resetInactivityTimer();
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const lp=document.getElementById('login-page');
+    const rp=document.getElementById('register-page');
+    if(lp&&lp.classList.contains('active')) doLogin();
+    else if(rp&&rp.classList.contains('active')) doRegister();
+  }
+});
+
+initApp();
+</script>
+</body>
+</html>
