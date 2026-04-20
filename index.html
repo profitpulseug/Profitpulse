@@ -6,17 +6,13 @@
 <title>ProfitPulse — Grow Your Wealth</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="ProfitPulse — Grow Your Wealth">
-<meta property="og:description" content="Uganda's Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors growing their money today!">
+<meta property="og:description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors growing their money today!">
 <meta property="og:site_name" content="ProfitPulse">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ProfitPulse — Grow Your Wealth">
-<meta name="twitter:description" content="Uganda's Premium Investment Wallet. Earn 10% daily returns for 72 days!">
-<meta name="description" content="Uganda's Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors today!">
+<meta name="twitter:description" content="Premium Investment Wallet. Earn 10% daily returns for 72 days!">
+<meta name="description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors today!">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --bg:#fff5f7;
@@ -170,7 +166,7 @@ input[type="password"]{padding-right:46px;}
 }
 .whatsapp-float:hover{transform:scale(1.08);}
 
-/* Table (Scrollable) - CORRECTED CALCULATIONS */
+/* Table (Scrollable) */
 .plan-wrap{background:var(--surface);border:2px solid var(--accent);border-radius:16px;overflow:hidden;}
 .plan-header{background:var(--table-header);padding:12px 14px;text-align:center;}
 .plan-header-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:800;color:var(--accent3);}
@@ -208,7 +204,7 @@ input[type="password"]{padding-right:46px;}
 .profile-detail-val{font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;}
 .profile-avatar-container{display:flex;justify-content:center;margin-bottom:14px;}
 
-/* New Profile Redesign Styles */
+/* Profile Redesign Styles */
 .profile-header-section{background:linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:16px;color:#fff;}
 .profile-avatar-lg{width:90px;height:90px;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px;font-weight:700;}
 .profile-name-header{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;margin-bottom:4px;}
@@ -248,13 +244,8 @@ input[type="password"]{padding-right:46px;}
 .red-btn:disabled{opacity:0.4;cursor:not-allowed;}
 .amber-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .amber-btn:active{transform:scale(.98);}
-/* Popup Banner */
 .popup-banner{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-10px);background:#1e293b;color:#fff;font-size:13px;font-weight:600;padding:14px 22px;border-radius:16px;opacity:0;transition:.35s;z-index:9998;pointer-events:none;text-align:center;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.25);line-height:1.5;}
 .popup-banner.show{opacity:1;transform:translateX(-50%) translateY(0);}
-/* Deposit polling spinner */
-.dep-polling{display:none;align-items:center;gap:10px;justify-content:center;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-top:10px;font-size:12px;color:var(--muted);}
-.dep-polling.active{display:flex;}
-.dep-spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:#16a34a;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
 .readonly-field{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 42px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
 .charge-note{background:var(--surface2);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--warn);margin-bottom:12px;line-height:1.6;}
 .deposit-note{background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--accent);margin-bottom:12px;line-height:1.6;}
@@ -289,7 +280,7 @@ input[type="password"]{padding-right:46px;}
 .tx-tab{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;}
 .tx-tab.active{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
 
-/* Referral Page - Pure Green */
+/* Referral Page */
 .ref-main-card{background:var(--ref-bg);border:1px solid var(--table-border);border-radius:20px;padding:20px;margin-bottom:14px;}
 .ref-total-card{background:#065f46;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;}
 .ref-total-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#a7f3d0;margin-bottom:8px;}
@@ -431,7 +422,6 @@ input[type="password"]{padding-right:46px;}
         </div>
         <div class="stats-grid" style="display:flex;justify-content:space-between;gap:20px;">
           <div class="stat-box"><div class="stat-label">INVESTMENT</div><div class="stat-value dep" id="stat-invested">UGX 0</div></div>
-
         </div>
       </div>
     </div>
@@ -471,7 +461,7 @@ input[type="password"]{padding-right:46px;}
     <div class="section" id="history-list"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No Records Yet</div><div class="empty-text">Your transaction history will appear here.</div></div></div>
   </div>
 
-  <!-- REFER (Team) - Updated -->
+  <!-- REFER (Team) -->
   <div class="dash-section" id="sec-team">
     <div class="inner-header"><span style="font-size:22px">👥</span><div><div class="inner-title">REFER</div><div class="inner-sub">Your referral network</div></div></div>
     <div class="section">
@@ -490,7 +480,7 @@ input[type="password"]{padding-right:46px;}
             <tr><th>Level 2</th><td id="ref-pct-l2-display">4%</td><td>Their referrals</td></tr>
             <tr><th>Level 3</th><td id="ref-pct-l3-display">2%</td><td>3rd level network</td></tr>
           </tbody>
-        </table>
+         </table>
       </div>
       
       <div class="section-title">Your Referral Link</div>
@@ -505,7 +495,7 @@ input[type="password"]{padding-right:46px;}
     </div>
   </div>
 
-  <!-- TABLE (Plan) - CORRECTED CALCULATIONS -->
+  <!-- TABLE (Plan) -->
   <div class="dash-section" id="sec-plan">
     <div class="inner-header"><span style="font-size:22px">📈</span><div><div class="inner-title">TABLE</div><div class="inner-sub">10% daily for 72 days (720% total)</div></div></div>
     <div class="section">
@@ -529,7 +519,7 @@ input[type="password"]{padding-right:46px;}
               <tr><td>10,000,000</td><td>1,000,000</td><td>72,000,000</td></tr>
               <tr><td>20,000,000</td><td>2,000,000</td><td>144,000,000</td></tr>
             </tbody>
-          </table>
+           </table>
         </div>
         <div class="scroll-hint">← Swipe horizontally to see all columns →</div>
         <div class="plan-footer"><button class="start-invest-btn" onclick="switchTab('deposit')">🚀 Start Investing Now</button></div>
@@ -541,7 +531,6 @@ input[type="password"]{padding-right:46px;}
   <div class="dash-section" id="sec-profile">
     <div class="inner-header"><span style="font-size:22px">👤</span><div><div class="inner-title">MYSELF</div><div class="inner-sub">Your account details</div></div></div>
     <div class="section">
-      <!-- Profile Header Section -->
       <div class="profile-header-section">
         <div class="profile-avatar-lg" id="profile-avatar-lg-main">—</div>
         <div class="profile-name-header" id="profile-name-header">—</div>
@@ -549,7 +538,6 @@ input[type="password"]{padding-right:46px;}
         <div class="profile-status-badge" id="profile-status-badge">🟢 Active Investor</div>
       </div>
 
-      <!-- Personal Information Card -->
       <div class="profile-info-section">
         <div class="profile-section-title">📝 Personal Information</div>
         <div class="profile-info-item">
@@ -562,7 +550,6 @@ input[type="password"]{padding-right:46px;}
         </div>
       </div>
 
-      <!-- Account Information Card -->
       <div class="profile-info-section">
         <div class="profile-section-title">🔐 Account Information</div>
         <div class="profile-info-item">
@@ -575,7 +562,6 @@ input[type="password"]{padding-right:46px;}
         </div>
       </div>
 
-      <!-- Investment Statistics -->
       <div class="profile-stats-grid">
         <div class="profile-stat-card">
           <div class="profile-stat-label">Total Invested</div>
@@ -595,7 +581,6 @@ input[type="password"]{padding-right:46px;}
         </div>
       </div>
 
-      <!-- Sign Out Button -->
       <button class="logout-dash-new" onclick="doLogout()">🚪 Sign Out</button>
     </div>
   </div>
@@ -621,7 +606,6 @@ input[type="password"]{padding-right:46px;}
           <div class="field-error" id="dep-amount-err">Please check the amount limits</div>
         </div>
         <button class="green-btn" id="dep-submit-btn" onclick="doDeposit()">💳 SUBMIT DEPOSIT</button>
-        <div class="dep-polling" id="dep-polling"><div class="dep-spin"></div><span id="dep-polling-msg">Waiting for payment confirmation...</span></div>
       </div>
     </div>
   </div>
@@ -708,55 +692,99 @@ input[type="password"]{padding-right:46px;}
 <div class="popup-banner" id="popup-banner"></div>
 
 <script>
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDljoKtREqmM0B-Y3uctCA8rsgK0s8dbJw",
-  authDomain: "profitpulse-dev.firebaseapp.com",
-  projectId: "profitpulse-dev",
-  storageBucket: "profitpulse-dev.firebasestorage.app",
-  messagingSenderId: "581122025349",
-  appId: "1:581122025349:web:c0239ad6830bbbd4e806ec"
-};
+// ============================================================
+// PROFIT PULSE - LOCAL STORAGE VERSION (NO FIREBASE)
+// All data stored in browser's localStorage
+// ============================================================
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+// Storage keys
+const STORAGE_USERS = 'profitpulse_users';
+const STORAGE_SETTINGS = 'profitpulse_settings';
+const STORAGE_CURRENT_USER = 'profitpulse_current_user';
+const STORAGE_PENDING_WITHDRAWALS = 'profitpulse_pending_withdrawals';
+const STORAGE_ADMINS = 'profitpulse_admins';
+const STORAGE_CURRENT_ADMIN = 'profitpulse_current_admin';
+const STORAGE_ADMIN_SESSION = 'profitpulse_admin_session';
+const STORAGE_DEBIT_HISTORY = 'profitpulse_debit_history';
+const STORAGE_ADMIN_NOTIFICATIONS = 'profitpulse_admin_notifications';
 
-// Firestore Helpers
-const dbGet = async (collection, doc) => {
-  const snap = await db.collection(collection).doc(doc).get();
-  return snap.exists ? snap.data() : null;
-};
-const dbSet = (collection, doc, val) => db.collection(collection).doc(doc).set(val);
-const dbUpdate = (collection, doc, val) => db.collection(collection).doc(doc).update(val);
-const dbAdd = (collection, val) => db.collection(collection).add(val);
-const dbDelete = (collection, doc) => db.collection(collection).doc(doc).delete();
+// Helper functions
+function saveToLocalStorage(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
 
-let currentUser = null;
-let currentUsername = null;
-let userListener = null;
+function loadFromLocalStorage(key, defaultValue = {}) {
+  const data = localStorage.getItem(key);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch(e) {
+      return defaultValue;
+    }
+  }
+  return defaultValue;
+}
+
+function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
+function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
+function safeKey(u){ return (u||'').replace(/[^a-zA-Z0-9]/g,'_'); }
+function genUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{ const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8); return v.toString(16); }); }
+
+// Default settings
 let settingsData = {
   withdrawCharge: 10,
-  refL1: 10, refL2: 3, refL3: 1,
+  refL1: 10, refL2: 4, refL3: 2,
   waGroup: '', waSupport: '',
   withdrawLocked: false,
   withdrawManual: false,
   minDeposit: 10000,
   minWithdraw: 5000,
-  waNumber: '700000000',
-  marzApiKey: ''
+  waNumber: '700000000'
 };
 
-// Store active polling intervals per transaction
-let activePollingIntervals = {};
+// Initialize default settings if not exists
+function initSettings() {
+  const saved = loadFromLocalStorage(STORAGE_SETTINGS);
+  if (Object.keys(saved).length === 0) {
+    saveToLocalStorage(STORAGE_SETTINGS, settingsData);
+  } else {
+    settingsData = saved;
+  }
+}
+
+// User management
+function getAllUsers() {
+  return loadFromLocalStorage(STORAGE_USERS, {});
+}
+
+function saveUser(username, userData) {
+  const users = getAllUsers();
+  users[username] = userData;
+  saveToLocalStorage(STORAGE_USERS, users);
+}
+
+function getUser(username) {
+  const users = getAllUsers();
+  return users[username] || null;
+}
+
+function deleteUser(username) {
+  const users = getAllUsers();
+  delete users[username];
+  saveToLocalStorage(STORAGE_USERS, users);
+}
+
+// Current user session
+let currentUser = null;
+let currentUsername = null;
+
+// Store active intervals
+let profitInterval = null;
+let inactivityTimer = null;
+const INACTIVITY_LIMIT = 60 * 60 * 1000;
 
 const tabMap = {home:'sec-home',history:'sec-history',team:'sec-team',plan:'sec-plan',profile:'sec-profile',deposit:'sec-deposit',withdraw:'sec-withdraw',reinvest:'sec-reinvest'};
 const navOrder = ['home','history','team','plan','profile'];
-
-function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
-function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
-function safeKey(u){ return (u||'').replace(/[.#$\[\]/]/g,'_'); }
-
 let currentHistoryFilter = 'Deposit';
 
 // Avatar Generation
@@ -785,15 +813,8 @@ function updateAvatarInUI(username){
     const avatar = createAvatarElement(username, 'avatar-sm');
     topbarAvatar.appendChild(avatar);
   }
-  const profileAvatarContainer = document.getElementById('profile-avatar-container');
-  if(profileAvatarContainer){
-    profileAvatarContainer.innerHTML = '';
-    const avatar = createAvatarElement(username, 'avatar-lg');
-    profileAvatarContainer.appendChild(avatar);
-  }
 }
 
-// Update WhatsApp floating button
 function updateWhatsAppButton(){
   const waBtn = document.getElementById('whatsapp-float-btn');
   if(waBtn && currentUser){
@@ -814,13 +835,16 @@ function showAuth(id){
     if(refDisplay) refDisplay.textContent=refCode;
   }
 }
+
 function showDashboard(){
   document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   document.getElementById('dashboard-page').style.display='block';
   document.getElementById('dashboard-page').classList.add('active');
   updateWhatsAppButton();
 }
+
 function hideLoading(){ document.getElementById('loading-screen').style.display='none'; }
+
 function switchTab(tab){
   if(tab==='withdraw' && settingsData.withdrawLocked){ showModal('🔒','Withdrawals Locked','Withdrawals are currently disabled. Please contact support.'); return; }
   Object.values(tabMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
@@ -829,31 +853,43 @@ function switchTab(tab){
   const idx=navOrder.indexOf(tab); if(idx>=0)document.querySelectorAll('.nav-item')[idx].classList.add('active');
   closeMenu();
 }
+
 function menuNav(tab){ switchTab(tab); }
 function openMenu(){ document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').classList.add('open'); }
 function closeMenu(){ document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').classList.remove('open'); }
-function showModal(icon,title,msg){ document.getElementById('modal-icon').textContent=icon; document.getElementById('modal-title').textContent=title; document.getElementById('modal-msg').textContent=msg; document.getElementById('modal-overlay').classList.add('open'); }
+
+function showModal(icon,title,msg){ 
+  document.getElementById('modal-icon').textContent=icon; 
+  document.getElementById('modal-title').textContent=title; 
+  document.getElementById('modal-msg').textContent=msg; 
+  document.getElementById('modal-overlay').classList.add('open'); 
+}
+
 function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+
 function showToast(msg,color){
   const t=document.getElementById('toast');
   t.textContent=msg;
   t.style.background=color||'var(--accent3)';
-  t.style.color=color?'#fff':'#fff';
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
+
 function setErr(id,show,msg){
   const el=document.getElementById(id);
   if(!el)return;
   if(show){el.classList.add('show');if(msg)el.textContent=msg;}
   else{el.classList.remove('show');}
 }
+
 function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
+
 function toggleEye(inputId,btn){
   const inp=document.getElementById(inputId);
   if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
   else{inp.type='password';btn.textContent='👁️';}
 }
+
 function checkStrength(pw){
   const b=[document.getElementById('pw-b1'),document.getElementById('pw-b2'),document.getElementById('pw-b3')];
   b.forEach(x=>{if(x){x.className='pw-bar';}});
@@ -862,28 +898,34 @@ function checkStrength(pw){
   if(pw.length>=8&&/[0-9]/.test(pw)){b[0].classList.add('strong');b[1].classList.add('medium');}
   if(pw.length>=10&&/[^A-Za-z0-9]/.test(pw)){b[0].classList.add('strong');b[1].classList.add('strong');b[2].classList.add('strong');}
 }
+
 function applyWithdrawLock(){
   const msg=document.getElementById('withdraw-locked-msg');
   if(msg) msg.style.display=settingsData.withdrawLocked?'block':'none';
 }
+
 function updateDepMinNote(){
   const minDep=settingsData.minDeposit||10000;
   const note=document.getElementById('dep-min-note');
   if(note) note.innerHTML=`✅ Minimum deposit is <strong>${fmt(minDep)}</strong>. Enter your phone number and amount.`;
 }
+
 function updateRegPrefix(){
   const c=document.getElementById('reg-country').value;
   const pr=document.getElementById('reg-prefix');
   if(pr) pr.textContent=c==='KE'?'+254':'+256';
 }
+
 function regPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
 function depPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
+
 function copyRef(){
   const url=document.getElementById('ref-url');
   if(url&&url.textContent&&url.textContent!=='Loading referral link...'){
     navigator.clipboard.writeText(url.textContent).then(()=>showToast('✓ Referral link copied!')).catch(()=>showToast('✓ Link ready to share!'));
   }
 }
+
 function openWaGroup(){ if(settingsData.waGroup) window.open(settingsData.waGroup,'_blank'); else showModal('💬','Coming Soon','WhatsApp group link will be available soon. Contact support for now.'); }
 
 function updateBalanceUI(){
@@ -914,7 +956,6 @@ function renderHistory(){
     const pos=tx.amount>=0; 
     const isPending=tx.status==='pending';
     const isFailed=tx.status==='failed';
-    const isCompleted=tx.status==='completed';
     const timeStr=tx.date?tx.date.split(' ')[1]||'':' ';
     const statusBadge=isPending?'⏳ Pending':isFailed?'❌ Failed':'✅ Completed';
     const amountColor=isPending?'gold':isFailed?'negative':'positive';
@@ -943,201 +984,57 @@ function renderTeam(){
     const isActive=(r.invested||0)>0;
     const statusBadge=isActive?'<span style="background:rgba(74,222,128,.2);color:#4ade80;padding:2px 8px;border-radius:20px;font-size:10px;">ACTIVE</span>':'<span style="background:rgba(248,113,113,.2);color:#f87171;padding:2px 8px;border-radius:20px;font-size:10px;">INACTIVE</span>';
     return `<tr><td>${i+1}</td><td>${r.username}</td><td>${statusBadge}</td><td>L${r.level}</td></tr>`;
-  }).join('')+'</tbody></table>';
+  }).join('')+'</tbody> </table>';
 }
 
-function startUserListener(username){
-  if(userListener){ db.ref('users/'+safeKey(username)).off('value',userListener); }
-  userListener = db.ref('users/'+safeKey(username)).on('value', snap=>{
-    if(!snap.exists()) return;
-    currentUser = snap.val();
+function getDateKey(d){ return d.toISOString().slice(0,10); }
+function addDays(d,n){ const r=new Date(d); r.setUTCDate(r.getUTCDate()+n); return r; }
+
+function runDailyProfits(){
+  if(!currentUser||!currentUsername) return;
+  const deposits=currentUser.deposits?Object.entries(currentUser.deposits):[];
+  if(!deposits.length) return;
+  const todayKey=getDateKey(new Date());
+  let totalProfit=0;
+  let anyPaid=false;
+  const updates = { ...currentUser };
+  for(const [key,dep] of deposits){
+    let daysRun=dep.daysRun||0;
+    if(daysRun>=72) continue;
+    const startDate=new Date(dep.startDate);
+    const lastPaid=dep.lastPaidDate||getDateKey(startDate);
+    let cursor=addDays(new Date(lastPaid),1);
+    while(getDateKey(cursor)<=todayKey && daysRun<72){
+      const dateKey=getDateKey(cursor);
+      const profit=Math.floor(dep.amount*0.10);
+      totalProfit+=profit;
+      const txKey='txp_'+dateKey.replace(/-/g,'')+'_'+key.slice(-5);
+      if(!updates.transactions) updates.transactions = {};
+      updates.transactions[txKey]={type:'Profit',amount:profit,note:'Daily 10% profit — Day '+(daysRun+1)+'/72',date:dateKey+' 00:00'};
+      if(!updates.deposits) updates.deposits = {};
+      if(!updates.deposits[key]) updates.deposits[key] = {};
+      updates.deposits[key].daysRun=daysRun+1;
+      updates.deposits[key].lastPaidDate=dateKey;
+      daysRun++; anyPaid=true;
+      cursor=addDays(cursor,1);
+    }
+  }
+  if(anyPaid){
+    updates.balance = (currentUser.balance||0) + totalProfit;
+    saveUser(currentUsername, updates);
+    currentUser = updates;
     updateBalanceUI();
     renderHistory();
-    renderTeam();
-    applyWithdrawLock();
-    updateWhatsAppButton();
-    // Check for any pending deposits on user load
-    checkPendingDeposits();
-  });
+  }
 }
 
-function startSettingsListener(){
-  db.ref('settings').on('value', snap=>{
-    if(snap.exists()){ settingsData=snap.val(); }
-    if(currentUser){ renderTeam(); }
-    applyWithdrawLock();
-    updateDepMinNote();
-    updateWhatsAppButton();
-  });
-}
-
-// Check all pending deposits on login/reload and recover if MarzPay shows completed
-async function checkPendingDeposits(){
-  if(!currentUser || !currentUser.transactions) return;
-  
-  const pendingTxs = [];
-  for(const [txKey, tx] of Object.entries(currentUser.transactions)){
-    if(tx.type === 'Deposit' && tx.status === 'pending' && tx.marzRef){
-      pendingTxs.push({txKey, tx});
+function startDailyProfitLoop(){
+  if(profitInterval) clearInterval(profitInterval);
+  profitInterval = setInterval(() => {
+    if(currentUser && currentUsername){
+      runDailyProfits();
     }
-  }
-  
-  if(pendingTxs.length === 0) return;
-  
-  for(const {txKey, tx} of pendingTxs){
-    try {
-      const status = await pollMarzStatus(tx.marzRef);
-      if(status === 'successful' || status === 'success' || status === 'completed'){
-        await recoverPendingDeposit(txKey, tx);
-      } else if(status === 'failed' || status === 'cancelled'){
-        await dbUpdate('users/'+safeKey(currentUsername), {
-          ['transactions/'+txKey+'/status']: 'failed',
-          ['transactions/'+txKey+'/note']: 'Deposit failed ❌ — funds not credited'
-        });
-      }
-    } catch(e){
-      console.warn('Recovery check failed for', txKey, e);
-    }
-  }
-}
-
-async function recoverPendingDeposit(txKey, tx){
-  const amount = tx.amount;
-  const profit = Math.floor(amount * 0.10);
-  const freshUser = await dbGet('users/'+safeKey(currentUsername));
-  if(!freshUser) return;
-  
-  if(tx.credited === true){
-    await dbUpdate('users/'+safeKey(currentUsername), {
-      ['transactions/'+txKey+'/status']: 'completed',
-      ['transactions/'+txKey+'/note']: 'Deposit confirmed ✅'
-    });
-    return;
-  }
-  
-  const newInvested = (freshUser.invested || 0) + amount;
-  const newBalance = (freshUser.balance || 0) + profit;
-  const depKey = 'dep_'+Date.now();
-  const profitTxKey = 'txp_recover_'+Date.now();
-  
-  const updates = {};
-  updates['invested'] = newInvested;
-  updates['balance'] = newBalance;
-  updates['activated'] = true;
-  updates['transactions/'+txKey+'/status'] = 'completed';
-  updates['transactions/'+txKey+'/note'] = 'Deposit confirmed ✅ (recovered)';
-  updates['transactions/'+txKey+'/credited'] = true;
-  updates['transactions/'+profitTxKey] = {type:'Profit',amount:profit,note:'10% instant profit on deposit',date:dateStr()};
-  updates['deposits/'+depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:getDateKey(new Date()), bonusPaid: false};
-  
-  await dbUpdate('users/'+safeKey(currentUsername), updates);
-  await creditReferralBonuses(currentUsername, amount);
-  await dbUpdate('users/'+safeKey(currentUsername)+'/deposits/'+depKey+'/bonusPaid', true);
-  
-  showToast('✓ Deposit recovered! +'+fmt(profit)+' profit added. 📈');
-}
-
-function initApp(){
-  startSettingsListener();
-  const savedUser = localStorage.getItem('pp_current_user');
-  if(savedUser){
-    currentUsername = savedUser;
-    dbGet('users/'+safeKey(savedUser)).then(userData => {
-      if(userData && !userData.locked){
-        currentUser = userData;
-        loadDashboard();
-        showDashboard();
-        switchTab('home');
-        startUserListener(savedUser);
-        runDailyProfits();
-        startInactivityWatcher();
-      } else {
-        localStorage.removeItem('pp_current_user');
-        hideLoading();
-        showAuth('login-page');
-      }
-    });
-  } else {
-    hideLoading();
-    const openReg=sessionStorage.getItem('pp_open_register');
-    if(openReg){ sessionStorage.removeItem('pp_open_register'); showAuth('register-page'); }
-    else showAuth('login-page');
-  }
-}
-
-function doLogin(){
-  clearErrors('login-user-err','login-pw-err'); setErr('login-general-err',false);
-  const username=document.getElementById('login-username').value.trim();
-  const password=document.getElementById('login-password').value;
-  if(!username){setErr('login-user-err',true);return;}
-  if(!password){setErr('login-pw-err',true);return;}
-  dbGet('users/'+safeKey(username)).then(userData => {
-    if(!userData||userData.password!==password){ setErr('login-general-err',true,'❌ Invalid username or password'); return; }
-    if(userData.locked){ setErr('login-general-err',true,'🔒 Your account has been locked. Contact support.'); return; }
-    currentUser=userData; currentUsername=username;
-    localStorage.setItem('pp_current_user',username);
-    loadDashboard(); showDashboard(); switchTab('home');
-    startUserListener(username);
-    runDailyProfits();
-    startInactivityWatcher();
-  });
-}
-
-function doRegister(){
-  clearErrors('reg-user-err','reg-country-err','reg-phone-err','reg-pw-err','reg-confirm-err','reg-general-err');
-  const username=document.getElementById('reg-username').value.trim();
-  const country=document.getElementById('reg-country').value;
-  const phoneDigits=document.getElementById('reg-phone').value.trim();
-  const password=document.getElementById('reg-password').value;
-  const confirm=document.getElementById('reg-confirm').value;
-  const urlParams=new URLSearchParams(window.location.search);
-  const refCode=urlParams.get('ref')||'John';
-  let ok=true;
-  if(!username){setErr('reg-user-err',true,'Username is required');ok=false;}
-  if(!country){setErr('reg-country-err',true,'Please select your country');ok=false;}
-  if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){setErr('reg-phone-err',true,'Enter 9 digits starting with 7');ok=false;}
-  if(!password||password.length<6){setErr('reg-pw-err',true,'Password must be at least 6 characters');ok=false;}
-  if(!confirm||confirm!==password){setErr('reg-confirm-err',true,'Passwords do not match');ok=false;}
-  if(!ok)return;
-  const prefix=country==='KE'?'+254':'+256';
-  const fullPhone=prefix+phoneDigits;
-  dbGet('users/'+safeKey(username)).then(existing => {
-    if(existing){setErr('reg-user-err',true,'Username already taken');return;}
-    const now=dateStr();
-    const newUser={
-      username, password, country,
-      phone: fullPhone,
-      balance:0, invested:0, withdrawn:0, profitEarned:4000,
-      activated:false, locked:false,
-      referredBy:refCode,
-      joinedDate:new Date().getFullYear().toString(),
-      transactions:{ t0:{type:'Bonus',amount:4000,note:'Registration Bonus 🎁',date:now} },
-      referrals:{}, deposits:{}
-    };
-    dbSet('users/'+safeKey(username), newUser);
-    if(refCode && refCode!=='John'){
-      dbGet('users/'+safeKey(refCode)).then(ref1 => {
-        if(ref1){
-          dbUpdate('users/'+safeKey(refCode)+'/referrals/'+safeKey(username), {username,invested:0,level:1});
-          if(ref1.referredBy){
-            dbGet('users/'+safeKey(ref1.referredBy)).then(ref2 => {
-              if(ref2){
-                dbUpdate('users/'+safeKey(ref1.referredBy)+'/referrals/'+safeKey(username), {username,invested:0,level:2});
-                if(ref2.referredBy){
-                  dbUpdate('users/'+safeKey(ref2.referredBy)+'/referrals/'+safeKey(username), {username,invested:0,level:3});
-                }
-              }
-            });
-          }
-        }
-      });
-    } else if(refCode==='John'){
-      dbUpdate('users/John/referrals/'+safeKey(username), {username,invested:0,level:1});
-    }
-    ['reg-username','reg-phone','reg-password','reg-confirm'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('reg-country').value=''; updateRegPrefix(); checkStrength('');
-    setTimeout(()=>showAuth('login-page'),1200);
-  });
+  }, 60000);
 }
 
 function loadDashboard(){
@@ -1181,54 +1078,150 @@ function loadDashboard(){
   updateWhatsAppButton();
 }
 
-function getDateKey(d){ return d.toISOString().slice(0,10); }
-function addDays(d,n){ const r=new Date(d); r.setUTCDate(r.getUTCDate()+n); return r; }
+function initApp(){
+  initSettings();
+  
+  const savedUser = localStorage.getItem(STORAGE_CURRENT_USER);
+  if(savedUser){
+    currentUsername = savedUser;
+    const userData = getUser(savedUser);
+    if(userData && !userData.locked){
+      currentUser = userData;
+      loadDashboard();
+      showDashboard();
+      switchTab('home');
+      runDailyProfits();
+      startDailyProfitLoop();
+      startInactivityWatcher();
+    } else {
+      localStorage.removeItem(STORAGE_CURRENT_USER);
+      hideLoading();
+      showAuth('login-page');
+    }
+  } else {
+    hideLoading();
+    const openReg=sessionStorage.getItem('pp_open_register');
+    if(openReg){ sessionStorage.removeItem('pp_open_register'); showAuth('register-page'); }
+    else showAuth('login-page');
+  }
+}
 
-function runDailyProfits(){
-  if(!currentUser||!currentUsername) return;
-  const deposits=currentUser.deposits?Object.entries(currentUser.deposits):[];
-  if(!deposits.length) return;
-  const todayKey=getDateKey(new Date());
-  let totalProfit=0;
-  let anyPaid=false;
-  const updates = {};
-  for(const [key,dep] of deposits){
-    let daysRun=dep.daysRun||0;
-    if(daysRun>=72) continue;
-    const startDate=new Date(dep.startDate);
-    const lastPaid=dep.lastPaidDate||getDateKey(startDate);
-    let cursor=addDays(new Date(lastPaid),1);
-    while(getDateKey(cursor)<=todayKey && daysRun<72){
-      const dateKey=getDateKey(cursor);
-      const profit=Math.floor(dep.amount*0.10);
-      totalProfit+=profit;
-      const txKey='txp_'+dateKey.replace(/-/g,'')+'_'+key.slice(-5);
-      updates['transactions/'+txKey]={type:'Profit',amount:profit,note:'Daily 10% profit — Day '+(daysRun+1)+'/72',date:dateKey+' 00:00'};
-      updates['deposits/'+key+'/daysRun']=daysRun+1;
-      updates['deposits/'+key+'/lastPaidDate']=dateKey;
-      daysRun++; anyPaid=true;
-      cursor=addDays(cursor,1);
+function doLogin(){
+  clearErrors('login-user-err','login-pw-err'); setErr('login-general-err',false);
+  const username=document.getElementById('login-username').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!username){setErr('login-user-err',true);return;}
+  if(!password){setErr('login-pw-err',true);return;}
+  
+  const userData = getUser(username);
+  if(!userData || userData.password !== password){ 
+    setErr('login-general-err',true,'❌ Invalid username or password'); 
+    return; 
+  }
+  if(userData.locked){ 
+    setErr('login-general-err',true,'🔒 Your account has been locked. Contact support.'); 
+    return; 
+  }
+  
+  currentUser=userData; 
+  currentUsername=username;
+  localStorage.setItem(STORAGE_CURRENT_USER, username);
+  loadDashboard(); 
+  showDashboard(); 
+  switchTab('home');
+  runDailyProfits();
+  startDailyProfitLoop();
+  startInactivityWatcher();
+}
+
+function doRegister(){
+  clearErrors('reg-user-err','reg-country-err','reg-phone-err','reg-pw-err','reg-confirm-err','reg-general-err');
+  const username=document.getElementById('reg-username').value.trim();
+  const country=document.getElementById('reg-country').value;
+  const phoneDigits=document.getElementById('reg-phone').value.trim();
+  const password=document.getElementById('reg-password').value;
+  const confirm=document.getElementById('reg-confirm').value;
+  const urlParams=new URLSearchParams(window.location.search);
+  const refCode=urlParams.get('ref')||'John';
+  let ok=true;
+  if(!username){setErr('reg-user-err',true,'Username is required');ok=false;}
+  if(!country){setErr('reg-country-err',true,'Please select your country');ok=false;}
+  if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){setErr('reg-phone-err',true,'Enter 9 digits starting with 7');ok=false;}
+  if(!password||password.length<6){setErr('reg-pw-err',true,'Password must be at least 6 characters');ok=false;}
+  if(!confirm||confirm!==password){setErr('reg-confirm-err',true,'Passwords do not match');ok=false;}
+  if(!ok)return;
+  
+  const existingUser = getUser(username);
+  if(existingUser){setErr('reg-user-err',true,'Username already taken');return;}
+  
+  const prefix=country==='KE'?'+254':'+256';
+  const fullPhone=prefix+phoneDigits;
+  const now=dateStr();
+  const newUser={
+    username, password, country,
+    phone: fullPhone,
+    balance:0, invested:0, withdrawn:0, profitEarned:4000,
+    activated:false, locked:false,
+    referredBy:refCode,
+    joinedDate:new Date().getFullYear().toString(),
+    transactions: { t0:{type:'Bonus',amount:4000,note:'Registration Bonus 🎁',date:now} },
+    referrals: {}, deposits: {}
+  };
+  saveUser(username, newUser);
+  
+  // Handle referral
+  if(refCode && refCode !== 'John'){
+    const ref1 = getUser(refCode);
+    if(ref1){
+      if(!ref1.referrals) ref1.referrals = {};
+      ref1.referrals[safeKey(username)] = {username, invested:0, level:1};
+      saveUser(refCode, ref1);
+      
+      if(ref1.referredBy && ref1.referredBy !== 'John'){
+        const ref2 = getUser(ref1.referredBy);
+        if(ref2){
+          if(!ref2.referrals) ref2.referrals = {};
+          ref2.referrals[safeKey(username)] = {username, invested:0, level:2};
+          saveUser(ref1.referredBy, ref2);
+          
+          if(ref2.referredBy && ref2.referredBy !== 'John'){
+            const ref3 = getUser(ref2.referredBy);
+            if(ref3){
+              if(!ref3.referrals) ref3.referrals = {};
+              ref3.referrals[safeKey(username)] = {username, invested:0, level:3};
+              saveUser(ref2.referredBy, ref3);
+            }
+          }
+        }
+      }
+    }
+  } else if(refCode === 'John'){
+    const john = getUser('John');
+    if(john){
+      if(!john.referrals) john.referrals = {};
+      john.referrals[safeKey(username)] = {username, invested:0, level:1};
+      saveUser('John', john);
+    } else {
+      const johnUser = {
+        username:'John', password:'John123', country:'UG',
+        phone:'+256700000000', balance:0, invested:0, withdrawn:0, profitEarned:0,
+        activated:false, locked:false, referredBy:'', joinedDate:'2024',
+        transactions:{}, referrals:{}, deposits:{}
+      };
+      johnUser.referrals[safeKey(username)] = {username, invested:0, level:1};
+      saveUser('John', johnUser);
     }
   }
-  if(anyPaid){
-    updates['balance']=(currentUser.balance||0)+totalProfit;
-    dbUpdate('users/'+safeKey(currentUsername), updates);
-    currentUser.balance=(currentUser.balance||0)+totalProfit;
-    updateBalanceUI();
-    renderHistory();
-  }
+  
+  ['reg-username','reg-phone','reg-password','reg-confirm'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('reg-country').value=''; updateRegPrefix(); checkStrength('');
+  setTimeout(()=>showAuth('login-page'),1200);
 }
 
 function doLogout(){
   if(inactivityTimer){ clearTimeout(inactivityTimer); inactivityTimer=null; }
-  for(const txKey in activePollingIntervals){
-    if(activePollingIntervals[txKey]){
-      clearInterval(activePollingIntervals[txKey]);
-    }
-  }
-  activePollingIntervals = {};
-  if(userListener&&currentUsername){ db.ref('users/'+safeKey(currentUsername)).off('value',userListener); userListener=null; }
-  localStorage.removeItem('pp_current_user');
+  if(profitInterval){ clearInterval(profitInterval); profitInterval=null; }
+  localStorage.removeItem(STORAGE_CURRENT_USER);
   currentUser=null; currentUsername=null;
   closeMenu();
   showToast('Signed out','#f87171');
@@ -1241,72 +1234,7 @@ function doLogout(){
   },800);
 }
 
-let popupTimer = null;
-function showPopup(msg, durationMs){
-  const el = document.getElementById('popup-banner');
-  if(!el) return;
-  el.innerHTML = msg;
-  el.classList.add('show');
-  if(popupTimer) clearTimeout(popupTimer);
-  popupTimer = setTimeout(()=>{ el.classList.remove('show'); }, durationMs||5000);
-}
-
-function genUUID(){
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{
-    const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8);
-    return v.toString(16);
-  });
-}
-
-async function callMarzCollect(phone, amount, reference, description){
-  const apiKey = settingsData.marzApiKey||'';
-  if(!apiKey) throw new Error('MarzPay API key not configured');
-  const fd = new FormData();
-  fd.append('phone_number', phone);
-  fd.append('amount', String(amount));
-  fd.append('country', 'UG');
-  fd.append('reference', reference);
-  fd.append('description', description);
-  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/collect-money', {
-    method:'POST',
-    headers:{ 'Authorization':'Basic '+apiKey },
-    body: fd
-  });
-  const data = await res.json();
-  if(!res.ok || data.status !== 'success') throw new Error(data.message||'MarzPay error');
-  return data.data.transaction.uuid;
-}
-
-async function pollMarzStatus(txUUID){
-  const apiKey = settingsData.marzApiKey||'';
-  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/collect-money/'+txUUID, {
-    headers:{ 'Authorization':'Basic '+apiKey }
-  });
-  const data = await res.json();
-  if(!res.ok) throw new Error('Poll error');
-  return (data.data?.transaction?.status||data.data?.status||'processing').toLowerCase();
-}
-
-async function callMarzSend(phone, amount, reference, description){
-  const apiKey = settingsData.marzApiKey||'';
-  if(!apiKey) throw new Error('MarzPay API key not configured');
-  const fd = new FormData();
-  fd.append('phone_number', phone);
-  fd.append('amount', String(amount));
-  fd.append('country', 'UG');
-  fd.append('reference', reference);
-  fd.append('description', description);
-  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/send-money', {
-    method:'POST',
-    headers:{ 'Authorization':'Basic '+apiKey },
-    body: fd
-  });
-  const data = await res.json();
-  if(!res.ok || data.status !== 'success') throw new Error(data.message||'MarzPay disbursement error');
-  return data.data?.transaction?.uuid||'sent';
-}
-
-async function doDeposit(){
+function doDeposit(){
   clearErrors('dep-phone-err','dep-amount-err');
   const phoneDigits = document.getElementById('dep-phone').value.trim();
   if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){ setErr('dep-phone-err',true,'Enter 9 digits starting with 7'); return; }
@@ -1315,229 +1243,126 @@ async function doDeposit(){
   const amount = parseInt(document.getElementById('dep-amount').value)||0;
   if(amount<minDep){ setErr('dep-amount-err',true,'Minimum deposit is '+fmt(minDep)); return; }
   if(amount>maxDep){ setErr('dep-amount-err',true,'Maximum deposit per transaction is '+fmt(maxDep)); return; }
-  if(!settingsData.marzApiKey){ showModal('⚠️','Payments Unavailable','Payment processing is not configured. Please contact support.'); return; }
 
   const btn = document.getElementById('dep-submit-btn');
   btn.disabled = true;
   btn.textContent = '⏳ Processing...';
 
-  const markedAmount = Math.round(amount * 1.037);
   const fullPhone = '+256' + phoneDigits;
-  const reference = genUUID();
   const now = dateStr();
-  const txKey = 'tx_dep_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-
-  const updates = {};
-  updates['transactions/'+txKey] = {type:'Deposit', amount:amount, depositPhone: fullPhone, note:'Awaiting your PIN confirmation', date:now, status:'pending', marzRef:reference, credited: false};
-  dbUpdate('users/'+safeKey(currentUsername), updates);
-  renderHistory();
-
-  showPopup('📲 Check your phone and confirm with your PIN', 5000);
-
-  try {
-    const marzUUID = await callMarzCollect(fullPhone, markedAmount, reference, 'ProfitPulse Deposit');
-    startDepositPolling(marzUUID, txKey, amount, fullPhone);
-  } catch(err){
-    dbUpdate('users/'+safeKey(currentUsername), {
-      ['transactions/'+txKey+'/status']: 'failed',
-      ['transactions/'+txKey+'/note']: 'Deposit failed ❌ — funds not credited'
-    });
-    renderHistory();
+  const txKey = 'tx_dep_' + Date.now();
+  
+  // Simulate deposit
+  setTimeout(() => {
+    const profit = Math.floor(amount * 0.10);
+    const newInvested = (currentUser.invested || 0) + amount;
+    const newBalance = (currentUser.balance || 0) + profit;
+    const depKey = 'dep_'+Date.now();
+    
+    const updates = { ...currentUser };
+    updates.invested = newInvested;
+    updates.balance = newBalance;
+    updates.activated = true;
+    if(!updates.transactions) updates.transactions = {};
+    updates.transactions[txKey] = {type:'Deposit', amount:amount, depositPhone:fullPhone, note:'Deposit confirmed ✅', date:now, status:'completed'};
+    const profitTxKey = 'txp_inst_'+Date.now();
+    updates.transactions[profitTxKey] = {type:'Profit', amount:profit, note:'10% instant profit on deposit', date:now};
+    if(!updates.deposits) updates.deposits = {};
+    updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:getDateKey(new Date()), bonusPaid: false};
+    
+    // Handle referral upgrade
+    if(amount >= 300000 && updates.referredBy && updates.referredBy !== 'John'){
+      updates.referredBy = 'John';
+    }
+    
+    saveUser(currentUsername, updates);
+    currentUser = updates;
+    
+    // Credit referral bonuses
+    creditReferralBonuses(currentUsername, amount);
+    
     btn.disabled = false;
     btn.textContent = '💳 SUBMIT DEPOSIT';
-    showModal('❌','Deposit Failed', err.message||'Could not initiate payment. Please try again.');
-  }
+    document.getElementById('dep-phone').value='';
+    document.getElementById('dep-amount').value='';
+    updateBalanceUI();
+    renderHistory();
+    showToast('✓ Deposit of '+fmt(amount)+' confirmed! +'+fmt(profit)+' profit added. 📈');
+  }, 1500);
 }
 
-function startDepositPolling(marzUUID, txKey, amount, depositPhone){
-  const btn = document.getElementById('dep-submit-btn');
-  const polling = document.getElementById('dep-polling');
+function creditReferralBonuses(depositorUsername, amount){
+  const depositor = getUser(depositorUsername);
+  if(!depositor) return;
+  if(!depositor.referredBy || depositor.referredBy === 'John') return;
   
-  if(polling) polling.classList.add('active');
-
-  let attempts = 0;
-  const maxAttempts = 120;
-
-  const intervalId = setInterval(async ()=>{
-    attempts++;
-    try {
-      const status = await pollMarzStatus(marzUUID);
-      if(status === 'successful' || status === 'success' || status === 'completed'){
-        clearInterval(intervalId);
-        delete activePollingIntervals[txKey];
-        
-        if(polling) polling.classList.remove('active');
-        
-        const txCheck = await db.ref('users/'+safeKey(currentUsername)+'/transactions/'+txKey).once('value');
-        const transaction = txCheck.val();
-        
-        if(transaction && (transaction.status === 'completed' || transaction.credited === true)){
-          btn.disabled = false;
-          btn.textContent = '💳 SUBMIT DEPOSIT';
-          return;
+  const pctL1 = (settingsData.refL1 || 10) / 100;
+  const pctL2 = (settingsData.refL2 || 4) / 100;
+  const pctL3 = (settingsData.refL3 || 2) / 100;
+  
+  let upline1 = depositor.referredBy;
+  if(upline1 && upline1 !== 'John'){
+    const upline1Data = getUser(upline1);
+    if(upline1Data){
+      const bonus1 = Math.floor(amount * pctL1);
+      if(bonus1 > 0){
+        upline1Data.balance = (upline1Data.balance || 0) + bonus1;
+        if(!upline1Data.transactions) upline1Data.transactions = {};
+        const txKey1 = 'tx_ref_' + Date.now() + '_l1';
+        upline1Data.transactions[txKey1] = {
+          type: 'Referral',
+          amount: bonus1,
+          note: 'Level 1 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
+          date: dateStr()
+        };
+        if(upline1Data.referrals && upline1Data.referrals[safeKey(depositorUsername)]){
+          upline1Data.referrals[safeKey(depositorUsername)].invested = 
+            (upline1Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
         }
-        
-        if(transaction && transaction.status === 'failed'){
-          btn.disabled = false;
-          btn.textContent = '💳 SUBMIT DEPOSIT';
-          return;
-        }
-        
-        btn.disabled = false;
-        btn.textContent = '💳 SUBMIT DEPOSIT';
-        document.getElementById('dep-phone').value='';
-        document.getElementById('dep-amount').value='';
-        
-        const freshUserSnapshot = await db.ref('users/'+safeKey(currentUsername)).once('value');
-        const freshUser = freshUserSnapshot.val();
-        if(!freshUser) return;
-        
-        const profit = Math.floor(amount * 0.10);
-        const newInvested = (freshUser.invested || 0) + amount;
-        const newBalance = (freshUser.balance || 0) + profit;
-        const depKey = 'dep_'+Date.now();
-        const profitTxKey = 'txp_inst_'+Date.now();
-        const credUpdates = {};
-        credUpdates['invested'] = newInvested;
-        credUpdates['balance'] = newBalance;
-        credUpdates['activated'] = true;
-        credUpdates['transactions/'+txKey+'/status'] = 'completed';
-        credUpdates['transactions/'+txKey+'/note'] = 'Deposit confirmed ✅';
-        credUpdates['transactions/'+txKey+'/credited'] = true;
-        credUpdates['transactions/'+profitTxKey] = {type:'Profit',amount:profit,note:'10% instant profit on deposit',date:dateStr()};
-        credUpdates['deposits/'+depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:getDateKey(new Date()), bonusPaid: false};
-        
-        if(amount >= 300000){
-          if(freshUser.referredBy && freshUser.referredBy !== 'John'){
-            credUpdates['referredBy'] = 'John';
-          }
-        }
-        
-        await dbUpdate('users/'+safeKey(currentUsername), credUpdates);
-        await creditReferralBonuses(currentUsername, amount);
-        await dbUpdate('users/'+safeKey(currentUsername)+'/deposits/'+depKey+'/bonusPaid', true);
-        
-        showToast('✓ Deposit of '+fmt(amount)+' confirmed! +'+fmt(profit)+' profit added. 📈');
-        setTimeout(()=>{ window.location.hash=''; window.location.reload(); }, 1500);
-        
-      } else if(status === 'failed' || status === 'cancelled' || status === 'auto-failed'){
-        clearInterval(intervalId);
-        delete activePollingIntervals[txKey];
-        if(polling) polling.classList.remove('active');
-        btn.disabled = false;
-        btn.textContent = '💳 SUBMIT DEPOSIT';
-        
-        const txCheck = await db.ref('users/'+safeKey(currentUsername)+'/transactions/'+txKey).once('value');
-        const transaction = txCheck.val();
-        if(transaction && transaction.status !== 'failed'){
-          dbUpdate('users/'+safeKey(currentUsername), {
-            ['transactions/'+txKey+'/status']:'failed',
-            ['transactions/'+txKey+'/note']:'Deposit failed ❌ — funds not credited'
-          });
-          renderHistory();
-        }
-        setTimeout(()=>{ window.location.hash=''; window.location.reload(); }, 1500);
-        
-      } else if(attempts >= maxAttempts){
-        clearInterval(intervalId);
-        delete activePollingIntervals[txKey];
-        if(polling) polling.classList.remove('active');
-        btn.disabled = false;
-        btn.textContent = '💳 SUBMIT DEPOSIT';
-        
-        const txCheck = await db.ref('users/'+safeKey(currentUsername)+'/transactions/'+txKey).once('value');
-        const transaction = txCheck.val();
-        if(transaction && transaction.status !== 'failed'){
-          dbUpdate('users/'+safeKey(currentUsername), {
-            ['transactions/'+txKey+'/status']:'failed',
-            ['transactions/'+txKey+'/note']:'Deposit timed out ❌ — funds not credited'
-          });
-          renderHistory();
-        }
-        setTimeout(()=>{ window.location.hash=''; window.location.reload(); }, 1500);
+        saveUser(upline1, upline1Data);
       }
-    } catch(e){ 
-      console.warn('Polling error:', e);
-    }
-  }, 5000);
-  
-  activePollingIntervals[txKey] = intervalId;
-}
-
-async function creditReferralBonuses(depositorUsername, amount){
-  try {
-    const depositor = await dbGet('users/'+safeKey(depositorUsername));
-    if(!depositor) return;
-    if(!depositor.referredBy || depositor.referredBy === 'John') return;
-    
-    const pctL1 = (settingsData.refL1 || 10) / 100;
-    const pctL2 = (settingsData.refL2 || 3) / 100;
-    const pctL3 = (settingsData.refL3 || 1) / 100;
-    
-    let upline1 = depositor.referredBy;
-    if(upline1 && upline1 !== 'John'){
-      const upline1Data = await dbGet('users/'+safeKey(upline1));
-      if(upline1Data){
-        const bonus1 = Math.floor(amount * pctL1);
-        if(bonus1 > 0){
-          const txKey1 = 'tx_ref_' + Date.now() + '_l1_' + Math.random().toString(36).slice(2,6);
-          const updates1 = {};
-          updates1['users/'+safeKey(upline1)+'/balance'] = (upline1Data.balance || 0) + bonus1;
-          updates1['users/'+safeKey(upline1)+'/transactions/'+txKey1] = {
-            type: 'Referral',
-            amount: bonus1,
-            note: 'Level 1 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-            date: dateStr()
-          };
-          if(upline1Data.referrals && upline1Data.referrals[safeKey(depositorUsername)]){
-            updates1['users/'+safeKey(upline1)+'/referrals/'+safeKey(depositorUsername)+'/invested'] = 
-              (upline1Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
-          }
-          await db.ref().update(updates1);
-        }
-        
-        let upline2 = upline1Data.referredBy;
-        if(upline2 && upline2 !== 'John'){
-          const upline2Data = await dbGet('users/'+safeKey(upline2));
-          if(upline2Data){
-            const bonus2 = Math.floor(amount * pctL2);
-            if(bonus2 > 0){
-              const txKey2 = 'tx_ref_' + Date.now() + '_l2_' + Math.random().toString(36).slice(2,6);
-              const updates2 = {};
-              updates2['users/'+safeKey(upline2)+'/balance'] = (upline2Data.balance || 0) + bonus2;
-              updates2['users/'+safeKey(upline2)+'/transactions/'+txKey2] = {
-                type: 'Referral',
-                amount: bonus2,
-                note: 'Level 2 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-                date: dateStr()
-              };
-              if(upline2Data.referrals && upline2Data.referrals[safeKey(depositorUsername)]){
-                updates2['users/'+safeKey(upline2)+'/referrals/'+safeKey(depositorUsername)+'/invested'] = 
-                  (upline2Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
-              }
-              await db.ref().update(updates2);
-              
-              let upline3 = upline2Data.referredBy;
-              if(upline3 && upline3 !== 'John'){
-                const upline3Data = await dbGet('users/'+safeKey(upline3));
-                if(upline3Data){
-                  const bonus3 = Math.floor(amount * pctL3);
-                  if(bonus3 > 0){
-                    const txKey3 = 'tx_ref_' + Date.now() + '_l3_' + Math.random().toString(36).slice(2,6);
-                    const updates3 = {};
-                    updates3['users/'+safeKey(upline3)+'/balance'] = (upline3Data.balance || 0) + bonus3;
-                    updates3['users/'+safeKey(upline3)+'/transactions/'+txKey3] = {
-                      type: 'Referral',
-                      amount: bonus3,
-                      note: 'Level 3 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-                      date: dateStr()
-                    };
-                    if(upline3Data.referrals && upline3Data.referrals[safeKey(depositorUsername)]){
-                      updates3['users/'+safeKey(upline3)+'/referrals/'+safeKey(depositorUsername)+'/invested'] = 
-                        (upline3Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
-                    }
-                    await db.ref().update(updates3);
+      
+      let upline2 = upline1Data.referredBy;
+      if(upline2 && upline2 !== 'John'){
+        const upline2Data = getUser(upline2);
+        if(upline2Data){
+          const bonus2 = Math.floor(amount * pctL2);
+          if(bonus2 > 0){
+            upline2Data.balance = (upline2Data.balance || 0) + bonus2;
+            if(!upline2Data.transactions) upline2Data.transactions = {};
+            const txKey2 = 'tx_ref_' + Date.now() + '_l2';
+            upline2Data.transactions[txKey2] = {
+              type: 'Referral',
+              amount: bonus2,
+              note: 'Level 2 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
+              date: dateStr()
+            };
+            if(upline2Data.referrals && upline2Data.referrals[safeKey(depositorUsername)]){
+              upline2Data.referrals[safeKey(depositorUsername)].invested = 
+                (upline2Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+            }
+            saveUser(upline2, upline2Data);
+            
+            let upline3 = upline2Data.referredBy;
+            if(upline3 && upline3 !== 'John'){
+              const upline3Data = getUser(upline3);
+              if(upline3Data){
+                const bonus3 = Math.floor(amount * pctL3);
+                if(bonus3 > 0){
+                  upline3Data.balance = (upline3Data.balance || 0) + bonus3;
+                  if(!upline3Data.transactions) upline3Data.transactions = {};
+                  const txKey3 = 'tx_ref_' + Date.now() + '_l3';
+                  upline3Data.transactions[txKey3] = {
+                    type: 'Referral',
+                    amount: bonus3,
+                    note: 'Level 3 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
+                    date: dateStr()
+                  };
+                  if(upline3Data.referrals && upline3Data.referrals[safeKey(depositorUsername)]){
+                    upline3Data.referrals[safeKey(depositorUsername)].invested = 
+                      (upline3Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
                   }
+                  saveUser(upline3, upline3Data);
                 }
               }
             }
@@ -1545,12 +1370,10 @@ async function creditReferralBonuses(depositorUsername, amount){
         }
       }
     }
-  } catch(e){ 
-    console.warn('Referral bonus error:', e); 
   }
 }
 
-async function doWithdraw(){
+function doWithdraw(){
   clearErrors('with-amount-err');
   if(settingsData.withdrawLocked){ showModal('🔒','Locked','Withdrawals are currently disabled.'); return; }
   if(!currentUser.activated){ showModal('🔒','Account Not Activated','Make a deposit first to activate your account.'); return; }
@@ -1559,70 +1382,30 @@ async function doWithdraw(){
   if(amount<minWith){ setErr('with-amount-err',true,'Minimum withdrawal is '+fmt(minWith)); return; }
   
   const balance = currentUser.balance || 0;
-  
   if(balance < amount){ setErr('with-amount-err',true,'Insufficient balance.'); return; }
-
-  if(!settingsData.marzApiKey){ showModal('⚠️','Payments Unavailable','Payment processing is not configured. Please contact support.'); return; }
 
   const chargeRate = (settingsData.withdrawCharge||10)/100;
   const sendAmount = Math.floor(amount*(1-chargeRate));
   const phone = currentUser.phone;
   const now = dateStr();
   const txKey = 'tx_wd_'+Date.now();
-  const reqKey = 'wreq_'+Date.now();
-  const reference = genUUID();
 
   const btn = document.getElementById('with-submit-btn');
   btn.disabled = true; btn.textContent = '⏳ Processing...';
 
-  // DEDUCT ONLY ONCE - when user requests withdrawal
-  const updates = {};
-  updates['balance'] = (currentUser.balance||0) - amount;
-  updates['transactions/'+txKey] = {type:'Withdrawal', amount:-amount, note:'Processing... Will be sent to '+phone, date:now, status:'pending', marzRef:reference};
-  dbUpdate('users/'+safeKey(currentUsername), updates);
+  // Deduct balance
+  const updates = { ...currentUser };
+  updates.balance = (currentUser.balance||0) - amount;
+  if(!updates.transactions) updates.transactions = {};
+  updates.transactions[txKey] = {type:'Withdrawal', amount:-amount, note:'Withdrawal processed to '+phone, date:now, status:'completed'};
+  saveUser(currentUsername, updates);
+  currentUser = updates;
   updateBalanceUI();
   renderHistory();
 
   btn.disabled = false; btn.textContent = '💸 CASHOUT';
   document.getElementById('with-amount').value='';
-  showPopup('💸 You will receive your funds shortly', 5000);
-
-  const isManual = settingsData.withdrawManual||false;
-
-  if(isManual){
-    dbSet('pendingWithdrawals/'+reqKey, {
-      username:currentUsername, phone, amount, sendAmount, txKey, reqKey, date:now, status:'pending', reference
-    });
-  } else {
-    try {
-      await callMarzSend(phone, sendAmount, reference, 'ProfitPulse Withdrawal');
-      // ON SUCCESS: Just mark as successful, balance already deducted
-      const wUpdates = {};
-      wUpdates['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/status'] = 'successful';
-      wUpdates['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/note'] = 'Withdrawal Successful ✅ — sent to '+phone;
-      db.ref().update(wUpdates);
-    } catch(err){
-      // ON FAILURE: REFUND the amount back to balance
-      db.ref('users/'+safeKey(currentUsername)+'/balance').once('value', snap => {
-        const curBalance = snap.val() || 0;
-        db.ref().update({
-          ['users/'+safeKey(currentUsername)+'/balance']: curBalance + amount,
-          ['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/status']: 'failed',
-          ['users/'+safeKey(currentUsername)+'/transactions/'+txKey+'/note']: 'Withdrawal failed'
-        });
-      });
-      const notifKey = 'notif_wd_fail_'+Date.now();
-      db.ref('adminNotifications/'+notifKey).set({
-        type: 'withdrawal_failed',
-        username: currentUsername,
-        amount: amount,
-        reason: err.message,
-        timestamp: new Date().toISOString(),
-        read: false,
-        message: '❌ Withdrawal failed for '+currentUsername+' ('+fmt(amount)+'). Reason: '+err.message+'. Funds refunded.'
-      });
-    }
-  }
+  showToast('💸 Withdrawal of '+fmt(amount)+' processed! Net received: '+fmt(sendAmount));
 }
 
 function doReinvest(){
@@ -1631,7 +1414,6 @@ function doReinvest(){
   if(amount<10000){setErr('reinvest-amount-err',true,'Minimum re-invest is UGX 10,000');return;}
   
   const balance = currentUser.balance || 0;
-  
   if(balance < amount){setErr('reinvest-amount-err',true,'Insufficient balance.');return;}
   
   const profit=Math.floor(amount*0.10);
@@ -1641,27 +1423,31 @@ function doReinvest(){
   const tx1Key='tx_'+Date.now()+'a';
   const tx2Key='tx_'+Date.now()+'b';
   const todayKey=getDateKey(new Date());
-  const updates = {};
-  updates['balance']=(currentUser.balance||0)-amount+profit;
-  updates['invested']=newInvested;
-  updates['activated']=true;
-  updates['deposits/'+depKey]={amount,startDate:new Date().toISOString(),daysRun:0,lastPaidDate:todayKey, bonusPaid: true};
-  updates['transactions/'+tx1Key]={type:'Re-Invest',amount:-amount,note:'Moved from Available Balance to Invested',date:now};
-  updates['transactions/'+tx2Key]={type:'Profit',amount:profit,note:'10% instant profit on re-invest (72 days)',date:now};
-  dbUpdate('users/'+safeKey(currentUsername), updates);
+  
+  const updates = { ...currentUser };
+  updates.balance = (currentUser.balance||0) - amount + profit;
+  updates.invested = newInvested;
+  updates.activated = true;
+  if(!updates.deposits) updates.deposits = {};
+  updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:todayKey, bonusPaid: true};
+  if(!updates.transactions) updates.transactions = {};
+  updates.transactions[tx1Key] = {type:'Re-Invest', amount:-amount, note:'Moved from Available Balance to Invested', date:now};
+  updates.transactions[tx2Key] = {type:'Profit', amount:profit, note:'10% instant profit on re-invest (72 days)', date:now};
+  
+  saveUser(currentUsername, updates);
+  currentUser = updates;
   document.getElementById('reinvest-amount').value='';
   updateBalanceUI();
   renderHistory();
   showToast('✓ Re-invested! +'+fmt(profit)+' profit added. 📈');
 }
 
-let inactivityTimer = null;
-const INACTIVITY_LIMIT = 60 * 60 * 1000;
 function resetInactivityTimer(){
   if(!currentUser) return;
   if(inactivityTimer) clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(()=>{ if(currentUser){ doLogout(); } }, INACTIVITY_LIMIT);
 }
+
 function startInactivityWatcher(){
   ['click','touchstart','scroll','keydown'].forEach(evt=>{
     document.addEventListener(evt, resetInactivityTimer, {passive:true});

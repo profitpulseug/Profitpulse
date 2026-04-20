@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProfitPulse Command Center</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
@@ -340,7 +336,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
 
     <div class="page" id="pg-transactions">
       <div class="page-title">Transactions</div>
-      <div class="page-sub">All deposits and withdrawals across all users - Deposits are automatically processed by MarzPay</div>
+      <div class="page-sub">All deposits and withdrawals across all users</div>
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
         <button class="btn btn-save" onclick="filterTx('all')">All</button>
         <button class="btn btn-edit" onclick="filterTx('deposit')">Deposits</button>
@@ -451,19 +447,6 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         </div>
       </div>
       <div class="settings-section">
-        <div class="settings-title">🔑 MarzPay Payment API</div>
-        <div class="settings-sub">Paste your MarzPay Base64 Authorization Header here.</div>
-        <div class="settings-row">
-          <span class="settings-label">Base64 Auth Header</span>
-          <div class="api-key-wrap">
-            <input type="password" class="settings-input mono" id="marz-api-key-input" placeholder="Paste Base64 Authorization Header...">
-            <button class="api-key-toggle" onclick="toggleApiKeyVis()" id="api-key-eye">👁️</button>
-          </div>
-          <button class="btn btn-save" onclick="saveMarzApiKey()">Save</button>
-        </div>
-        <div class="settings-row"><span class="settings-label">Status</span><div id="api-status-display"><span class="api-status-badge notset" id="api-status-badge">⚠️ Not Set</span></div></div>
-      </div>
-      <div class="settings-section">
         <div class="settings-title">💬 WhatsApp Links</div>
         <div class="settings-row"><span class="settings-label">WhatsApp Group Link</span><input type="url" class="settings-input" id="wa-group-input" placeholder="https://chat.whatsapp.com/..."><button class="btn btn-save" onclick="saveWaGroup()">Save</button></div>
         <div class="settings-row"><span class="settings-label">WhatsApp Support Link</span><input type="url" class="settings-input" id="wa-support-input" placeholder="https://wa.me/..."><button class="btn btn-save" onclick="saveWaSupport()">Save</button></div>
@@ -484,7 +467,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="settings-title">🔒 Withdrawal Control</div>
         <div class="settings-row"><span class="settings-label">Withdrawal Status</span><button class="btn btn-danger" onclick="lockWithdrawals(true)">🔒 Lock All Withdrawals</button><button class="btn btn-success" onclick="lockWithdrawals(false)">🔓 Unlock Withdrawals</button></div>
         <div id="lock-status" style="font-size:13px;font-weight:700;color:var(--accent3);margin-top:8px;"></div>
-        <div class="settings-row"><span class="settings-label">Manual Approval Mode</span><button class="btn btn-danger" onclick="setWithdrawManual(true)">🔴 Enable Manual Mode</button><button class="btn btn-success" onclick="setWithdrawManual(false)">🟢 Auto-Process (MarzPay)</button></div>
+        <div class="settings-row"><span class="settings-label">Manual Approval Mode</span><button class="btn btn-danger" onclick="setWithdrawManual(true)">🔴 Enable Manual Mode</button><button class="btn btn-success" onclick="setWithdrawManual(false)">🟢 Auto-Process</button></div>
         <div id="manual-status" style="font-size:13px;font-weight:700;color:var(--accent3);margin-top:8px;"></div>
       </div>
       <div class="danger-zone">
@@ -505,56 +488,115 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
 <div class="notif-drawer" id="notif-drawer"><div class="notif-drawer-header"><div class="notif-drawer-title">🔔 Notifications</div><button class="notif-close" onclick="closeNotifDrawer()">✕ Close</button></div><div class="notif-list" id="notif-list"><div class="notif-empty">No notifications yet</div></div><button class="notif-clear-btn" onclick="clearAllNotifications()">🗑️ Clear All</button></div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDljoKtREqmM0B-Y3uctCA8rsgK0s8dbJw",
-  authDomain: "profitpulse-dev.firebaseapp.com",
-  projectId: "profitpulse-dev",
-  storageBucket: "profitpulse-dev.firebasestorage.app",
-  messagingSenderId: "581122025349",
-  appId: "1:581122025349:web:c0239ad6830bbbd4e806ec"
-};
+// ============================================================
+// PROFIT PULSE COMMAND CENTER - LOCAL STORAGE VERSION
+// All data stored in browser's localStorage
+// ============================================================
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+// Storage keys (must match index.html)
+const STORAGE_USERS = 'profitpulse_users';
+const STORAGE_SETTINGS = 'profitpulse_settings';
+const STORAGE_PENDING_WITHDRAWALS = 'profitpulse_pending_withdrawals';
+const STORAGE_ADMINS = 'profitpulse_admins';
+const STORAGE_CURRENT_ADMIN = 'profitpulse_current_admin';
+const STORAGE_ADMIN_SESSION = 'profitpulse_admin_session';
+const STORAGE_DEBIT_HISTORY = 'profitpulse_debit_history';
+const STORAGE_ADMIN_NOTIFICATIONS = 'profitpulse_admin_notifications';
 
-const dbGet = async (collection, doc) => {
-  const snap = await db.collection(collection).doc(doc).get();
-  return snap.exists ? snap.data() : null;
-};
-const dbSet = (collection, doc, val) => db.collection(collection).doc(doc).set(val);
-const dbUpdate = (collection, doc, val) => db.collection(collection).doc(doc).update(val);
-const dbAdd = (collection, val) => db.collection(collection).add(val);
-const dbDelete = (collection, doc) => db.collection(collection).doc(doc).delete();
+function loadFromLocalStorage(key, defaultValue = {}) {
+  const data = localStorage.getItem(key);
+  if (data) {
+    try {
+      return JSON.parse(data);
+    } catch(e) {
+      return defaultValue;
+    }
+  }
+  return defaultValue;
+}
 
-let currentAdmin = null;
+function saveToLocalStorage(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+function getAllUsers() {
+  return loadFromLocalStorage(STORAGE_USERS, {});
+}
+
+function saveUser(username, userData) {
+  const users = getAllUsers();
+  users[username] = userData;
+  saveToLocalStorage(STORAGE_USERS, users);
+}
+
+function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
+function safeKey(u){ return (u||'').replace(/[^a-zA-Z0-9]/g,'_'); }
+function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
+function toast(msg,color){ const t=document.getElementById('toast'); t.textContent=msg; t.style.background=color||'var(--accent3)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+// Admin management
 let allUsers = {};
-let allSettings = { withdrawCharge:10, refL1:10, refL2:3, refL3:1, waGroup:'', waSupport:'', withdrawLocked:false, withdrawManual:false, minDeposit:10000, minWithdraw:5000, marzApiKey:'', waNumber:'700000000' };
+let allSettings = {};
+let currentAdmin = null;
 let searchFilter = '';
 let txFilter = 'all';
 let wdFilter = 'pending';
 let debitTargetUser = null;
 let debitHistory = [];
+let allWithdrawals = {};
+let allAdmins = {};
 
-function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
-function safeKey(u){ return (u||'').replace(/[.#$\[\]/]/g,'_'); }
-function toast(msg,color){ const t=document.getElementById('toast'); t.textContent=msg; t.style.background=color||'var(--accent3)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
+function loadAllData() {
+  allUsers = getAllUsers();
+  allSettings = loadFromLocalStorage(STORAGE_SETTINGS, {
+    withdrawCharge: 10, refL1: 10, refL2: 4, refL3: 2,
+    waGroup: '', waSupport: '', withdrawLocked: false,
+    withdrawManual: false, minDeposit: 10000, minWithdraw: 5000, waNumber: '700000000'
+  });
+  allWithdrawals = loadFromLocalStorage(STORAGE_PENDING_WITHDRAWALS, {});
+  debitHistory = loadFromLocalStorage(STORAGE_DEBIT_HISTORY, []);
+  allAdmins = loadFromLocalStorage(STORAGE_ADMINS, {});
+}
+
+function saveAllSettings() {
+  saveToLocalStorage(STORAGE_SETTINGS, allSettings);
+}
+
+function saveAllWithdrawals() {
+  saveToLocalStorage(STORAGE_PENDING_WITHDRAWALS, allWithdrawals);
+}
+
+function saveDebitHistory() {
+  saveToLocalStorage(STORAGE_DEBIT_HISTORY, debitHistory);
+}
+
+function saveAllAdmins() {
+  saveToLocalStorage(STORAGE_ADMINS, allAdmins);
+}
 
 function checkAdminSession(){
-  const session = localStorage.getItem('pp_admin_session');
-  const savedAdmin = localStorage.getItem('pp_current_admin');
+  const session = localStorage.getItem(STORAGE_ADMIN_SESSION);
+  const savedAdmin = localStorage.getItem(STORAGE_CURRENT_ADMIN);
   if(session === 'true' && savedAdmin){
     try{
       currentAdmin = JSON.parse(savedAdmin);
       document.getElementById('auth-wrap').style.display='none';
       document.getElementById('admin-wrap').classList.add('active');
-      startRealtimeListeners();
+      loadAllData();
+      renderDashboard();
+      renderUsersTable();
+      renderTube();
+      renderTransactions();
+      renderWithdrawalsTable();
+      updateWithdrawalsBadge();
+      renderWithdrawalsStats();
+      loadSettingsUI();
+      startNotifListener();
       toast('Welcome back, '+currentAdmin.username);
     } catch(e){ console.warn(e); }
   } else {
-    localStorage.removeItem('pp_admin_session');
-    localStorage.removeItem('pp_current_admin');
+    localStorage.removeItem(STORAGE_ADMIN_SESSION);
+    localStorage.removeItem(STORAGE_CURRENT_ADMIN);
     currentAdmin = null;
     document.getElementById('auth-wrap').style.display='flex';
     document.getElementById('admin-wrap').classList.remove('active');
@@ -562,7 +604,7 @@ function checkAdminSession(){
   }
 }
 
-async function adminLogin(){
+function adminLogin(){
   clearErrors('login-user-err','login-pw-err');
   document.getElementById('login-general-err').classList.remove('show');
   const username = document.getElementById('login-username').value.trim();
@@ -570,17 +612,12 @@ async function adminLogin(){
   if(!username){ setErr('login-user-err',true); return; }
   if(!password){ setErr('login-pw-err',true); return; }
   
-  const admins = await dbGet('admins', 'all');
-  if(!admins){
-    document.getElementById('login-general-err').textContent = '❌ No admin accounts found. Please register first.';
-    document.getElementById('login-general-err').classList.add('show');
-    return;
-  }
+  loadAllData();
   
   let foundAdmin = null;
-  for(const key in admins){
-    if(admins[key].username === username && admins[key].password === password){
-      foundAdmin = admins[key];
+  for(const key in allAdmins){
+    if(allAdmins[key].username === username && allAdmins[key].password === password){
+      foundAdmin = allAdmins[key];
       break;
     }
   }
@@ -592,15 +629,23 @@ async function adminLogin(){
   }
   
   currentAdmin = foundAdmin;
-  localStorage.setItem('pp_admin_session', 'true');
-  localStorage.setItem('pp_current_admin', JSON.stringify(foundAdmin));
+  localStorage.setItem(STORAGE_ADMIN_SESSION, 'true');
+  localStorage.setItem(STORAGE_CURRENT_ADMIN, JSON.stringify(foundAdmin));
   document.getElementById('auth-wrap').style.display='none';
   document.getElementById('admin-wrap').classList.add('active');
-  startRealtimeListeners();
+  renderDashboard();
+  renderUsersTable();
+  renderTube();
+  renderTransactions();
+  renderWithdrawalsTable();
+  updateWithdrawalsBadge();
+  renderWithdrawalsStats();
+  loadSettingsUI();
+  startNotifListener();
   toast('✅ Welcome, '+foundAdmin.username+' ('+foundAdmin.position+')');
 }
 
-async function adminRegister(){
+function adminRegister(){
   clearErrors('reg-phone-err','reg-position-err','reg-username-err','reg-pw-err','reg-confirm-err','reg-second-pw-err','reg-second-confirm-err','reg-general-err');
   
   const phoneDigits = document.getElementById('reg-phone').value.trim();
@@ -622,8 +667,8 @@ async function adminRegister(){
   if(!ok) return;
   
   const fullPhone = '+256' + phoneDigits;
-  const existingAdmins = await dbGet('admins', 'all');
-  const adminCount = existingAdmins ? Object.keys(existingAdmins).length : 0;
+  loadAllData();
+  const adminCount = Object.keys(allAdmins).length;
   
   if(adminCount >= 3){
     document.getElementById('reg-general-err').textContent = '❌ Maximum 3 admin accounts allowed. Cannot register more.';
@@ -631,19 +676,17 @@ async function adminRegister(){
     return;
   }
   
-  if(existingAdmins){
-    for(const key in existingAdmins){
-      if(existingAdmins[key].username === username){
-        document.getElementById('reg-general-err').textContent = '❌ Username already taken';
-        document.getElementById('reg-general-err').classList.add('show');
-        return;
-      }
+  for(const key in allAdmins){
+    if(allAdmins[key].username === username){
+      document.getElementById('reg-general-err').textContent = '❌ Username already taken';
+      document.getElementById('reg-general-err').classList.add('show');
+      return;
     }
   }
   
   const adminKey = 'admin_' + Date.now();
-  const newAdmin = { username, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr() };
-  await dbSet('admins/'+adminKey, newAdmin);
+  allAdmins[adminKey] = { username, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr() };
+  saveAllAdmins();
   toast('✅ Admin registered successfully! You can now login.');
   showLoginForm();
   document.getElementById('reg-phone').value='';
@@ -662,11 +705,10 @@ function toggleRegPw(){ const inp=document.getElementById('reg-password'); const
 function toggleRegConfirm(){ const inp=document.getElementById('reg-confirm'); const btn=document.getElementById('reg-confirm-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
 function toggleRegSecond(){ const inp=document.getElementById('reg-second-pw'); const btn=document.getElementById('reg-second-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
 function toggleRegSecondConfirm(){ const inp=document.getElementById('reg-second-confirm'); const btn=document.getElementById('reg-second-confirm-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
-function toggleApiKeyVis(){ const inp=document.getElementById('marz-api-key-input'); const btn=document.getElementById('api-key-eye'); if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; } else { inp.type='password'; btn.textContent='👁️'; } }
 
 function adminLogout(){
-  localStorage.removeItem('pp_admin_session');
-  localStorage.removeItem('pp_current_admin');
+  localStorage.removeItem(STORAGE_ADMIN_SESSION);
+  localStorage.removeItem(STORAGE_CURRENT_ADMIN);
   currentAdmin = null;
   document.getElementById('admin-wrap').classList.remove('active');
   document.getElementById('auth-wrap').style.display='flex';
@@ -674,13 +716,6 @@ function adminLogout(){
   document.getElementById('login-username').value='';
   document.getElementById('login-password').value='';
   toast('Signed out');
-}
-
-function startRealtimeListeners(){
-  db.ref('users').on('value', snap=>{ allUsers = snap.val()||{}; renderDashboard(); renderUsersTable(); renderTube(); });
-  db.ref('settings').on('value', snap=>{ if(snap.exists()) allSettings=snap.val(); loadSettingsUI(); renderDashboard(); });
-  startNotifListener();
-  startPendingWithdrawalsListener();
 }
 
 function showPage(id){
@@ -691,23 +726,50 @@ function showPage(id){
   if(map[id]!==undefined) document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
   if(id==='pg-transactions'){ renderTransactions(); }
   if(id==='pg-withdrawals') renderWithdrawalsTable();
+  if(id==='pg-debit') renderDebitHistory();
 }
 
 let sogTargetUser=null;
-function searchSOGUser(){ const q=document.getElementById('sog-username-search').value.trim().toLowerCase(); const found=document.getElementById('sog-user-found'); const notFound=document.getElementById('sog-not-found'); sogTargetUser=null; found.style.display='none'; notFound.style.display='none'; if(!q) return; const user=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); if(user){ sogTargetUser=user; const userDisplay='Username: <strong>'+user.username+'</strong><br>Phone: '+(user.phone||'—')+'<br>Current Balance: '+fmt(user.balance||0)+' | Invested: '+fmt(user.invested||0); document.getElementById('sog-user-display').innerHTML=userDisplay; found.style.display='block'; } else { notFound.style.display='block'; } }
-function clearSOGSearch(){ sogTargetUser=null; document.getElementById('sog-username-search').value=''; document.getElementById('sog-user-found').style.display='none'; document.getElementById('sog-not-found').style.display='none'; }
+function searchSOGUser(){ 
+  loadAllData();
+  const q=document.getElementById('sog-username-search').value.trim().toLowerCase(); 
+  const found=document.getElementById('sog-user-found'); 
+  const notFound=document.getElementById('sog-not-found'); 
+  sogTargetUser=null; 
+  found.style.display='none'; 
+  notFound.style.display='none'; 
+  if(!q) return; 
+  const user=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); 
+  if(user){ 
+    sogTargetUser=user; 
+    const userDisplay='Username: <strong>'+user.username+'</strong><br>Phone: '+(user.phone||'—')+'<br>Current Balance: '+fmt(user.balance||0)+' | Invested: '+fmt(user.invested||0); 
+    document.getElementById('sog-user-display').innerHTML=userDisplay; 
+    found.style.display='block'; 
+  } else { 
+    notFound.style.display='block'; 
+  } 
+}
+
+function clearSOGSearch(){ 
+  sogTargetUser=null; 
+  document.getElementById('sog-username-search').value=''; 
+  document.getElementById('sog-user-found').style.display='none'; 
+  document.getElementById('sog-not-found').style.display='none'; 
+}
 
 function obliterateUserData(){ 
   if(!sogTargetUser){ toast('No user selected','#f87171'); return; } 
   confirmAction('🗑️ OBLITERATE ALL FINANCIAL DATA?', 'Delete ALL financial data for ' + sogTargetUser.username + '? Account will become brand new. THIS CANNOT BE UNDONE.').then(confirmed=>{ 
     if(confirmed){ 
-      const updates = {}; 
-      updates['users/'+safeKey(sogTargetUser.username)+'/balance'] = 0;
-      updates['users/'+safeKey(sogTargetUser.username)+'/invested'] = 0;
-      updates['users/'+safeKey(sogTargetUser.username)+'/activated'] = false;
-      updates['users/'+safeKey(sogTargetUser.username)+'/transactions'] = {};
-      updates['users/'+safeKey(sogTargetUser.username)+'/deposits'] = {};
-      db.ref().update(updates); 
+      sogTargetUser.balance = 0;
+      sogTargetUser.invested = 0;
+      sogTargetUser.activated = false;
+      sogTargetUser.transactions = {};
+      sogTargetUser.deposits = {};
+      saveUser(sogTargetUser.username, sogTargetUser);
+      loadAllData();
+      renderUsersTable();
+      renderDashboard();
       toast('🗑️ All financial data obliterated for ' + sogTargetUser.username, '#f87171'); 
       clearSOGSearch(); 
     } 
@@ -717,6 +779,7 @@ function obliterateUserData(){
 function confirmAction(title, text){ return Swal.fire({title, text, icon:'warning', showCancelButton:true, confirmButtonColor:'#db2777', confirmButtonText:'Yes, proceed!'}).then(result=>result.isConfirmed); }
 
 function renderDashboard(){
+  loadAllData();
   const users=Object.values(allUsers);
   let invested=0,balance=0,locked=0,pendingDep=0;
   users.forEach(u=>{ 
@@ -732,62 +795,159 @@ function renderDashboard(){
   document.getElementById('d-min-deposit').textContent=fmt(allSettings.minDeposit||10000);
   document.getElementById('d-pending-dep').textContent=pendingDep;
   const s=allSettings;
-  document.getElementById('pct-summary').innerHTML='<div class="pct-pill">Min Deposit <span>'+fmt(s.minDeposit||10000)+'</span></div><div class="pct-pill">Withdrawal Charge <span>'+(s.withdrawCharge||10)+'%</span></div><div class="pct-pill">Ref L1 <span>'+(s.refL1||10)+'%</span></div><div class="pct-pill">Ref L2 <span>'+(s.refL2||3)+'%</span></div><div class="pct-pill">Ref L3 <span>'+(s.refL3||1)+'%</span></div><div class="pct-pill">MarzPay API <span style="color:'+(s.marzApiKey?'var(--accent3)':'var(--warn)')+';">'+(s.marzApiKey?'✅ Set':'⚠️ Not Set')+'</span></div><div class="pct-pill">Withdrawals <span style="color:'+(s.withdrawLocked?'var(--warn)':'var(--accent3)')+';">'+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN')+'</span></div>';
+  document.getElementById('pct-summary').innerHTML='<div class="pct-pill">Min Deposit <span>'+fmt(s.minDeposit||10000)+'</span></div><div class="pct-pill">Withdrawal Charge <span>'+(s.withdrawCharge||10)+'%</span></div><div class="pct-pill">Ref L1 <span>'+(s.refL1||10)+'%</span></div><div class="pct-pill">Ref L2 <span>'+(s.refL2||4)+'%</span></div><div class="pct-pill">Ref L3 <span>'+(s.refL3||2)+'%</span></div><div class="pct-pill">Withdrawals <span style="color:'+(s.withdrawLocked?'var(--warn)':'var(--accent3)')+';">'+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN')+'</span></div>';
 }
 
 function filterUsers(val){ searchFilter=val; renderUsersTable(); }
 function renderUsersTable(){
+  loadAllData();
   const users=Object.values(allUsers);
   const filtered=searchFilter?users.filter(u=>u.username&&u.username.toLowerCase().includes(searchFilter.toLowerCase())):users;
   const tbody=document.getElementById('users-table-body');
   if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="9">No users found<\/tr>'; return; }
-  tbody.innerHTML=filtered.map(u=>{ const sk=safeKey(u.username||''); const availColor=(u.balance||0)>0?'var(--accent3)':'var(--warn)'; return '<tr><td><strong>'+ (u.username||'—') +'</strong></td><td class="mono">'+ (u.phone||'—') +'</strong></td><td><div class="pw-cell" id="pwcell_'+sk+'"><span class="pw-val" onclick="editPw(\''+sk+'\')">'+ (u.password||'—') +'</span></div></td><td class="mono" style="color:var(--gold)">'+fmt(u.invested)+'</td><td class="mono" style="color:'+availColor+';font-weight:700">'+fmt(u.balance)+'</td><td class="mono">'+ (u.referrals?Object.keys(u.referrals).length:0) +'</td><td><span class="badge '+(u.locked?'badge-locked':'badge-active')+'">'+(u.locked?'Locked':'Active')+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-edit" onclick="openEditModal(\''+u.username+'\')">✏️ Edit</button><button class="btn btn-edit" onclick="openEditPhoneModal(\''+u.username+'\')">📱 Phone</button><button class="btn '+(u.locked?'btn-approve':'btn-reject')+'" onclick="toggleLock(\''+u.username+'\','+(!u.locked)+')">'+(u.locked?'🔓 Unlock':'🔒 Lock')+'</button><button class="btn btn-delete" onclick="deleteUser(\''+u.username+'\')">🗑️</button></td></tr>'; }).join('');
+  tbody.innerHTML=filtered.map(u=>{ const sk=safeKey(u.username||''); const availColor=(u.balance||0)>0?'var(--accent3)':'var(--warn)'; return '<tr><td><strong>'+ (u.username||'—') +'</strong></td><td class="mono">'+ (u.phone||'—') +'</strong></td><td><div class="pw-cell" id="pwcell_'+sk+'"><span class="pw-val" onclick="editPw(\''+sk+'\',\''+u.username+'\')">'+ (u.password||'—') +'</span></div></td><td class="mono" style="color:var(--gold)">'+fmt(u.invested)+'</td><td class="mono" style="color:'+availColor+';font-weight:700">'+fmt(u.balance)+'</td><td class="mono">'+ (u.referrals?Object.keys(u.referrals).length:0) +'</td></td><span class="badge '+(u.locked?'badge-locked':'badge-active')+'">'+(u.locked?'Locked':'Active')+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-edit" onclick="openEditModal(\''+u.username+'\')">✏️ Edit</button><button class="btn btn-edit" onclick="openEditPhoneModal(\''+u.username+'\')">📱 Phone</button><button class="btn '+(u.locked?'btn-approve':'btn-reject')+'" onclick="toggleLock(\''+u.username+'\','+(!u.locked)+')">'+(u.locked?'🔓 Unlock':'🔒 Lock')+'</button><button class="btn btn-delete" onclick="deleteUser(\''+u.username+'\')">🗑️</button></td></tr>'; }).join('');
 }
 
-function editPw(sk){ const cell=document.getElementById('pwcell_'+sk); if(!cell) return; const cur=cell.querySelector('.pw-val'); const currentPw=cur?cur.textContent:''; cell.innerHTML='<input class="pw-edit-input" id="pwinput_'+sk+'" value="'+currentPw+'" type="text"><button class="pw-save-btn" onclick="savePw(\''+sk+'\')">✓</button>'; const inp=document.getElementById('pwinput_'+sk); if(inp){inp.focus();inp.onkeydown=e=>{if(e.key==='Enter')savePw(sk);if(e.key==='Escape')renderUsersTable();};} }
-function savePw(sk){ const inp=document.getElementById('pwinput_'+sk); if(!inp) return; const newPw=inp.value.trim(); if(!newPw){toast('Password cannot be empty','#f87171');return;} const u=Object.values(allUsers).find(u=>safeKey(u.username||'')==sk); if(!u) return; db.ref('users/'+sk+'/password').set(newPw); toast('✅ Password updated for '+u.username); }
+function editPw(sk, username){ 
+  const cell=document.getElementById('pwcell_'+sk); 
+  if(!cell) return; 
+  const cur=cell.querySelector('.pw-val'); 
+  const currentPw=cur?cur.textContent:''; 
+  cell.innerHTML='<input class="pw-edit-input" id="pwinput_'+sk+'" value="'+currentPw+'" type="text"><button class="pw-save-btn" onclick="savePw(\''+sk+'\',\''+username+'\')">✓</button>'; 
+  const inp=document.getElementById('pwinput_'+sk); 
+  if(inp){inp.focus();inp.onkeydown=e=>{if(e.key==='Enter')savePw(sk,username);if(e.key==='Escape')renderUsersTable();};} 
+}
 
-function openEditModal(username){ const u=allUsers[safeKey(username)]; if(!u) return; document.getElementById('edit-username').value=username; document.getElementById('edit-password').value=u.password||''; document.getElementById('edit-phone-modal').value=u.phone||''; document.getElementById('edit-balance').value=u.balance||0; document.getElementById('edit-invested').value=u.invested||0; document.getElementById('edit-modal').classList.add('open'); }
+function savePw(sk, username){ 
+  const inp=document.getElementById('pwinput_'+sk); 
+  if(!inp) return; 
+  const newPw=inp.value.trim(); 
+  if(!newPw){toast('Password cannot be empty','#f87171');return;} 
+  const user = getAllUsers()[username];
+  if(user){
+    user.password = newPw;
+    saveUser(username, user);
+    toast('✅ Password updated for '+username);
+    renderUsersTable();
+  }
+}
+
+function openEditModal(username){ 
+  loadAllData();
+  const u=allUsers[username]; 
+  if(!u) return; 
+  document.getElementById('edit-username').value=username; 
+  document.getElementById('edit-password').value=u.password||''; 
+  document.getElementById('edit-phone-modal').value=u.phone||''; 
+  document.getElementById('edit-balance').value=u.balance||0; 
+  document.getElementById('edit-invested').value=u.invested||0; 
+  document.getElementById('edit-modal').classList.add('open'); 
+}
+
 function closeEditModal(){ document.getElementById('edit-modal').classList.remove('open'); }
-async function saveEditUser(){
+
+function saveEditUser(){
   const username=document.getElementById('edit-username').value;
   const newPassword=document.getElementById('edit-password').value;
   const newPhone=document.getElementById('edit-phone-modal').value;
-  const oldInvested = allUsers[safeKey(username)]?.invested || 0;
+  const oldInvested = allUsers[username]?.invested || 0;
   const newInvested=parseInt(document.getElementById('edit-invested').value)||0;
   const newBalance=parseInt(document.getElementById('edit-balance').value)||0;
-  const updates={};
-  updates['users/'+safeKey(username)+'/password'] = newPassword;
-  updates['users/'+safeKey(username)+'/phone'] = newPhone;
-  updates['users/'+safeKey(username)+'/balance'] = newBalance;
-  updates['users/'+safeKey(username)+'/invested'] = newInvested;
-  updates['users/'+safeKey(username)+'/activated'] = newInvested > 0;
+  
+  const user = allUsers[username];
+  if(!user) return;
+  
+  user.password = newPassword;
+  user.phone = newPhone;
+  user.balance = newBalance;
+  user.invested = newInvested;
+  user.activated = newInvested > 0;
+  
   if(newInvested > oldInvested){
     const addedAmount = newInvested - oldInvested;
     const instantProfit = Math.floor(addedAmount * 0.10);
-    const creditedBalance = newBalance + instantProfit;
+    user.balance = newBalance + instantProfit;
     const depKey = 'dep_' + Date.now();
     const tx1Key = 'tx_' + Date.now() + 'a';
     const tx2Key = 'tx_' + (Date.now()+1) + 'b';
-    updates['users/'+safeKey(username)+'/balance'] = creditedBalance;
-    updates['users/'+safeKey(username)+'/deposits/'+depKey] = { amount: addedAmount, startDate: new Date().toISOString(), daysRun: 0, lastPaidDate: dateStr() };
-    updates['users/'+safeKey(username)+'/transactions/'+tx1Key] = { type:'Deposit', amount:addedAmount, note:'Admin credited — Investment set to '+fmt(newInvested), date: dateStr(), status:'completed' };
-    updates['users/'+safeKey(username)+'/transactions/'+tx2Key] = { type:'Profit', amount:instantProfit, note:'10% instant profit on credited amount', date: dateStr(), status:'completed' };
+    if(!user.deposits) user.deposits = {};
+    user.deposits[depKey] = { amount: addedAmount, startDate: new Date().toISOString(), daysRun: 0, lastPaidDate: dateStr() };
+    if(!user.transactions) user.transactions = {};
+    user.transactions[tx1Key] = { type:'Deposit', amount:addedAmount, note:'Admin credited — Investment set to '+fmt(newInvested), date: dateStr(), status:'completed' };
+    user.transactions[tx2Key] = { type:'Profit', amount:instantProfit, note:'10% instant profit on credited amount', date: dateStr(), status:'completed' };
   }
-  await db.ref().update(updates);
+  
+  saveUser(username, user);
+  loadAllData();
   closeEditModal();
+  renderUsersTable();
+  renderDashboard();
   toast('✅ User '+username+' updated');
 }
-function toggleLock(username, lock){ db.ref('users/'+safeKey(username)+'/locked').set(lock); toast(lock?'🔒 User locked':'🔓 User unlocked', lock?'#f87171':undefined); }
-function deleteUser(username){ confirmAction('Delete User?', 'Delete user "'+username+'"? This cannot be undone.').then(confirmed=>{ if(confirmed){ db.ref('users/'+safeKey(username)).remove(); toast('🗑️ User deleted','#f87171'); } }); }
-function openEditPhoneModal(username){ const u=allUsers[safeKey(username)]; if(!u) return; document.getElementById('edit-phone-username').value=username; document.getElementById('edit-phone-user-display').value=username; document.getElementById('edit-phone-value').value=u.phone||''; document.getElementById('edit-phone-modal').classList.add('open'); }
-function closeEditPhoneModal(){ document.getElementById('edit-phone-modal').classList.remove('open'); }
-function saveEditPhone(){ const username=document.getElementById('edit-phone-username').value; const phone=document.getElementById('edit-phone-value').value.trim(); if(!phone){ toast('Please enter a valid phone number','#f87171'); return; } db.ref('users/'+safeKey(username)+'/phone').set(phone); closeEditPhoneModal(); toast('✅ Phone number updated for '+username); }
 
-function renderTube(){ const investors=Object.values(allUsers).filter(u=>(u.invested||0)>0); const grid=document.getElementById('tube-grid'); if(!investors.length){ grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">No investors yet.</div>'; return; } grid.innerHTML=investors.map(u=>'<div class="tube-card"><div class="tube-avatar">📈</div><div class="tube-name">'+u.username+'</div><div class="tube-amt">'+fmt(u.invested)+'</div></div>').join(''); }
+function toggleLock(username, lock){ 
+  const user = allUsers[username];
+  if(user){
+    user.locked = lock;
+    saveUser(username, user);
+    loadAllData();
+    renderUsersTable();
+    toast(lock?'🔒 User locked':'🔓 User unlocked', lock?'#f87171':undefined);
+  }
+}
+
+function deleteUser(username){ 
+  confirmAction('Delete User?', 'Delete user "'+username+'"? This cannot be undone.').then(confirmed=>{ 
+    if(confirmed){ 
+      const users = getAllUsers();
+      delete users[username];
+      saveToLocalStorage(STORAGE_USERS, users);
+      loadAllData();
+      renderUsersTable();
+      renderDashboard();
+      toast('🗑️ User deleted','#f87171'); 
+    } 
+  }); 
+}
+
+function openEditPhoneModal(username){ 
+  const u=allUsers[username]; 
+  if(!u) return; 
+  document.getElementById('edit-phone-username').value=username; 
+  document.getElementById('edit-phone-user-display').value=username; 
+  document.getElementById('edit-phone-value').value=u.phone||''; 
+  document.getElementById('edit-phone-modal').classList.add('open'); 
+}
+
+function closeEditPhoneModal(){ document.getElementById('edit-phone-modal').classList.remove('open'); }
+
+function saveEditPhone(){ 
+  const username=document.getElementById('edit-phone-username').value; 
+  const phone=document.getElementById('edit-phone-value').value.trim(); 
+  if(!phone){ toast('Please enter a valid phone number','#f87171'); return; } 
+  const user = allUsers[username];
+  if(user){
+    user.phone = phone;
+    saveUser(username, user);
+    loadAllData();
+    closeEditPhoneModal();
+    renderUsersTable();
+    toast('✅ Phone number updated for '+username);
+  }
+}
+
+function renderTube(){ 
+  loadAllData();
+  const investors=Object.values(allUsers).filter(u=>(u.invested||0)>0); 
+  const grid=document.getElementById('tube-grid'); 
+  if(!investors.length){ grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">No investors yet.</div>'; return; } 
+  grid.innerHTML=investors.map(u=>'<div class="tube-card"><div class="tube-avatar">📈</div><div class="tube-name">'+u.username+'</div><div class="tube-amt">'+fmt(u.invested)+'</div></div>').join(''); 
+}
 
 function filterTx(type){ txFilter=type; renderTransactions(); }
+
 function renderTransactions(){ 
+  loadAllData();
   const tbody=document.getElementById('tx-table-body'); 
   const countEl=document.getElementById('tx-count'); 
   if(!tbody) return; 
@@ -820,106 +980,364 @@ function renderTransactions(){
   }).join(''); 
 }
 
-function startPendingWithdrawalsListener(){ db.ref('pendingWithdrawals').on('value', snap=>{ allWithdrawals = snap.val()||{}; updateWithdrawalsBadge(); renderWithdrawalsStats(); renderWithdrawalsTable(); }); }
-let allWithdrawals = {};
-function updateWithdrawalsBadge(){ const count=Object.values(allWithdrawals).filter(v=>v.status==='pending').length; const badge=document.getElementById('withdrawals-nav-badge'); if(!badge) return; if(count>0){ badge.textContent=count; badge.style.display='inline-flex'; } else { badge.style.display='none'; } }
-function renderWithdrawalsStats(){ const vals=Object.values(allWithdrawals); const pending=vals.filter(v=>v.status==='pending'); const approved=vals.filter(v=>v.status==='approved'); const pendingAmt=pending.reduce((s,v)=>s+(v.amount||0),0); const e1=document.getElementById('wd-stat-pending'); const e2=document.getElementById('wd-stat-approved'); const e3=document.getElementById('wd-stat-amount'); if(e1)e1.textContent=pending.length; if(e2)e2.textContent=approved.length; if(e3)e3.textContent=fmt(pendingAmt); }
-function filterWithdrawals(f){ wdFilter=f; renderWithdrawalsTable(); }
-function renderWithdrawalsTable(){ const tbody=document.getElementById('wd-table-body'); const countEl=document.getElementById('wd-count'); if(!tbody) return; let entries=Object.entries(allWithdrawals); if(wdFilter!=='all') entries=entries.filter(([k,v])=>v.status===wdFilter); entries.sort((a,b)=>b[0].localeCompare(a[0])); if(countEl) countEl.textContent=entries.length+' requests'; if(!entries.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="7">No withdrawal requests yet<\/tr>'; return; } tbody.innerHTML=entries.map(([k,v])=>{ const sc=v.status==='approved'?'var(--accent3)':v.status==='rejected'?'var(--warn)':'var(--gold)'; const si=v.status==='approved'?'✅ Approved':v.status==='rejected'?'❌ Rejected':'⏳ Pending'; const fee=Math.round((v.amount||0)*0.10); const sendAmt=v.sendAmount||(v.amount-fee); const actions=v.status==='pending'?'<button class="btn btn-approve" onclick="approveWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+','+sendAmt+',\''+(v.txKey||k)+'\')">✅ Approve</button><button class="btn btn-reject" onclick="rejectWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+',\''+(v.txKey||k)+'\')">❌ Reject</button>':'—'; return '<tr><td class="mono" style="font-size:11px;">'+(v.date||'—')+'</td><td><strong>'+(v.username||'—')+'</strong></td><td class="mono">'+(v.phone||(allUsers[safeKey(v.username||'')]?.phone||'—'))+'</td><td class="mono" style="color:var(--warn);font-weight:800;">'+fmt(v.amount)+'</td><td class="mono" style="color:var(--accent3);">'+fmt(sendAmt)+'</td><td><span style="font-size:11px;font-weight:700;color:'+sc+';">'+si+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</td></tr>'; }).join(''); }
-function deleteAllUsers(){ if(!confirm('⚠️ DELETE ALL USERS?')) return; if(!confirm('Are you absolutely sure?')) return; db.ref('users').remove(); toast('🗑️ All users deleted','#f87171'); }
-function loadSettingsUI(){ const s=allSettings; document.getElementById('wa-group-input').value=s.waGroup||''; document.getElementById('wa-support-input').value=s.waSupport||''; document.getElementById('wa-number-input').value=s.waNumber||'700000000'; document.getElementById('with-charge-input').value=s.withdrawCharge||10; document.getElementById('ref-l1-input').value=s.refL1||10; document.getElementById('ref-l2-input').value=s.refL2||3; document.getElementById('ref-l3-input').value=s.refL3||1; document.getElementById('min-deposit-input').value=s.minDeposit||10000; document.getElementById('min-withdraw-input').value=s.minWithdraw||5000; const apiKeyInp=document.getElementById('marz-api-key-input'); if(s.marzApiKey && !apiKeyInp.value) apiKeyInp.value=s.marzApiKey; const badge=document.getElementById('api-status-badge'); if(s.marzApiKey && s.marzApiKey.length>5){ badge.className='api-status-badge set'; badge.textContent='✅ API Key Set'; } else { badge.className='api-status-badge notset'; badge.textContent='⚠️ Not Set — Payments Disabled'; } const ls=document.getElementById('lock-status'); if(ls){ ls.textContent='Status: Withdrawals are '+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN'); ls.style.color=s.withdrawLocked?'var(--warn)':'var(--accent3)'; } const ms=document.getElementById('manual-status'); if(ms){ ms.textContent='Mode: '+(s.withdrawManual?'🔴 Manual Approval — Admin must approve each withdrawal':'🟢 Auto-Process — MarzPay handles payouts automatically'); ms.style.color=s.withdrawManual?'var(--warn)':'var(--accent3)'; } }
-function saveWaNumber(){ const val=document.getElementById('wa-number-input').value.trim().replace(/\D/g,''); if(val && val.length>=9){ db.ref('settings/waNumber').set(val); toast('✅ WhatsApp number saved'); } else { toast('Enter a valid phone number (9 digits)','#f87171'); } }
-function saveMarzApiKey(){ const val=document.getElementById('marz-api-key-input').value.trim(); if(!val){ toast('Please enter a valid API key','#f87171'); return; } db.ref('settings/marzApiKey').set(val); toast('✅ MarzPay API key saved — Payments enabled!'); }
-function saveMinDeposit(){ const v=parseInt(document.getElementById('min-deposit-input').value)||10000; if(v<500){toast('Min deposit must be at least UGX 500','#f87171');return;} db.ref('settings/minDeposit').set(v); toast('✅ Minimum deposit set to '+fmt(v)); }
-function saveMinWithdraw(){ const v=parseInt(document.getElementById('min-withdraw-input').value)||5000; if(v<500){toast('Min withdrawal must be at least UGX 500','#f87171');return;} db.ref('settings/minWithdraw').set(v); toast('✅ Minimum withdrawal set to '+fmt(v)); }
-function saveWaGroup(){ db.ref('settings/waGroup').set(document.getElementById('wa-group-input').value.trim()); toast('✅ WhatsApp Group link saved'); }
-function saveWaSupport(){ db.ref('settings/waSupport').set(document.getElementById('wa-support-input').value.trim()); toast('✅ WhatsApp Support link saved'); }
-function saveWithCharge(){ const v=parseFloat(document.getElementById('with-charge-input').value)||10; db.ref('settings/withdrawCharge').set(v); toast('✅ Withdrawal charge updated to '+v+'%'); }
-function saveRefPct(){ db.ref('settings').update({refL1:parseFloat(document.getElementById('ref-l1-input').value)||10, refL2:parseFloat(document.getElementById('ref-l2-input').value)||3, refL3:parseFloat(document.getElementById('ref-l3-input').value)||1}); toast('✅ Referral percentages updated'); }
-function setWithdrawManual(manual){ db.ref('settings/withdrawManual').set(manual); toast(manual?'🔴 Manual approval mode enabled':'🟢 Auto-process mode enabled', manual?'#f87171':undefined); }
-function lockWithdrawals(lock){ db.ref('settings/withdrawLocked').set(lock); toast(lock?'🔒 Withdrawals LOCKED':'🔓 Withdrawals UNLOCKED',lock?'#f87171':undefined); }
-
-async function callMarzSendAdmin(phone, amount, reference, description){
-  const apiKey = allSettings.marzApiKey||'';
-  if(!apiKey) throw new Error('MarzPay API key not set');
-  const fd = new FormData();
-  fd.append('phone_number', phone);
-  fd.append('amount', String(amount));
-  fd.append('country', 'UG');
-  fd.append('reference', reference);
-  fd.append('description', description);
-  const res = await fetch('https://corsproxy.io/?url=https://wallet.wearemarz.com/api/v1/send-money', {
-    method:'POST',
-    headers:{ 'Authorization':'Basic '+apiKey },
-    body: fd
-  });
-  const data = await res.json();
-  if(!res.ok || data.status !== 'success') throw new Error(data.message||'MarzPay error');
-  return true;
+function updateWithdrawalsBadge(){ 
+  const count=Object.values(allWithdrawals).filter(v=>v.status==='pending').length; 
+  const badge=document.getElementById('withdrawals-nav-badge'); 
+  if(!badge) return; 
+  if(count>0){ badge.textContent=count; badge.style.display='inline-flex'; } 
+  else { badge.style.display='none'; } 
 }
 
-async function approveWithdrawal(reqKey, username, amount, sendAmount, txKey){
-  confirmAction('Approve Withdrawal?', 'Approve withdrawal for '+username+'? MarzPay will send '+fmt(sendAmount)+' to '+( allUsers[safeKey(username)]?.phone||username )+' automatically.').then(async confirmed=>{
-    if(!confirmed) return;
-    const phone = allUsers[safeKey(username)]?.phone||'';
-    const reference = allWithdrawals[reqKey]?.reference || ('ref_'+Date.now());
-    try {
-      await callMarzSendAdmin(phone, sendAmount, reference, 'ProfitPulse Withdrawal — '+username);
-      // ON SUCCESS: Just mark as completed, balance already deducted
-      db.ref().update({
-        ['users/'+safeKey(username)+'/transactions/'+txKey+'/status']: 'completed',
-        ['users/'+safeKey(username)+'/transactions/'+txKey+'/note']: 'Withdrawal Successful ✅ — sent to '+phone,
-        ['pendingWithdrawals/'+reqKey+'/status']: 'approved'
-      });
-      toast('✅ Withdrawal successful — MarzPay sent '+fmt(sendAmount)+' to '+username);
-    } catch(err){
-      // ON FAILURE: REFUND the amount back to balance
-      const curBal = allUsers[safeKey(username)]?.balance||0;
-      db.ref().update({
-        ['users/'+safeKey(username)+'/balance']: curBal+amount,
-        ['users/'+safeKey(username)+'/transactions/'+txKey+'/status']: 'failed',
-        ['users/'+safeKey(username)+'/transactions/'+txKey+'/note']: 'Withdrawal failed ❌ — MarzPay error: '+err.message,
-        ['pendingWithdrawals/'+reqKey+'/status']: 'failed'
-      });
-      const notifKey = 'notif_wd_fail_'+Date.now();
-      db.ref('adminNotifications/'+notifKey).set({ type: 'withdrawal_failed', username: username, amount: amount, reason: 'MarzPay error: '+err.message, timestamp: new Date().toISOString(), read: false, message: '❌ Withdrawal failed for '+username+' ('+fmt(amount)+'). Reason: MarzPay error: '+err.message+'. Funds refunded.' });
-      toast('❌ MarzPay failed: '+err.message+' — funds refunded to '+username,'#f87171');
+function renderWithdrawalsStats(){ 
+  const vals=Object.values(allWithdrawals); 
+  const pending=vals.filter(v=>v.status==='pending'); 
+  const approved=vals.filter(v=>v.status==='approved'); 
+  const pendingAmt=pending.reduce((s,v)=>s+(v.amount||0),0); 
+  const e1=document.getElementById('wd-stat-pending'); 
+  const e2=document.getElementById('wd-stat-approved'); 
+  const e3=document.getElementById('wd-stat-amount'); 
+  if(e1)e1.textContent=pending.length; 
+  if(e2)e2.textContent=approved.length; 
+  if(e3)e3.textContent=fmt(pendingAmt); 
+}
+
+function filterWithdrawals(f){ wdFilter=f; renderWithdrawalsTable(); }
+
+function renderWithdrawalsTable(){ 
+  loadAllData();
+  const tbody=document.getElementById('wd-table-body'); 
+  const countEl=document.getElementById('wd-count'); 
+  if(!tbody) return; 
+  let entries=Object.entries(allWithdrawals); 
+  if(wdFilter!=='all') entries=entries.filter(([k,v])=>v.status===wdFilter); 
+  entries.sort((a,b)=>b[0].localeCompare(a[0])); 
+  if(countEl) countEl.textContent=entries.length+' requests'; 
+  if(!entries.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="7">No withdrawal requests yet<\/tr>'; return; } 
+  tbody.innerHTML=entries.map(([k,v])=>{ 
+    const sc=v.status==='approved'?'var(--accent3)':v.status==='rejected'?'var(--warn)':'var(--gold)'; 
+    const si=v.status==='approved'?'✅ Approved':v.status==='rejected'?'❌ Rejected':'⏳ Pending'; 
+    const fee=Math.round((v.amount||0)*0.10); 
+    const sendAmt=v.sendAmount||(v.amount-fee); 
+    const actions=v.status==='pending'?'<button class="btn btn-approve" onclick="approveWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+','+sendAmt+',\''+(v.txKey||k)+'\')">✅ Approve</button><button class="btn btn-reject" onclick="rejectWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+',\''+(v.txKey||k)+'\')">❌ Reject</button>':'—'; 
+    return '<tr><td class="mono" style="font-size:11px;">'+(v.date||'—')+'</td><td><strong>'+(v.username||'—')+'</strong></td><td class="mono">'+(v.phone||(allUsers[v.username]?.phone||'—'))+'</td><td class="mono" style="color:var(--warn);font-weight:800;">'+fmt(v.amount)+'</td><td class="mono" style="color:var(--accent3);">'+fmt(sendAmt)+'</td><td><span style="font-size:11px;font-weight:700;color:'+sc+';">'+si+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</td></tr>'; 
+  }).join(''); 
+}
+
+function approveWithdrawal(reqKey, username, amount, sendAmount, txKey){
+  confirmAction('Approve Withdrawal?', 'Approve withdrawal for '+username+'? Amount: '+fmt(amount)+'. Net to send: '+fmt(sendAmount)).then(confirmed=>{
+    if(confirmed){
+      const user = allUsers[username];
+      if(user && user.transactions && user.transactions[txKey]){
+        user.transactions[txKey].status = 'completed';
+        user.transactions[txKey].note = 'Withdrawal Successful ✅';
+        saveUser(username, user);
+      }
+      if(allWithdrawals[reqKey]){
+        allWithdrawals[reqKey].status = 'approved';
+        saveAllWithdrawals();
+      }
+      loadAllData();
+      renderWithdrawalsTable();
+      renderWithdrawalsStats();
+      updateWithdrawalsBadge();
+      toast('✅ Withdrawal approved for '+username);
     }
   });
 }
 
 function rejectWithdrawal(reqKey, username, amount, txKey){ 
-  confirmAction('Reject Withdrawal?', 'Reject withdrawal of '+fmt(amount)+' for '+username+'? Full amount will be refunded to their profits.').then(confirmed=>{ 
+  confirmAction('Reject Withdrawal?', 'Reject withdrawal of '+fmt(amount)+' for '+username+'? Full amount will be refunded.').then(confirmed=>{ 
     if(confirmed){ 
-      const curBal = allUsers[safeKey(username)]?.profitEarned||0;
-      db.ref().update({
-        ['users/'+safeKey(username)+'/profitEarned']: curBal+amount,
-        ['users/'+safeKey(username)+'/transactions/'+txKey+'/status']: 'failed',
-        ['users/'+safeKey(username)+'/transactions/'+txKey+'/note']: 'Withdrawal Rejected ❌ by Admin',
-        ['pendingWithdrawals/'+reqKey+'/status']: 'rejected'
-      });
-      const notifKey = 'notif_wd_reject_'+Date.now();
-      db.ref('adminNotifications/'+notifKey).set({ type: 'withdrawal_rejected', username: username, amount: amount, reason: 'Rejected by Admin', timestamp: new Date().toISOString(), read: false, message: '❌ Withdrawal rejected for '+username+' ('+fmt(amount)+'). Reason: Rejected by Admin. Funds refunded.' });
-      toast('✅ Rejected — full amount refunded to '+username);
+      const user = allUsers[username];
+      if(user){
+        user.balance = (user.balance || 0) + amount;
+        if(user.transactions && user.transactions[txKey]){
+          user.transactions[txKey].status = 'failed';
+          user.transactions[txKey].note = 'Withdrawal Rejected ❌ by Admin';
+        }
+        saveUser(username, user);
+      }
+      if(allWithdrawals[reqKey]){
+        allWithdrawals[reqKey].status = 'rejected';
+        saveAllWithdrawals();
+      }
+      loadAllData();
+      renderWithdrawalsTable();
+      renderWithdrawalsStats();
+      updateWithdrawalsBadge();
+      toast('✅ Rejected — amount refunded to '+username);
     } 
   }); 
 }
 
-function deleteAllData(){ confirmAction('💥 DELETE ALL DATA?', 'This will wipe everything! This cannot be undone. Are you 100% sure?').then(confirmed=>{ if(confirmed){ db.ref('users').remove(); db.ref('pendingWithdrawals').remove(); db.ref('adminNotifications').remove(); db.ref('admins').remove(); toast('💥 All data deleted','#f87171'); } }); }
+function deleteAllUsers(){ 
+  confirmAction('⚠️ DELETE ALL USERS?', 'Are you absolutely sure? This cannot be undone.').then(confirmed=>{ 
+    if(confirmed){ 
+      saveToLocalStorage(STORAGE_USERS, {});
+      loadAllData();
+      renderUsersTable();
+      renderDashboard();
+      renderTube();
+      renderTransactions();
+      toast('🗑️ All users deleted','#f87171'); 
+    } 
+  }); 
+}
 
-function searchDebitUser(){ const q=document.getElementById('debit-search').value.trim().toLowerCase(); const infoBox=document.getElementById('debit-user-info'); const notFound=document.getElementById('debit-not-found'); debitTargetUser=null; infoBox.style.display='none'; notFound.style.display='none'; document.getElementById('debit-preview').style.display='none'; if(!q) return; const found=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); if(found){ debitTargetUser=found; document.getElementById('debit-user-name').textContent=found.username; document.getElementById('debit-user-phone').textContent=found.phone||'—'; const bal=found.balance||0; const balEl=document.getElementById('debit-user-balance'); balEl.textContent=fmt(bal); balEl.style.color=bal<0?'var(--warn)':'var(--accent3)'; infoBox.style.display='block'; } else { notFound.style.display='block'; } }
-function updateDebitPreview(){ const amt=parseInt(document.getElementById('debit-amount').value)||0; const prev=document.getElementById('debit-preview'); if(!debitTargetUser||amt<=0){ prev.style.display='none'; return; } const newBal=(debitTargetUser.balance||0)-amt; prev.style.display='block'; prev.innerHTML='Balance: '+fmt(debitTargetUser.balance||0)+' → After debit: <strong>'+fmt(newBal)+'</strong>'; prev.style.color=newBal<0?'var(--warn)':'var(--muted)'; }
-function processDebit(){ if(!debitTargetUser){ toast('Search and select a user first','#f87171'); return; } const amt=parseInt(document.getElementById('debit-amount').value)||0; if(amt<=0){ toast('Enter a valid amount','#f87171'); return; } confirmAction('Debit Balance?', 'Debit '+fmt(amt)+' from '+debitTargetUser.username+'?').then(confirmed=>{ if(confirmed){ const oldBal=debitTargetUser.balance||0; const newBal=oldBal-amt; const txKey='tx_debit_'+Date.now(); const updates={}; updates['users/'+safeKey(debitTargetUser.username)+'/balance']=newBal; updates['users/'+safeKey(debitTargetUser.username)+'/transactions/'+txKey]={type:'Withdrawal',amount:-amt,note:'Admin Debit',date:dateStr(),status:'approved'}; db.ref().update(updates); debitHistory.unshift({username:debitTargetUser.username,amount:amt,balAfter:newBal,date:dateStr()}); document.getElementById('debit-search').value=''; document.getElementById('debit-amount').value=''; document.getElementById('debit-user-info').style.display='none'; document.getElementById('debit-preview').style.display='none'; debitTargetUser=null; renderDebitHistory(); toast('✅ Debit of '+fmt(amt)+' processed',''); } }); }
-function renderDebitHistory(){ const tbody=document.getElementById('debit-history-body'); if(!tbody) return; if(!debitHistory.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="4">No debits yet<\/tr>'; return; } tbody.innerHTML=debitHistory.slice(0,20).map(d=>'<tr><td><strong>'+d.username+'</strong></td><td class="mono" style="color:var(--warn);">-'+fmt(d.amount)+'</td><td class="mono" style="color:'+(d.balAfter<0?'var(--warn)':'var(--accent3)')+';">'+fmt(d.balAfter)+'</td><td class="mono" style="font-size:11px;">'+d.date+'</td></tr>').join(''); }
+function deleteAllData(){ 
+  confirmAction('💥 DELETE ALL DATA?', 'This will wipe everything! This cannot be undone. Are you 100% sure?').then(confirmed=>{ 
+    if(confirmed){ 
+      localStorage.clear();
+      toast('💥 All data deleted','#f87171');
+      setTimeout(()=>{ window.location.reload(); }, 1500);
+    } 
+  }); 
+}
 
-function addNotification(type, username, amount, message){ const notifKey='notif_'+Date.now(); db.ref('adminNotifications/'+notifKey).set({type,username,amount,message,date:dateStr(),read:false}); }
-function openNotifDrawer(){ document.getElementById('notif-drawer').classList.add('open'); document.getElementById('notif-overlay').classList.add('open'); db.ref('adminNotifications').once('value', snap=>{ if(!snap.exists()) return; const updates={}; Object.keys(snap.val()).forEach(k=>{ updates[k+'/read']=true; }); db.ref('adminNotifications').update(updates); }); }
-function closeNotifDrawer(){ document.getElementById('notif-drawer').classList.remove('open'); document.getElementById('notif-overlay').classList.remove('open'); }
-function clearAllNotifications(){ confirmAction('Clear All Notifications?', 'Clear all notifications?').then(confirmed=>{ if(confirmed){ db.ref('adminNotifications').remove(); toast('🗑️ All notifications cleared'); } }); }
-function dismissNotification(key){ db.ref('adminNotifications/'+key).remove(); }
-function startNotifListener(){ db.ref('adminNotifications').on('value', snap=>{ const notifs = snap.val()||{}; const keys = Object.keys(notifs).sort().reverse(); const unread = keys.filter(k=>!notifs[k].read).length; const badge = document.getElementById('notif-badge'); if(unread>0){ badge.textContent=unread; badge.classList.add('show'); } else { badge.classList.remove('show'); } const list = document.getElementById('notif-list'); if(!keys.length){ list.innerHTML='<div class="notif-empty">No notifications yet</div>'; return; } list.innerHTML=keys.map(k=>{ const n=notifs[k]; const isUnread=!n.read; return '<div class="notif-item '+(isUnread?'unread':'')+'"><button class="notif-item-dismiss" onclick="dismissNotification(\''+k+'\')">✕</button><div class="notif-item-msg">'+(n.message||'Notification')+'</div><div class="notif-item-date">'+(n.date||'')+' · '+(n.username||'')+' · '+(n.amount?fmt(n.amount):'')+'</div></div>'; }).join(''); }); }
+function loadSettingsUI(){ 
+  const s=allSettings; 
+  document.getElementById('wa-group-input').value=s.waGroup||''; 
+  document.getElementById('wa-support-input').value=s.waSupport||''; 
+  document.getElementById('wa-number-input').value=s.waNumber||'700000000'; 
+  document.getElementById('with-charge-input').value=s.withdrawCharge||10; 
+  document.getElementById('ref-l1-input').value=s.refL1||10; 
+  document.getElementById('ref-l2-input').value=s.refL2||4; 
+  document.getElementById('ref-l3-input').value=s.refL3||2; 
+  document.getElementById('min-deposit-input').value=s.minDeposit||10000; 
+  document.getElementById('min-withdraw-input').value=s.minWithdraw||5000; 
+  const ls=document.getElementById('lock-status'); 
+  if(ls){ 
+    ls.textContent='Status: Withdrawals are '+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN'); 
+    ls.style.color=s.withdrawLocked?'var(--warn)':'var(--accent3)'; 
+  } 
+  const ms=document.getElementById('manual-status'); 
+  if(ms){ 
+    ms.textContent='Mode: '+(s.withdrawManual?'🔴 Manual Approval — Admin must approve each withdrawal':'🟢 Auto-Process'); 
+    ms.style.color=s.withdrawManual?'var(--warn)':'var(--accent3)'; 
+  } 
+}
 
-function setErr(id,show,msg){ const el=document.getElementById(id); if(!el)return; if(show){el.classList.add('show');if(msg)el.textContent=msg;} else{el.classList.remove('show');} }
+function saveWaNumber(){ 
+  const val=document.getElementById('wa-number-input').value.trim().replace(/\D/g,''); 
+  if(val && val.length>=9){ 
+    allSettings.waNumber = val;
+    saveAllSettings();
+    toast('✅ WhatsApp number saved'); 
+  } else { 
+    toast('Enter a valid phone number (9 digits)','#f87171'); 
+  } 
+}
+
+function saveMinDeposit(){ 
+  const v=parseInt(document.getElementById('min-deposit-input').value)||10000; 
+  if(v<500){toast('Min deposit must be at least UGX 500','#f87171');return;} 
+  allSettings.minDeposit = v;
+  saveAllSettings();
+  toast('✅ Minimum deposit set to '+fmt(v)); 
+}
+
+function saveMinWithdraw(){ 
+  const v=parseInt(document.getElementById('min-withdraw-input').value)||5000; 
+  if(v<500){toast('Min withdrawal must be at least UGX 500','#f87171');return;} 
+  allSettings.minWithdraw = v;
+  saveAllSettings();
+  toast('✅ Minimum withdrawal set to '+fmt(v)); 
+}
+
+function saveWaGroup(){ 
+  allSettings.waGroup = document.getElementById('wa-group-input').value.trim();
+  saveAllSettings();
+  toast('✅ WhatsApp Group link saved'); 
+}
+
+function saveWaSupport(){ 
+  allSettings.waSupport = document.getElementById('wa-support-input').value.trim();
+  saveAllSettings();
+  toast('✅ WhatsApp Support link saved'); 
+}
+
+function saveWithCharge(){ 
+  const v=parseFloat(document.getElementById('with-charge-input').value)||10; 
+  allSettings.withdrawCharge = v;
+  saveAllSettings();
+  toast('✅ Withdrawal charge updated to '+v+'%'); 
+}
+
+function saveRefPct(){ 
+  allSettings.refL1 = parseFloat(document.getElementById('ref-l1-input').value)||10;
+  allSettings.refL2 = parseFloat(document.getElementById('ref-l2-input').value)||4;
+  allSettings.refL3 = parseFloat(document.getElementById('ref-l3-input').value)||2;
+  saveAllSettings();
+  toast('✅ Referral percentages updated'); 
+}
+
+function setWithdrawManual(manual){ 
+  allSettings.withdrawManual = manual;
+  saveAllSettings();
+  loadSettingsUI();
+  toast(manual?'🔴 Manual approval mode enabled':'🟢 Auto-process mode enabled', manual?'#f87171':undefined); 
+}
+
+function lockWithdrawals(lock){ 
+  allSettings.withdrawLocked = lock;
+  saveAllSettings();
+  loadSettingsUI();
+  toast(lock?'🔒 Withdrawals LOCKED':'🔓 Withdrawals UNLOCKED',lock?'#f87171':undefined); 
+}
+
+function searchDebitUser(){ 
+  loadAllData();
+  const q=document.getElementById('debit-search').value.trim().toLowerCase(); 
+  const infoBox=document.getElementById('debit-user-info'); 
+  const notFound=document.getElementById('debit-not-found'); 
+  debitTargetUser=null; 
+  infoBox.style.display='none'; 
+  notFound.style.display='none'; 
+  document.getElementById('debit-preview').style.display='none'; 
+  if(!q) return; 
+  const found=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); 
+  if(found){ 
+    debitTargetUser=found; 
+    document.getElementById('debit-user-name').textContent=found.username; 
+    document.getElementById('debit-user-phone').textContent=found.phone||'—'; 
+    const bal=found.balance||0; 
+    const balEl=document.getElementById('debit-user-balance'); 
+    balEl.textContent=fmt(bal); 
+    balEl.style.color=bal<0?'var(--warn)':'var(--accent3)'; 
+    infoBox.style.display='block'; 
+  } else { 
+    notFound.style.display='block'; 
+  } 
+}
+
+function updateDebitPreview(){ 
+  const amt=parseInt(document.getElementById('debit-amount').value)||0; 
+  const prev=document.getElementById('debit-preview'); 
+  if(!debitTargetUser||amt<=0){ prev.style.display='none'; return; } 
+  const newBal=(debitTargetUser.balance||0)-amt; 
+  prev.style.display='block'; 
+  prev.innerHTML='Balance: '+fmt(debitTargetUser.balance||0)+' → After debit: <strong>'+fmt(newBal)+'</strong>'; 
+  prev.style.color=newBal<0?'var(--warn)':'var(--muted)'; 
+}
+
+function processDebit(){ 
+  if(!debitTargetUser){ toast('Search and select a user first','#f87171'); return; } 
+  const amt=parseInt(document.getElementById('debit-amount').value)||0; 
+  if(amt<=0){ toast('Enter a valid amount','#f87171'); return; } 
+  confirmAction('Debit Balance?', 'Debit '+fmt(amt)+' from '+debitTargetUser.username+'?').then(confirmed=>{ 
+    if(confirmed){ 
+      const oldBal=debitTargetUser.balance||0; 
+      const newBal=oldBal-amt; 
+      const txKey='tx_debit_'+Date.now(); 
+      if(!debitTargetUser.transactions) debitTargetUser.transactions = {};
+      debitTargetUser.transactions[txKey]={type:'Withdrawal',amount:-amt,note:'Admin Debit',date:dateStr(),status:'approved'};
+      debitTargetUser.balance = newBal;
+      saveUser(debitTargetUser.username, debitTargetUser);
+      debitHistory.unshift({username:debitTargetUser.username,amount:amt,balAfter:newBal,date:dateStr()}); 
+      saveDebitHistory();
+      loadAllData();
+      document.getElementById('debit-search').value=''; 
+      document.getElementById('debit-amount').value=''; 
+      document.getElementById('debit-user-info').style.display='none'; 
+      document.getElementById('debit-preview').style.display='none'; 
+      debitTargetUser=null; 
+      renderDebitHistory(); 
+      renderUsersTable();
+      toast('✅ Debit of '+fmt(amt)+' processed',''); 
+    } 
+  }); 
+}
+
+function renderDebitHistory(){ 
+  const tbody=document.getElementById('debit-history-body'); 
+  if(!tbody) return; 
+  if(!debitHistory.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="4">No debits yet<\/tr>'; return; } 
+  tbody.innerHTML=debitHistory.slice(0,20).map(d=>'<tr><td><strong>'+d.username+'</strong></td><td class="mono" style="color:var(--warn);">-'+fmt(d.amount)+'</td><td class="mono" style="color:'+(d.balAfter<0?'var(--warn)':'var(--accent3)')+';">'+fmt(d.balAfter)+'</td><td class="mono" style="font-size:11px;">'+d.date+'</td></tr>').join(''); 
+}
+
+// Notifications
+let adminNotifications = {};
+
+function startNotifListener(){
+  adminNotifications = loadFromLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, {});
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function updateNotifBadge(){
+  const unread = Object.values(adminNotifications).filter(n => !n.read).length;
+  const badge = document.getElementById('notif-badge');
+  if(unread > 0){
+    badge.textContent = unread;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+function renderNotifList(){
+  const list = document.getElementById('notif-list');
+  const keys = Object.keys(adminNotifications).sort().reverse();
+  if(!keys.length){
+    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+    return;
+  }
+  list.innerHTML = keys.map(k => {
+    const n = adminNotifications[k];
+    const isUnread = !n.read;
+    return '<div class="notif-item '+(isUnread?'unread':'')+'"><button class="notif-item-dismiss" onclick="dismissNotification(\''+k+'\')">✕</button><div class="notif-item-msg">'+(n.message||'Notification')+'</div><div class="notif-item-date">'+(n.date||'')+' · '+(n.username||'')+' · '+(n.amount?fmt(n.amount):'')+'</div></div>';
+  }).join('');
+}
+
+function dismissNotification(key){
+  delete adminNotifications[key];
+  saveToLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, adminNotifications);
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function clearAllNotifications(){
+  confirmAction('Clear All Notifications?', 'Clear all notifications?').then(confirmed=>{
+    if(confirmed){
+      adminNotifications = {};
+      saveToLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, adminNotifications);
+      updateNotifBadge();
+      renderNotifList();
+      toast('🗑️ All notifications cleared');
+    }
+  });
+}
+
+function openNotifDrawer(){
+  document.getElementById('notif-drawer').classList.add('open');
+  document.getElementById('notif-overlay').classList.add('open');
+  // Mark all as read
+  let updated = false;
+  for(const key in adminNotifications){
+    if(!adminNotifications[key].read){
+      adminNotifications[key].read = true;
+      updated = true;
+    }
+  }
+  if(updated){
+    saveToLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, adminNotifications);
+    updateNotifBadge();
+    renderNotifList();
+  }
+}
+
+function closeNotifDrawer(){
+  document.getElementById('notif-drawer').classList.remove('open');
+  document.getElementById('notif-overlay').classList.remove('open');
+}
+
+function setErr(id,show,msg){ 
+  const el=document.getElementById(id); 
+  if(!el)return; 
+  if(show){el.classList.add('show');if(msg)el.textContent=msg;} 
+  else{el.classList.remove('show');} 
+}
+
 function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
 
 document.getElementById('loading-screen').style.display='none';
