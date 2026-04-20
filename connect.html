@@ -301,7 +301,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="stat-card"><div class="stat-card-label">Total Users</div><div class="stat-card-val green" id="d-total-users">—</div></div>
         <div class="stat-card"><div class="stat-card-label">Total Invested</div><div class="stat-card-val gold" id="d-total-invested">—</div></div>
         <div class="stat-card"><div class="stat-card-label">Total Balance</div><div class="stat-card-val emerald" id="d-total-balance">—</div></div>
-        <div class="stat-card"><div class="stat-card-label">Total Balance</div><div class="stat-card-val blue" id="d-total-balance">—</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Withdrawn</div><div class="stat-card-val red" id="d-total-withdrawn">—</div></div>
       </div>
       <div class="pct-summary" id="pct-summary"></div>
       <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
@@ -454,7 +454,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
       <div class="settings-section">
         <div class="settings-title">💰 Deposit & Withdrawal Settings</div>
         <div class="settings-row"><span class="settings-label">Minimum Deposit (UGX)</span><div class="ugx-group"><span class="ugx-label">UGX</span><input type="number" class="ugx-input" id="min-deposit-input" min="500" step="500" placeholder="10000"></div><button class="btn btn-save" onclick="saveMinDeposit()">Save</button></div>
-        <div class="settings-row"><span class="settings-label">Minimum Withdrawal (UGX)</span><div class="ugx-group"><span class="ugx-label">UGX</span><input type="number" class="ugx-input" id="min-withdraw-input" min="500" step="500" placeholder="5000"></div><button class="btn btn-save" onclick="saveMinWithdraw()">Save</button></div>
+        <div class="settings-row"><span class="settings-label">Minimum Withdrawal (UGX)</span><div class="ugx-group"><span class="ugx-label">UGX</span><input type="number" class="ugx-input" id="min-withdraw-input" min="500" step="500" placeholder="10000"></div><button class="btn btn-save" onclick="saveMinWithdraw()">Save</button></div>
         <div class="settings-row"><span class="settings-label">Withdrawal Service Charge (%)</span><div style="display:flex;align-items:center;gap:8px;"><input type="number" class="pct-input" id="with-charge-input" min="0" max="50" step="0.5" placeholder="10"><span class="pct-label">%</span></div><button class="btn btn-save" onclick="saveWithCharge()">Save</button></div>
       </div>
       <div class="settings-section">
@@ -479,7 +479,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
   </div>
 </div>
 
-<div class="modal-ov" id="edit-modal"><div class="modal-box"><div class="modal-title">✏️ Edit User</div><input type="hidden" id="edit-username"><div class="modal-row"><label class="modal-label">Password</label><input type="text" class="modal-input" id="edit-password"></div><div class="modal-row"><label class="modal-label">Phone Number</label><input type="text" class="modal-input" id="edit-phone-modal" placeholder="+256..."></div><div class="modal-row"><label class="modal-label">Available Balance (UGX)</label><input type="number" class="modal-input" id="edit-balance" min="0"></div><div class="modal-row"><label class="modal-label">Investment (UGX)</label><input type="number" class="modal-input" id="edit-invested" min="0"></div><div class="modal-actions"><button class="modal-cancel" onclick="closeEditModal()">Cancel</button><button class="btn btn-save" onclick="saveEditUser()">Save Changes</button></div></div></div>
+<div class="modal-ov" id="edit-modal"><div class="modal-box"><div class="modal-title">✏️ Edit User</div><input type="hidden" id="edit-username"><div class="modal-row"><label class="modal-label">Password</label><input type="text" class="modal-input" id="edit-password"></div><div class="modal-row"><label class="modal-label">Phone Number</label><input type="text" class="modal-input" id="edit-phone-modal" placeholder="+256..."></div><div class="modal-row"><label class="modal-label">Balance (UGX)</label><input type="number" class="modal-input" id="edit-balance" min="0"></div><div class="modal-row"><label class="modal-label">Investment (UGX)</label><input type="number" class="modal-input" id="edit-invested" min="0"></div><div class="modal-actions"><button class="modal-cancel" onclick="closeEditModal()">Cancel</button><button class="btn btn-save" onclick="saveEditUser()">Save Changes</button></div></div></div>
 <div class="modal-ov" id="edit-phone-modal"><div class="modal-box"><div class="modal-title">📱 Edit Phone Number</div><input type="hidden" id="edit-phone-username"><div class="modal-row"><label class="modal-label">Username</label><input type="text" class="modal-input" id="edit-phone-user-display" disabled></div><div class="modal-row"><label class="modal-label">Phone Number (with prefix)</label><input type="text" class="modal-input" id="edit-phone-value" placeholder="+256712345678"></div><div class="modal-actions"><button class="modal-cancel" onclick="closeEditPhoneModal()">Cancel</button><button class="btn btn-save" onclick="saveEditPhone()">Save Phone</button></div></div></div>
 
 <div class="toast" id="toast"></div>
@@ -551,7 +551,7 @@ function loadAllData() {
   allSettings = loadFromLocalStorage(STORAGE_SETTINGS, {
     withdrawCharge: 10, refL1: 10, refL2: 4, refL3: 2,
     waGroup: '', waSupport: '', withdrawLocked: false,
-    withdrawManual: false, minDeposit: 10000, minWithdraw: 5000, waNumber: '700000000'
+        <div class="settings-row\"><span class=\"settings-label\">Minimum Withdrawal (UGX)</span><div class=\"ugx-group\"><span class=\"ugx-label\">UGX</span><input type=\"number\" class=\"ugx-input\" id=\"min-withdraw-input\" min=\"500\" step=\"500\" placeholder=\"10000\"></div><button class=\"btn btn-save\" onclick=\"saveMinWithdraw()\">Save</button></div>
   });
   allWithdrawals = loadFromLocalStorage(STORAGE_PENDING_WITHDRAWALS, {});
   debitHistory = loadFromLocalStorage(STORAGE_DEBIT_HISTORY, []);
@@ -1104,7 +1104,7 @@ function loadSettingsUI(){
   document.getElementById('ref-l2-input').value=s.refL2||4; 
   document.getElementById('ref-l3-input').value=s.refL3||2; 
   document.getElementById('min-deposit-input').value=s.minDeposit||10000; 
-  document.getElementById('min-withdraw-input').value=s.minWithdraw||5000; 
+  document.getElementById('min-withdraw-input').value=s.minWithdraw||10000; 
   const ls=document.getElementById('lock-status'); 
   if(ls){ 
     ls.textContent='Status: Withdrawals are '+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN'); 

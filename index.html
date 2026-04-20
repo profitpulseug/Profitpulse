@@ -10,34 +10,34 @@
 <meta property="og:site_name" content="ProfitPulse">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ProfitPulse — Grow Your Wealth">
-<meta name="twitter:description" content="Premium Investment Wallet. Earn 10% daily returns for 72 days!">
+<meta name="twitter:description" content="Premium Investment Wallet. Earn 10% daily returns for 56 days!">
 <meta name="description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors today!">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#fff5f7;
-  --surface:#ffffff;
-  --surface2:#fff0f4;
-  --surface3:#ffe4e8;
-  --border:#fbcfe8;
-  --accent:#db2777;
-  --accent2:#ec4899;
-  --accent3:#f43f5e;
-  --warn:#e11d48;
-  --gold:#f59e0b;
-  --text:#1f2937;
-  --muted:#9ca3af;
-  --table-header:#064e3b;
-  --table-border:#166534;
-  --avatar-bg:#831843;
-  --ref-bg:#047857;
+  --bg:#0f172a;
+  --surface:#1a2847;
+  --surface2:#253557;
+  --surface3:#2f4570;
+  --border:#3d5a8c;
+  --accent:#00d9ff;
+  --accent2:#00a8cc;
+  --accent3:#ff6b6b;
+  --warn:#ff4757;
+  --gold:#26de81;
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --table-header:#0d3b66;
+  --table-border:#1a5490;
+  --avatar-bg:#00a8cc;
+  --ref-bg:#26de81;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:500px;margin:0 auto;position:relative;overflow-x:hidden;}
 
 /* Avatar Styles */
 .avatar{
-  background:var(--avatar-bg);
+  background:linear-gradient(135deg, var(--avatar-bg) 0%, var(--accent) 100%);
   border-radius:50%;
   display:flex;
   align-items:center;
@@ -46,8 +46,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   color:#ffffff;
   text-transform:uppercase;
   flex-shrink:0;
+  border:2px solid var(--accent);
+  box-shadow:0 2px 8px rgba(0,217,255,0.3);
 }
-.avatar-sm{width:32px;height:32px;font-size:14px;}
+.avatar-sm{width:38px;height:38px;font-size:14px;}
 .avatar-lg{width:72px;height:72px;font-size:28px;margin:0 auto 14px;}
 .avatar-md{width:40px;height:40px;font-size:16px;}
 
@@ -148,7 +150,7 @@ input[type="password"]{padding-right:46px;}
 .whatsapp-float{
   position:fixed;
   bottom:80px;
-  right:20px;
+  left:20px;
   width:55px;
   height:55px;
   background:#25D366;
@@ -168,21 +170,21 @@ input[type="password"]{padding-right:46px;}
 
 /* Table (Scrollable) */
 .plan-wrap{background:var(--surface);border:2px solid var(--accent);border-radius:16px;overflow:hidden;}
-.plan-header{background:var(--table-header);padding:12px 14px;text-align:center;}
-.plan-header-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:800;color:var(--accent3);}
+.plan-header{background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%);padding:14px 16px;text-align:center;}
+.plan-header-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:800;color:#fff;}
 .table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0;}
 .plan-table{width:100%;border-collapse:collapse;min-width:380px;}
-.plan-table thead tr{background:var(--table-header);}
-.plan-table thead th{padding:12px 10px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);text-align:center;border-bottom:2px solid var(--accent);border-right:1px solid var(--table-border);}
+.plan-table thead tr{background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%);}
+.plan-table thead th{padding:14px 12px;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#fff;text-align:center;border-bottom:2px solid #fff;border-right:1px solid #991b1b;}
 .plan-table thead th:last-child{border-right:none;}
-.plan-table tbody tr{border-bottom:1px solid var(--table-border);}
-.plan-table tbody tr:nth-child(odd){background:var(--ref-bg);}
-.plan-table tbody tr:nth-child(even){background:#065f46;}
-.plan-table tbody td{padding:10px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;text-align:center;border-right:1px solid var(--table-border);color:#fff;}
+.plan-table tbody tr{border-bottom:1px solid #991b1b;}
+.plan-table tbody tr:nth-child(odd){background:#ef4444;}
+.plan-table tbody tr:nth-child(even){background:#dc2626;}
+.plan-table tbody td{padding:12px 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;text-align:center;border-right:1px solid #991b1b;color:#fff;}
 .plan-table tbody td:last-child{border-right:none;}
-.plan-table tbody td:first-child{color:var(--gold);font-weight:700;}
-.plan-table tbody td:nth-child(2){color:var(--accent3);}
-.plan-table tbody td:nth-child(3){color:#fff;font-weight:700;}
+.plan-table tbody td:first-child{color:#fff;font-weight:800;font-size:14px;}
+.plan-table tbody td:nth-child(2){color:#fef08a;font-weight:700;font-size:13px;}
+.plan-table tbody td:nth-child(3){color:#fecaca;font-weight:800;font-size:14px;}
 .scroll-hint{text-align:center;padding:8px;font-size:9px;color:var(--muted);background:var(--surface);border-top:1px solid var(--border);}
 .plan-footer{padding:12px;background:var(--surface2);}
 .start-invest-btn{width:100%;background:var(--accent);border:none;border-radius:12px;padding:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
@@ -224,10 +226,10 @@ input[type="password"]{padding-right:46px;}
 .logout-dash-new:active{transform:scale(.98);}
 
 /* Bottom Nav */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 0 14px;z-index:200;}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
-.nav-icon{font-size:20px;}
-.nav-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 0 10px;z-index:200;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;}
+.nav-icon{font-size:18px;}
+.nav-label{font-size:7px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);}
 .nav-item.active .nav-label{color:var(--accent);}
 
 /* Toast */
@@ -300,7 +302,7 @@ input[type="password"]{padding-right:46px;}
 .section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
 
 /* WA Button */
-.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#25D366;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:fit-content;margin-left:auto;background:#25D366;border:none;border-radius:14px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
 .wa-btn:active{transform:scale(.98);}
 
 .loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;}
@@ -352,7 +354,7 @@ input[type="password"]{padding-right:46px;}
   </div>
   <div class="auth-card">
     <div class="auth-title">Create Account</div>
-    <div class="auth-subtitle">Get UGX 4,000 registration bonus 🎁</div>
+    <div class="auth-subtitle">Get UGX 5,000 registration bonus 🎁</div>
     <div class="field-group">
       <label class="field-label">Username</label>
       <div class="field-wrap"><span class="field-icon">👤</span><input type="text" id="reg-username" placeholder="Choose a username" autocomplete="off"></div>
@@ -416,13 +418,27 @@ input[type="password"]{padding-right:46px;}
   <div class="dash-section active" id="sec-home">
     <div class="section">
       <div class="stats-card">
-        <div class="balance-big">
-          <div class="balance-label">Available Balance</div>
-          <div class="balance-amount" id="stat-balance">UGX 0</div>
+        <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="stat-box" style="padding:14px 8px;text-align:center;">
+            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">Balance</div>
+            <div class="stat-value" style="font-size:14px;font-weight:800;color:var(--accent);" id="stat-balance">UGX 0</div>
+          </div>
+          <div class="stat-box" style="padding:14px 8px;text-align:center;">
+            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">STAKE</div>
+            <div class="stat-value dep" style="font-size:14px;font-weight:800;" id="stat-invested">UGX 0</div>
+          </div>
+          <div class="stat-box" style="padding:14px 8px;text-align:center;">
+            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">Withdrawn</div>
+            <div class="stat-value" style="font-size:14px;font-weight:800;color:var(--warn);" id="stat-withdrawn">UGX 0</div>
+          </div>
         </div>
-        <div class="stats-grid" style="display:flex;justify-content:space-between;gap:20px;">
-          <div class="stat-box"><div class="stat-label">INVESTMENT</div><div class="stat-value dep" id="stat-invested">UGX 0</div></div>
-        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="action-grid" style="display:flex;flex-direction:column;gap:12px;margin:16px 0;align-items:flex-start;">
+        <button class="action-btn" style="background:#22c55e;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('deposit')"><span class="btn-icon">💳</span> Invest</button>
+        <button class="action-btn" style="background:#ef4444;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('withdraw')"><span class="btn-icon">💸</span> Withdraw</button>
+        <button class="action-btn" style="background:#a855f7;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('reinvest')"><span class="btn-icon">🔄</span> Re-Invest</button>
       </div>
     </div>
     <div class="section">
@@ -433,15 +449,7 @@ input[type="password"]{padding-right:46px;}
       </div>
     </div>
     <div class="section">
-      <div class="action-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0;">
-        <button class="action-btn" style="background:#22c55e;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('deposit')"><span class="btn-icon">💳</span>Top-up</button>
-        <button class="action-btn" style="background:#a855f7;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('reinvest')"><span class="btn-icon">🔄</span>Re-Invest</button>
-        <button class="action-btn" style="background:#ef4444;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('withdraw')"><span class="btn-icon">💸</span>Withdraw</button>
-        <button class="action-btn" style="background:#0ea5e9;border:none;color:white;padding:16px;border-radius:12px;font-weight:600;font-size:16px;" onclick="switchTab('history')"><span class="btn-icon">📋</span>Transactions</button>
-      </div>
-    </div>
-    <div class="section">
-      <button class="wa-btn" onclick="openWaGroup()">💬 Join Our WhatsApp Community</button>
+      <button class="wa-btn" onclick="openWaGroup()">💬 Join our channel</button>
     </div>
   </div>
 
@@ -450,7 +458,7 @@ input[type="password"]{padding-right:46px;}
 
   <!-- TNS (History) -->
   <div class="dash-section" id="sec-history">
-    <div class="inner-header"><span style="font-size:22px">📋</span><div><div class="inner-title">TNS</div><div class="inner-sub">All your transactions</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">📋</span><div><div class="inner-title">Records</div><div class="inner-sub">All your transactions</div></div></div>
     <div class="tx-filter-tabs">
       <div class="tx-tab active" onclick="filterHistory('Deposit',this)">💳 Deposits</div>
       <div class="tx-tab" onclick="filterHistory('Withdrawal',this)">💸 Withdrawals</div>
@@ -497,32 +505,32 @@ input[type="password"]{padding-right:46px;}
 
   <!-- TABLE (Plan) -->
   <div class="dash-section" id="sec-plan">
-    <div class="inner-header"><span style="font-size:22px">📈</span><div><div class="inner-title">TABLE</div><div class="inner-sub">10% daily for 72 days (720% total)</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">📈</span><div><div class="inner-title">TABLE</div><div class="inner-sub">10% daily for 56 days (560% total)</div></div></div>
     <div class="section">
       <div class="plan-wrap">
-        <div class="plan-header"><div class="plan-header-title">📈 ProfitPulse Growth Plan — 10% Daily × 72 Days = 720% Total Return</div></div>
+        <div class="plan-header"><div class="plan-header-title">📈 ProfitPulse Growth Plan — 10% Daily × 56 Days = 560% Total Return</div></div>
         <div class="table-wrapper">
           <table class="plan-table">
             <thead>
-              <tr><th>DEPOSIT (UGX)</th><th>DAILY PROFIT (10%)</th><th>72-DAY TOTAL (UGX)</th></tr>
+              <tr><th>DEPOSIT (UGX)</th><th>DAILY PROFIT (10%)</th><th>56-DAY TOTAL (UGX)</th></tr>
             </thead>
             <tbody>
-              <tr><td>10,000</td><td>1,000</td><td>72,000</td></tr>
-              <tr><td>20,000</td><td>2,000</td><td>144,000</td></tr>
-              <tr><td>50,000</td><td>5,000</td><td>360,000</td></tr>
-              <tr><td>100,000</td><td>10,000</td><td>720,000</td></tr>
-              <tr><td>200,000</td><td>20,000</td><td>1,440,000</td></tr>
-              <tr><td>500,000</td><td>50,000</td><td>3,600,000</td></tr>
-              <tr><td>1,000,000</td><td>100,000</td><td>7,200,000</td></tr>
-              <tr><td>2,000,000</td><td>200,000</td><td>14,400,000</td></tr>
-              <tr><td>5,000,000</td><td>500,000</td><td>36,000,000</td></tr>
-              <tr><td>10,000,000</td><td>1,000,000</td><td>72,000,000</td></tr>
-              <tr><td>20,000,000</td><td>2,000,000</td><td>144,000,000</td></tr>
+              <tr><td>10,000</td><td>1,000</td><td>56,000</td></tr>
+              <tr><td>20,000</td><td>2,000</td><td>112,000</td></tr>
+              <tr><td>50,000</td><td>5,000</td><td>280,000</td></tr>
+              <tr><td>100,000</td><td>10,000</td><td>560,000</td></tr>
+              <tr><td>200,000</td><td>20,000</td><td>1,120,000</td></tr>
+              <tr><td>500,000</td><td>50,000</td><td>2,800,000</td></tr>
+              <tr><td>1,000,000</td><td>100,000</td><td>5,600,000</td></tr>
+              <tr><td>2,000,000</td><td>200,000</td><td>11,200,000</td></tr>
+              <tr><td>5,000,000</td><td>500,000</td><td>28,000,000</td></tr>
+              <tr><td>10,000,000</td><td>1,000,000</td><td>56,000,000</td></tr>
+              <tr><td>20,000,000</td><td>2,000,000</td><td>112,000,000</td></tr>
             </tbody>
            </table>
         </div>
         <div class="scroll-hint">← Swipe horizontally to see all columns →</div>
-        <div class="plan-footer"><button class="start-invest-btn" onclick="switchTab('deposit')">🚀 Start Investing Now</button></div>
+
       </div>
     </div>
   </div>
@@ -625,7 +633,7 @@ input[type="password"]{padding-right:46px;}
         <div class="field-group">
           <label class="field-label">Amount (UGX)</label>
           <div class="field-wrap"><span class="field-icon">💸</span><input type="number" id="with-amount" placeholder="Enter amount" min="5000"></div>
-          <div class="field-error" id="with-amount-err">Minimum withdrawal is <span id="with-min-display">UGX 5,000</span></div>
+          <div class="field-error" id="with-amount-err">Minimum withdrawal is <span id="with-min-display">UGX 10,000</span></div>
         </div>
         <button class="red-btn" id="with-submit-btn" onclick="doWithdraw()">💸 CASHOUT</button>
       </div>
@@ -639,7 +647,7 @@ input[type="password"]{padding-right:46px;}
       <div class="action-card">
         <div class="deposit-note">🔄 Re-invest from your <strong>Balance</strong>. Minimum <strong>UGX 10,000</strong>. Earns 10% instant profit + restarts daily profits.</div>
         <div class="field-group">
-          <label class="field-label">Available Balance</label>
+          <label class="field-label">Balance</label>
           <div class="field-wrap"><span class="field-icon">💼</span><div class="readonly-field" id="reinvest-balance-display">UGX 0</div></div>
         </div>
         <div class="field-group">
@@ -654,7 +662,6 @@ input[type="password"]{padding-right:46px;}
 
   <nav class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">DASHBOARD</span></div>
-    <div class="nav-item" onclick="switchTab('history')"><span class="nav-icon">📋</span><span class="nav-label">TNS</span></div>
     <div class="nav-item" onclick="switchTab('team')"><span class="nav-icon">👥</span><span class="nav-label">REFER</span></div>
     <div class="nav-item" onclick="switchTab('plan')"><span class="nav-icon">📊</span><span class="nav-label">TABLE</span></div>
     <div class="nav-item" onclick="switchTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">MYSELF</span></div>
@@ -667,12 +674,12 @@ input[type="password"]{padding-right:46px;}
   <div class="side-menu-header"><span class="side-menu-brand">ProfitPulse</span><button class="close-menu" onclick="closeMenu()">✕</button></div>
   <div class="side-menu-items">
     <div class="menu-item active-menu" onclick="menuNav('home')"><span class="menu-item-icon">🏠</span>Dashboard</div>
-    <div class="menu-item" onclick="menuNav('deposit')"><span class="menu-item-icon">💳</span>Deposit</div>
+    <div class="menu-item" onclick="menuNav('deposit')"><span class="menu-item-icon">💳</span>Invest Now</div>
     <div class="menu-item" onclick="menuNav('withdraw')"><span class="menu-item-icon">💰</span>Withdraw</div>
     <div class="menu-item" onclick="menuNav('reinvest')"><span class="menu-item-icon">🔄</span>Re-Invest</div>
     <div class="menu-item" onclick="menuNav('team')"><span class="menu-item-icon">🔗</span>Referral</div>
     <div class="menu-divider"></div>
-    <div class="menu-item" onclick="menuNav('history')"><span class="menu-item-icon">📋</span>TNS</div>
+    <div class="menu-item" onclick="menuNav('history')"><span class="menu-item-icon">📋</span>Records</div>
     <div class="menu-item" onclick="menuNav('profile')"><span class="menu-item-icon">👤</span>Myself</div>
   </div>
   <button class="menu-logout" onclick="doLogout()"><span style="font-size:18px">🚪</span>Logout</button>
@@ -738,7 +745,7 @@ let settingsData = {
   withdrawLocked: false,
   withdrawManual: false,
   minDeposit: 10000,
-  minWithdraw: 5000,
+  minWithdraw: 10000,
   waNumber: '700000000'
 };
 
@@ -808,7 +815,7 @@ function createAvatarElement(username, sizeClass){
 
 function updateAvatarInUI(username){
   const topbarAvatar = document.getElementById('topbar-avatar');
-  if(topbarAvatar){
+  if(topbarAvatar && username){
     topbarAvatar.innerHTML = '';
     const avatar = createAvatarElement(username, 'avatar-sm');
     topbarAvatar.appendChild(avatar);
@@ -827,7 +834,8 @@ function updateWhatsAppButton(){
 // UI Helpers
 function showAuth(id){
   document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-  const t=document.getElementById(id); t.style.display='flex'; t.classList.add('active');
+  const t=document.getElementById(id); 
+  if(t){ t.style.display='flex'; t.classList.add('active'); }
   if(id==='register-page'){
     const urlParams=new URLSearchParams(window.location.search);
     const refCode=urlParams.get('ref')||'John';
@@ -838,8 +846,11 @@ function showAuth(id){
 
 function showDashboard(){
   document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-  document.getElementById('dashboard-page').style.display='block';
-  document.getElementById('dashboard-page').classList.add('active');
+  const dashPage = document.getElementById('dashboard-page');
+  if(dashPage){
+    dashPage.style.display='block';
+    dashPage.classList.add('active');
+  }
   updateWhatsAppButton();
 }
 
@@ -855,24 +866,42 @@ function switchTab(tab){
 }
 
 function menuNav(tab){ switchTab(tab); }
-function openMenu(){ document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').classList.add('open'); }
-function closeMenu(){ document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').classList.remove('open'); }
-
-function showModal(icon,title,msg){ 
-  document.getElementById('modal-icon').textContent=icon; 
-  document.getElementById('modal-title').textContent=title; 
-  document.getElementById('modal-msg').textContent=msg; 
-  document.getElementById('modal-overlay').classList.add('open'); 
+function openMenu(){ 
+  const menu = document.getElementById('side-menu');
+  const overlay = document.getElementById('menu-overlay');
+  if(menu) menu.classList.add('open'); 
+  if(overlay) overlay.classList.add('open'); 
+}
+function closeMenu(){ 
+  const menu = document.getElementById('side-menu');
+  const overlay = document.getElementById('menu-overlay');
+  if(menu) menu.classList.remove('open'); 
+  if(overlay) overlay.classList.remove('open'); 
 }
 
-function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+function showModal(icon,title,msg){ 
+  const modalIcon = document.getElementById('modal-icon');
+  const modalTitle = document.getElementById('modal-title');
+  const modalMsg = document.getElementById('modal-msg');
+  const modalOverlay = document.getElementById('modal-overlay');
+  if(modalIcon) modalIcon.textContent=icon; 
+  if(modalTitle) modalTitle.textContent=title; 
+  if(modalMsg) modalMsg.textContent=msg; 
+  if(modalOverlay) modalOverlay.classList.add('open'); 
+}
+
+function closeModal(){ 
+  const modalOverlay = document.getElementById('modal-overlay');
+  if(modalOverlay) modalOverlay.classList.remove('open'); 
+}
 
 function showToast(msg,color){
   const t=document.getElementById('toast');
+  if(!t)return;
   t.textContent=msg;
   t.style.background=color||'var(--accent3)';
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+  setTimeout(()=>{if(t)t.classList.remove('show');},2800);
 }
 
 function setErr(id,show,msg){
@@ -933,15 +962,24 @@ function updateBalanceUI(){
   const invested = currentUser.invested || 0;
   const balance = currentUser.balance || 0;
   
+  // Calculate total withdrawn
+  let withdrawn = 0;
+  if(currentUser.transactions){
+    Object.values(currentUser.transactions).forEach(tx => {
+      if(tx.type === 'Withdrawal') withdrawn += Math.abs(tx.amount || 0);
+    });
+  }
+  
   document.getElementById('stat-invested').textContent=fmt(invested);
   document.getElementById('stat-balance').textContent=fmt(Math.max(0, balance));
+  document.getElementById('stat-withdrawn').textContent=fmt(withdrawn);
   const el=document.getElementById('reinvest-balance-display'); if(el)el.textContent=fmt(Math.max(0, balance));
 }
 
 function filterHistory(type, tabEl){
   currentHistoryFilter = type;
   document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));
-  if(tabEl) tabEl.classList.add('active');
+  if(tabEl && tabEl.classList) tabEl.classList.add('active');
   renderHistory();
 }
 
@@ -1000,17 +1038,17 @@ function runDailyProfits(){
   const updates = { ...currentUser };
   for(const [key,dep] of deposits){
     let daysRun=dep.daysRun||0;
-    if(daysRun>=72) continue;
+    if(daysRun>=56) continue;
     const startDate=new Date(dep.startDate);
     const lastPaid=dep.lastPaidDate||getDateKey(startDate);
     let cursor=addDays(new Date(lastPaid),1);
-    while(getDateKey(cursor)<=todayKey && daysRun<72){
+    while(getDateKey(cursor)<=todayKey && daysRun<56){
       const dateKey=getDateKey(cursor);
       const profit=Math.floor(dep.amount*0.10);
       totalProfit+=profit;
       const txKey='txp_'+dateKey.replace(/-/g,'')+'_'+key.slice(-5);
       if(!updates.transactions) updates.transactions = {};
-      updates.transactions[txKey]={type:'Profit',amount:profit,note:'Daily 10% profit — Day '+(daysRun+1)+'/72',date:dateKey+' 00:00'};
+      updates.transactions[txKey]={type:'Profit',amount:profit,note:'Daily 10% profit — Day '+(daysRun+1)+'/56',date:dateKey+' 00:00'};
       if(!updates.deposits) updates.deposits = {};
       if(!updates.deposits[key]) updates.deposits[key] = {};
       updates.deposits[key].daysRun=daysRun+1;
@@ -1039,23 +1077,35 @@ function startDailyProfitLoop(){
 
 function loadDashboard(){
   const u=currentUser;
+  if(!u) return;
   const ctry=u.country==='KE'?'🇰🇪 Kenya':'🇺🇬 Uganda';
-  document.getElementById('dash-username').textContent=u.username;
+  const dashUsername = document.getElementById('dash-username');
+  if(dashUsername) dashUsername.textContent=u.username;
   updateAvatarInUI(u.username);
   const siteBase=window.location.origin+window.location.pathname.replace(/\/[^\/]*$/,'/');
   const refLink=siteBase+'?ref='+encodeURIComponent(u.username);
-  document.getElementById('ref-url').textContent=refLink;
-  document.getElementById('ref-url2').textContent=refLink;
+  const refUrl = document.getElementById('ref-url');
+  if(refUrl) refUrl.textContent=refLink;
+  const refUrl2 = document.getElementById('ref-url2');
+  if(refUrl2) refUrl2.textContent=refLink;
   
   const avatarInitials=u.username.substring(0,2).toUpperCase();
-  document.getElementById('profile-avatar-lg-main').textContent=avatarInitials;
-  document.getElementById('profile-name-header').textContent=u.username;
-  document.getElementById('profile-country-header-main').innerHTML=`${ctry==='-'?'🌍':ctry} ${ctry==='-'?'Unknown':ctry}`;
-  document.getElementById('profile-user-new').textContent=u.username;
-  document.getElementById('profile-phone-new').textContent=u.phone;
-  document.getElementById('profile-ctry-new').textContent=ctry;
-  document.getElementById('profile-since-new').textContent=u.joinedDate||'2025';
-  document.getElementById('profile-status-badge').textContent=u.activated?'🟢 Active Investor':'⏳ Pending Deposit';
+  const profileAvatar = document.getElementById('profile-avatar-lg-main');
+  if(profileAvatar) profileAvatar.textContent=avatarInitials;
+  const profileName = document.getElementById('profile-name-header');
+  if(profileName) profileName.textContent=u.username;
+  const profileCountry = document.getElementById('profile-country-header-main');
+  if(profileCountry) profileCountry.innerHTML=`${ctry==='-'?'🌍':ctry} ${ctry==='-'?'Unknown':ctry}`;
+  const profileUser = document.getElementById('profile-user-new');
+  if(profileUser) profileUser.textContent=u.username;
+  const profilePhone = document.getElementById('profile-phone-new');
+  if(profilePhone) profilePhone.textContent=u.phone;
+  const profileCtry = document.getElementById('profile-ctry-new');
+  if(profileCtry) profileCtry.textContent=ctry;
+  const profileSince = document.getElementById('profile-since-new');
+  if(profileSince) profileSince.textContent=u.joinedDate||'2025';
+  const profileStatus = document.getElementById('profile-status-badge');
+  if(profileStatus) profileStatus.textContent=u.activated?'🟢 Active Investor':'⏳ Pending Deposit';
   
   const deposits=u.deposits?Object.values(u.deposits):[];
   const totalInvested=deposits.reduce((sum,d)=>sum+(d.amount||0),0);
@@ -1063,13 +1113,18 @@ function loadDashboard(){
   const daysActive=u.daysActive||0;
   const activeDeposits=deposits.filter(d=>d.status!=='completed').length;
   
-  document.getElementById('profile-stat-invested').textContent=fmt(totalInvested);
-  document.getElementById('profile-stat-earned').textContent=fmt(totalEarned);
-  document.getElementById('profile-stat-days').textContent=daysActive;
-  document.getElementById('profile-stat-deposits').textContent=activeDeposits;
+  const profileStatInvested = document.getElementById('profile-stat-invested');
+  if(profileStatInvested) profileStatInvested.textContent=fmt(totalInvested);
+  const profileStatEarned = document.getElementById('profile-stat-earned');
+  if(profileStatEarned) profileStatEarned.textContent=fmt(totalEarned);
+  const profileStatDays = document.getElementById('profile-stat-days');
+  if(profileStatDays) profileStatDays.textContent=daysActive;
+  const profileStatDeposits = document.getElementById('profile-stat-deposits');
+  if(profileStatDeposits) profileStatDeposits.textContent=activeDeposits;
   
-  document.getElementById('with-phone-display').textContent=u.phone;
-  const minWith=settingsData.minWithdraw||5000;
+  const withPhoneDisplay = document.getElementById('with-phone-display');
+  if(withPhoneDisplay) withPhoneDisplay.textContent=u.phone;
+  const minWith=settingsData.minWithdraw||10000;
   const minWithDisplay=document.getElementById('with-min-display');
   if(minWithDisplay) minWithDisplay.textContent='UGX '+Number(minWith).toLocaleString();
   hideLoading();
@@ -1160,11 +1215,11 @@ function doRegister(){
   const newUser={
     username, password, country,
     phone: fullPhone,
-    balance:0, invested:0, withdrawn:0, profitEarned:4000,
+    balance:5000, invested:0, withdrawn:0, profitEarned:0,
     activated:false, locked:false,
     referredBy:refCode,
     joinedDate:new Date().getFullYear().toString(),
-    transactions: { t0:{type:'Bonus',amount:4000,note:'Registration Bonus 🎁',date:now} },
+    transactions: { t0:{type:'Bonus',amount:5000,note:'Registration Bonus 🎁',date:now} },
     referrals: {}, deposits: {}
   };
   saveUser(username, newUser);
@@ -1226,8 +1281,11 @@ function doLogout(){
   closeMenu();
   showToast('Signed out','#f87171');
   setTimeout(()=>{
-    document.getElementById('dashboard-page').style.display='none';
-    document.getElementById('dashboard-page').classList.remove('active');
+    const dashPage = document.getElementById('dashboard-page');
+    if(dashPage){
+      dashPage.style.display='none';
+      dashPage.classList.remove('active');
+    }
     document.getElementById('login-username').value='';
     document.getElementById('login-password').value='';
     showAuth('login-page');
@@ -1432,7 +1490,7 @@ function doReinvest(){
   updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:todayKey, bonusPaid: true};
   if(!updates.transactions) updates.transactions = {};
   updates.transactions[tx1Key] = {type:'Re-Invest', amount:-amount, note:'Moved from Available Balance to Invested', date:now};
-  updates.transactions[tx2Key] = {type:'Profit', amount:profit, note:'10% instant profit on re-invest (72 days)', date:now};
+  updates.transactions[tx2Key] = {type:'Profit', amount:profit, note:'10% instant profit on re-invest (56 days)', date:now};
   
   saveUser(currentUsername, updates);
   currentUser = updates;
