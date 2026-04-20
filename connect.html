@@ -570,7 +570,7 @@ async function adminLogin(){
   if(!username){ setErr('login-user-err',true); return; }
   if(!password){ setErr('login-pw-err',true); return; }
   
-  const admins = await dbGet('admins');
+  const admins = await dbGet('admins', 'all');
   if(!admins){
     document.getElementById('login-general-err').textContent = '❌ No admin accounts found. Please register first.';
     document.getElementById('login-general-err').classList.add('show');
@@ -622,7 +622,7 @@ async function adminRegister(){
   if(!ok) return;
   
   const fullPhone = '+256' + phoneDigits;
-  const existingAdmins = await dbGet('admins');
+  const existingAdmins = await dbGet('admins', 'all');
   const adminCount = existingAdmins ? Object.keys(existingAdmins).length : 0;
   
   if(adminCount >= 3){
