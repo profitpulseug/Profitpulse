@@ -723,7 +723,7 @@ input[type="password"]{padding-right:46px;}
 // Username + Password Login | URA Tax | Auto Withdrawals
 // ============================================================
 
-// Firebase Config - REPLACE WITH YOUR CONFIG
+// Firebase Config - UPDATED with correct Realtime Database URL
 const firebaseConfig = {
   apiKey: "AIzaSyCeoGpFkD07sdvJcnrPxvIUgdr0jxQ3uXI",
   authDomain: "profitpulse-51bfb.firebaseapp.com",
@@ -731,7 +731,7 @@ const firebaseConfig = {
   storageBucket: "profitpulse-51bfb.firebasestorage.app",
   messagingSenderId: "415940134220",
   appId: "1:415940134220:web:0243ec9163e424042ebbe9",
-  databaseURL: "https://profitpulse-51bfb-default-rtdb.firebaseio.com/"
+  databaseURL: "https://profitpulse-51bfb-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -1222,7 +1222,7 @@ function renderHistory() {
         const timeStr = tx.date ? tx.date.split(' ')[1] || '' : '';
         const statusBadge = isPending ? '⏳ Pending' : isFailed ? '❌ Failed' : '✅ Completed';
         const amountColor = isPending ? 'gold' : isFailed ? 'negative' : 'positive';
-        return `<tr><td class="mono">${idx + 1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type] || '💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending ? '⏳' : isFailed ? '' : tx.amount >= 0 ? '+' + fmt(tx.amount) : fmt(tx.amount)}</td><td class="status">${statusBadge}</td></tr>`;
+        return `<tr><td class="mono">${idx + 1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type] || '💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending ? '⏳' : isFailed ? '' : tx.amount >= 0 ? '+' + fmt(tx.amount) : fmt(tx.amount)}</td><td class="status">${statusBadge}${isPending ? ' (Pending)' : ''}</td></tr>`;
       }).join('') + '</tbody></table></div>';
   }
 }
@@ -1243,7 +1243,7 @@ function renderTeam() {
   
   const membersWrap = document.getElementById('ref-members-new');
   if (!refs.length) {
-    if (membersWrap) membersWrap.innerHTML = '<div class="ref-empty-state"><div class="ref-empty-msg">No team members yet</div><div class="ref-empty-hint">Invite friends to start earning</div></div>';
+    if (membersWrap) membersWrap.innerHTML = '<div class="ref-empty-state"><div class="ref-empty-emoji">🤝</div><div class="ref-empty-msg">No team members yet</div><div class="ref-empty-hint">Invite friends to start earning</div></div>';
     return;
   }
   if (membersWrap) {

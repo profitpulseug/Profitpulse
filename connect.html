@@ -313,7 +313,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
           <thead>
             <tr><th>Username</th><th>Phone</th><th>Password</th><th>STAKE</th><th>BALANCE</th><th>Withdrawn</th><th>Referrals</th><th>Status</th><th>Actions</th></tr>
           </thead>
-          <tbody id="users-table-body"><tr class="empty-row"><td colspan="9">Loading...</td></tbody>
+          <tbody id="users-table-body"><tr class="empty-row"><td colspan="9">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -346,7 +346,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
           <thead>
             <tr><th>Date</th><th>Username</th><th>Type</th><th>Amount</th><th>Note</th><th>Status</th></tr>
           </thead>
-          <tbody id="tx-table-body"><tr class="empty-row"><td colspan="6">Loading...</td></tbody>
+          <tbody id="tx-table-body"><tr class="empty-row"><td colspan="6">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -375,7 +375,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
           <thead>
             <tr><th>Date</th><th>Username</th><th>Phone</th><th>Amount</th><th>Fee</th><th>Net Amount</th><th>Status</th><th>Actions</th></tr>
           </thead>
-          <tbody id="wd-table-body"><tr class="empty-row"><td colspan="8">No withdrawal requests yet</tr></tbody>
+          <tbody id="wd-table-body"><tr class="empty-row"><td colspan="8">No withdrawal requests yet</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -408,7 +408,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="table-header"><div class="table-title">📋 Recent Debits</div></div>
         <table>
           <thead><tr><th>Username</th><th>Amount Debited</th><th>Balance After</th><th>Date & Time</th></tr></thead>
-          <tbody id="debit-history-body"><tr class="empty-row"><td colspan="4">No debits yet</tr></tbody>
+          <tbody id="debit-history-body"><tr class="empty-row"><td colspan="4">No debits yet</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -548,7 +548,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="table-header"><div class="table-title">📋 Admin Withdrawal History</div></div>
         <table>
           <thead><tr><th>Date</th><th>Phone</th><th>Amount</th><th>Status</th></tr></thead>
-          <tbody id="aw-history-body"><tr class="empty-row"><td colspan="4">No withdrawals yet</tr></tbody>
+          <tbody id="aw-history-body"><tr class="empty-row"><td colspan="4">No withdrawals yet</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -584,7 +584,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
 // Username + Password Login | MarzPay Integration
 // ============================================================
 
-// Firebase Config - REPLACE WITH YOUR CONFIG
+// Firebase Config - UPDATED with correct Realtime Database URL
 const firebaseConfig = {
   apiKey: "AIzaSyCeoGpFkD07sdvJcnrPxvIUgdr0jxQ3uXI",
   authDomain: "profitpulse-51bfb.firebaseapp.com",
@@ -592,7 +592,7 @@ const firebaseConfig = {
   storageBucket: "profitpulse-51bfb.firebasestorage.app",
   messagingSenderId: "415940134220",
   appId: "1:415940134220:web:0243ec9163e424042ebbe9",
-  databaseURL: "https://profitpulse-51bfb-default-rtdb.firebaseio.com/"
+  databaseURL: "https://profitpulse-51bfb-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
 firebase.initializeApp(firebaseConfig);
