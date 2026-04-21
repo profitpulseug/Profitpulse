@@ -6,12 +6,10 @@
 <title>ProfitPulse — Grow Your Wealth</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="ProfitPulse — Grow Your Wealth">
-<meta property="og:description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors growing their money today!">
+<meta property="og:description" content="Earn 10% daily returns on your investments. Join thousands of investors in Uganda & Kenya.">
 <meta property="og:site_name" content="ProfitPulse">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ProfitPulse — Grow Your Wealth">
-<meta name="twitter:description" content="Premium Investment Wallet. Earn 10% daily returns for 56 days!">
-<meta name="description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors today!">
+<meta name="description" content="Earn 10% daily returns. Join thousands of investors today!">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -31,6 +29,8 @@
   --table-border:#3a2f26;
   --avatar-bg:#d4af37;
   --ref-bg:#d4af37;
+  --success:#10b981;
+  --danger:#ef4444;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:500px;margin:0 auto;position:relative;overflow-x:hidden;}
@@ -170,6 +170,15 @@ input[type="password"]{padding-right:46px;}
 }
 .whatsapp-float:hover{transform:scale(1.08);}
 
+/* Investment Active Card */
+.investment-card{background:linear-gradient(135deg, #1e3a5f 0%, #0f2b45 100%);border:1px solid var(--accent);border-radius:16px;padding:16px;margin-bottom:16px;}
+.investment-title{font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.investment-amount{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff;margin-bottom:8px;}
+.investment-progress{background:var(--surface2);border-radius:10px;height:8px;margin:12px 0;overflow:hidden;}
+.investment-progress-fill{background:var(--accent);height:100%;border-radius:10px;transition:width 0.3s;}
+.investment-days{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;}
+.investment-status{font-size:10px;color:var(--accent3);margin-top:8px;}
+
 /* Table (Scrollable) */
 .plan-wrap{background:var(--surface);border:2px solid var(--accent);border-radius:16px;overflow:hidden;}
 .plan-header{background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%);padding:14px 16px;text-align:center;}
@@ -208,7 +217,7 @@ input[type="password"]{padding-right:46px;}
 .profile-detail-val{font-weight:700;font-family:'JetBrains Mono',monospace;font-size:12px;}
 .profile-avatar-container{display:flex;justify-content:center;margin-bottom:14px;}
 
-/* Profile Redesign Styles */
+/* Profile Styles */
 .profile-header-section{background:linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:16px;color:#fff;}
 .profile-avatar-lg{width:90px;height:90px;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px;font-weight:700;}
 .profile-name-header{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;margin-bottom:4px;}
@@ -255,14 +264,21 @@ input[type="password"]{padding-right:46px;}
 
 /* Forms */
 .action-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 18px;}
-.green-btn{width:100%;background:#16a34a;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.green-btn{width:100%;background:#10b981;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .green-btn:active{transform:scale(.98);}
 .green-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.red-btn{width:100%;background:#dc2626;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.red-btn{width:100%;background:#ff6b5b;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .red-btn:active{transform:scale(.98);}
 .red-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.amber-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.amber-btn{width:100%;background:#06b6d4;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .amber-btn:active{transform:scale(.98);}
+.amber-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* Section-specific backgrounds */
+#sec-deposit .action-card{background:linear-gradient(135deg, rgba(16,185,129,.1) 0%, rgba(16,185,129,.05) 100%);border:1px solid rgba(16,185,129,.3);}
+#sec-withdraw .action-card{background:linear-gradient(135deg, rgba(255,107,91,.1) 0%, rgba(255,107,91,.05) 100%);border:1px solid rgba(255,107,91,.3);}
+#sec-reinvest .action-card{background:linear-gradient(135deg, rgba(6,182,212,.1) 0%, rgba(6,182,212,.05) 100%);border:1px solid rgba(6,182,212,.3);}
+
 .popup-banner{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-10px);background:#1e293b;color:#fff;font-size:13px;font-weight:600;padding:14px 22px;border-radius:16px;opacity:0;transition:.35s;z-index:9998;pointer-events:none;text-align:center;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.25);line-height:1.5;}
 .popup-banner.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .readonly-field{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 42px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
@@ -330,23 +346,6 @@ input[type="password"]{padding-right:46px;}
 .ref-member-info{display:flex;gap:12px;align-items:center;font-size:11px;}
 .ref-member-level{background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;}
 .ref-member-status{color:var(--muted);}
-.ref-main-card{background:var(--ref-bg);border:1px solid var(--table-border);border-radius:20px;padding:20px;margin-bottom:14px;}
-.ref-total-card{background:#065f46;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;}
-.ref-total-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#a7f3d0;margin-bottom:8px;}
-.ref-total-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:#fff;}
-.ref-program-table{width:100%;border-collapse:collapse;background:#065f46;border-radius:16px;overflow:hidden;margin-bottom:20px;}
-.ref-program-table thead tr{background:var(--table-header);}
-.ref-program-table thead th{padding:14px 12px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent3);text-align:left;}
-.ref-program-table tbody tr{border-top:1px solid var(--table-border);}
-.ref-program-table tbody td{padding:12px;font-size:13px;font-family:'JetBrains Mono',monospace;color:#fff;}
-.ref-program-table tbody td:nth-child(1){color:var(--gold);font-weight:700;}
-.ref-program-table tbody td:nth-child(2){color:var(--accent3);font-weight:700;}
-.ref-list-table{width:100%;border-collapse:collapse;background:#065f46;border-radius:16px;overflow:hidden;}
-.ref-list-table thead tr{background:var(--table-header);}
-.ref-list-table thead th{padding:12px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent3);text-align:left;}
-.ref-list-table tbody tr{border-top:1px solid var(--table-border);}
-.ref-list-table tbody td{padding:12px;font-size:12px;font-family:'JetBrains Mono',monospace;color:#fff;}
-.section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
 
 /* WA Button */
 .wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:fit-content;margin-left:auto;background:#25D366;border:none;border-radius:14px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
@@ -467,12 +466,12 @@ input[type="password"]{padding-right:46px;}
       <div class="stats-card">
         <div class="stats-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
           <div class="stat-box" style="padding:14px 8px;text-align:center;">
-            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">Balance</div>
-            <div class="stat-value" style="font-size:14px;font-weight:800;color:var(--accent);" id="stat-balance">UGX 0</div>
+            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">STAKE (Locked)</div>
+            <div class="stat-value" style="font-size:14px;font-weight:800;color:var(--accent);" id="stat-stake">UGX 0</div>
           </div>
           <div class="stat-box" style="padding:14px 8px;text-align:center;">
-            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">STAKE</div>
-            <div class="stat-value dep" style="font-size:14px;font-weight:800;" id="stat-invested">UGX 0</div>
+            <div class="stat-label" style="font-size:8px;margin-bottom:6px;">BALANCE</div>
+            <div class="stat-value" style="font-size:14px;font-weight:800;color:var(--success);" id="stat-balance">UGX 0</div>
           </div>
           <div class="stat-box" style="padding:14px 8px;text-align:center;">
             <div class="stat-label" style="font-size:8px;margin-bottom:6px;">Withdrawn</div>
@@ -481,6 +480,18 @@ input[type="password"]{padding-right:46px;}
         </div>
       </div>
     </div>
+
+    <!-- Active Investment Display -->
+    <div class="section" id="active-investment-section" style="display:none;">
+      <div class="investment-card">
+        <div class="investment-title">📈 ACTIVE INVESTMENT</div>
+        <div class="investment-amount" id="active-stake-amount">UGX 0</div>
+        <div class="investment-progress"><div class="investment-progress-fill" id="investment-progress-fill" style="width:0%"></div></div>
+        <div class="investment-days"><span id="days-completed">0</span><span>Day 56</span></div>
+        <div class="investment-status" id="investment-status">Generating 10% daily profit</div>
+      </div>
+    </div>
+
     <div class="section">
       <div class="action-grid" style="display:flex;flex-direction:column;gap:12px;margin:16px 0;align-items:flex-start;">
         <button class="action-btn" style="background:#22c55e;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('deposit')"><span class="btn-icon">💳</span> Invest</button>
@@ -594,10 +605,9 @@ input[type="password"]{padding-right:46px;}
               <tr><td>10,000,000</td><td>1,000,000</td><td>56,000,000</td></tr>
               <tr><td>20,000,000</td><td>2,000,000</td><td>112,000,000</td></tr>
             </tbody>
-           </table>
+          </table>
         </div>
         <div class="scroll-hint">← Swipe horizontally to see all columns →</div>
-
       </div>
     </div>
   </div>
@@ -631,10 +641,10 @@ input[type="password"]{padding-right:46px;}
 
   <!-- DEPOSIT -->
   <div class="dash-section" id="sec-deposit">
-    <div class="inner-header"><span style="font-size:22px">💳</span><div><div class="inner-title">Deposit</div><div class="inner-sub">Add funds to your wallet</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">💳</span><div><div class="inner-title">Invest</div><div class="inner-sub">Add funds to your STAKE</div></div></div>
     <div class="section">
       <div class="action-card">
-        <div class="deposit-note" id="dep-min-note">✅ Minimum deposit: <strong>UGX 10,000</strong>. Enter your MTN/Airtel number and amount below.</div>
+        <div class="deposit-note" id="dep-min-note">✅ Minimum deposit: <strong>UGX 10,000</strong>. Your deposit goes to STAKE and earns 10% daily for 56 days.</div>
         <div class="field-group">
           <label class="field-label">Mobile Money Phone Number</label>
           <div class="phone-prefix-wrap" id="dep-phone-wrap">
@@ -649,17 +659,18 @@ input[type="password"]{padding-right:46px;}
           <div class="field-wrap"><span class="field-icon">💰</span><input type="number" id="dep-amount" placeholder="Min 10,000 — Max 2,350,000" min="10000" max="2350000"></div>
           <div class="field-error" id="dep-amount-err">Please check the amount limits</div>
         </div>
-        <button class="green-btn" id="dep-submit-btn" onclick="doDeposit()">💳 SUBMIT DEPOSIT</button>
+        <button class="green-btn" id="dep-submit-btn" onclick="doDeposit()">💳 INVEST NOW</button>
       </div>
     </div>
   </div>
 
   <!-- WITHDRAW -->
   <div class="dash-section" id="sec-withdraw">
-    <div class="inner-header"><span style="font-size:22px">💰</span><div><div class="inner-title">Withdraw</div><div class="inner-sub">Cash out your earnings</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">💰</span><div><div class="inner-title">Withdraw</div><div class="inner-sub">Cash out your BALANCE</div></div></div>
     <div class="section">
       <div id="withdraw-locked-msg" class="locked-banner" style="display:none">🔒 Withdrawals are currently disabled. Please contact support.</div>
       <div class="action-card">
+        <div class="charge-note">⚠️ Withdrawal fee: 10% of amount. You receive 90% of requested amount.</div>
         <div class="deposit-note">📱 Funds will be sent to your registered mobile money number.</div>
         <div class="field-group">
           <label class="field-label">Sending To</label>
@@ -671,7 +682,11 @@ input[type="password"]{padding-right:46px;}
           <div class="field-wrap"><span class="field-icon">💸</span><input type="number" id="with-amount" placeholder="Enter amount" min="5000"></div>
           <div class="field-error" id="with-amount-err">Minimum withdrawal is <span id="with-min-display">UGX 10,000</span></div>
         </div>
-        <button class="red-btn" id="with-submit-btn" onclick="doWithdraw()">💸 CASHOUT</button>
+        <div id="withdraw-preview" style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;display:none;">
+          <span>💸 You receive: </span><strong id="withdraw-net-amount">UGX 0</strong><br>
+          <span>🔧 Fee (10%): </span><strong id="withdraw-fee-amount">UGX 0</strong>
+        </div>
+        <button class="red-btn" id="with-submit-btn" onclick="doWithdraw()">💸 WITHDRAW</button>
       </div>
     </div>
   </div>
@@ -681,9 +696,9 @@ input[type="password"]{padding-right:46px;}
     <div class="inner-header"><span style="font-size:22px">🔄</span><div><div class="inner-title">Re-Invest</div><div class="inner-sub">Compound your earnings</div></div></div>
     <div class="section">
       <div class="action-card">
-        <div class="deposit-note">🔄 Re-invest from your <strong>Balance</strong>. Minimum <strong>UGX 10,000</strong>. Earns 10% instant profit + restarts daily profits.</div>
+        <div class="deposit-note">🔄 Re-invest from your <strong>BALANCE</strong> to <strong>STAKE</strong>. Minimum <strong>UGX 10,000</strong>. Earns 10% instant profit + restarts 56-day cycle.</div>
         <div class="field-group">
-          <label class="field-label">Balance</label>
+          <label class="field-label">Available BALANCE</label>
           <div class="field-wrap"><span class="field-icon">💼</span><div class="readonly-field" id="reinvest-balance-display">UGX 0</div></div>
         </div>
         <div class="field-group">
@@ -747,8 +762,12 @@ input[type="password"]{padding-right:46px;}
 
 <script>
 // ============================================================
-// PROFIT PULSE - LOCAL STORAGE VERSION (NO FIREBASE)
-// All data stored in browser's localStorage
+// PROFIT PULSE - LOCAL STORAGE VERSION (FIXED)
+// CORRECT FINANCIAL LOGIC:
+// - STAKE = Locked investment (generates 10% daily)
+// - BALANCE = Profits + Referral bonuses (available for withdrawal)
+// - WITHDRAWN = Total withdrawals ever made
+// - Daily profits calculated from STAKE only
 // ============================================================
 
 // Storage keys
@@ -820,12 +839,6 @@ function saveUser(username, userData) {
 function getUser(username) {
   const users = getAllUsers();
   return users[username] || null;
-}
-
-function deleteUser(username) {
-  const users = getAllUsers();
-  delete users[username];
-  saveToLocalStorage(STORAGE_USERS, users);
 }
 
 // Current user session
@@ -983,7 +996,7 @@ function applyWithdrawLock(){
 function updateDepMinNote(){
   const minDep=settingsData.minDeposit||10000;
   const note=document.getElementById('dep-min-note');
-  if(note) note.innerHTML=`✅ Minimum deposit is <strong>${fmt(minDep)}</strong>. Enter your phone number and amount.`;
+  if(note) note.innerHTML=`✅ Minimum deposit is <strong>${fmt(minDep)}</strong>. Your deposit goes to STAKE and earns 10% daily for 56 days.`;
 }
 
 function updateRegPrefix(){
@@ -1004,23 +1017,88 @@ function copyRef(){
 
 function openWaGroup(){ if(settingsData.waGroup) window.open(settingsData.waGroup,'_blank'); else showModal('💬','Coming Soon','WhatsApp group link will be available soon. Contact support for now.'); }
 
+// Withdraw preview
+function updateWithdrawPreview(){
+  const amount = parseInt(document.getElementById('with-amount').value) || 0;
+  const fee = Math.floor(amount * 0.10);
+  const net = amount - fee;
+  const preview = document.getElementById('withdraw-preview');
+  const netEl = document.getElementById('withdraw-net-amount');
+  const feeEl = document.getElementById('withdraw-fee-amount');
+  if(amount > 0){
+    preview.style.display = 'block';
+    if(netEl) netEl.textContent = fmt(net);
+    if(feeEl) feeEl.textContent = fmt(fee);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+// Listen to withdraw amount input
+document.addEventListener('DOMContentLoaded', function(){
+  const withAmount = document.getElementById('with-amount');
+  if(withAmount){
+    withAmount.addEventListener('input', updateWithdrawPreview);
+  }
+});
+
+// Update UI with STAKE and BALANCE
 function updateBalanceUI(){
   if(!currentUser) return;
-  const invested = currentUser.invested || 0;
+  const stake = currentUser.stake || 0;
   const balance = currentUser.balance || 0;
+  const withdrawn = currentUser.withdrawn || 0;
   
-  // Calculate total withdrawn
-  let withdrawn = 0;
-  if(currentUser.transactions){
-    Object.values(currentUser.transactions).forEach(tx => {
-      if(tx.type === 'Withdrawal') withdrawn += Math.abs(tx.amount || 0);
+  document.getElementById('stat-stake').textContent = fmt(stake);
+  document.getElementById('stat-balance').textContent = fmt(balance);
+  document.getElementById('stat-withdrawn').textContent = fmt(withdrawn);
+  
+  const reinvestBalance = document.getElementById('reinvest-balance-display');
+  if(reinvestBalance) reinvestBalance.textContent = fmt(balance);
+  
+  // Update active investment display
+  updateActiveInvestmentDisplay();
+}
+
+// Calculate total withdrawn from transaction history
+function calculateTotalWithdrawn(user){
+  let total = 0;
+  if(user.transactions){
+    Object.values(user.transactions).forEach(tx => {
+      if(tx.type === 'Withdrawal' && tx.status === 'completed'){
+        total += Math.abs(tx.amount || 0);
+      }
     });
   }
+  return total;
+}
+
+// Update active investment card
+function updateActiveInvestmentDisplay(){
+  const section = document.getElementById('active-investment-section');
+  if(!currentUser || !currentUser.activeInvestment){
+    if(section) section.style.display = 'none';
+    return;
+  }
   
-  document.getElementById('stat-invested').textContent=fmt(invested);
-  document.getElementById('stat-balance').textContent=fmt(Math.max(0, balance));
-  document.getElementById('stat-withdrawn').textContent=fmt(withdrawn);
-  const el=document.getElementById('reinvest-balance-display'); if(el)el.textContent=fmt(Math.max(0, balance));
+  const inv = currentUser.activeInvestment;
+  const stakeAmount = inv.amount || 0;
+  const daysRun = inv.daysRun || 0;
+  const totalDays = 56;
+  const progress = (daysRun / totalDays) * 100;
+  
+  document.getElementById('active-stake-amount').textContent = fmt(stakeAmount);
+  document.getElementById('investment-progress-fill').style.width = progress + '%';
+  document.getElementById('days-completed').textContent = daysRun;
+  
+  if(daysRun >= totalDays){
+    document.getElementById('investment-status').textContent = '✅ Investment completed! Re-invest to continue earning.';
+  } else {
+    const remaining = totalDays - daysRun;
+    document.getElementById('investment-status').textContent = `📈 Generating 10% daily profit — ${remaining} days remaining`;
+  }
+  
+  if(section) section.style.display = 'block';
 }
 
 function filterHistory(type, tabEl){
@@ -1037,7 +1115,7 @@ function renderHistory(){
   const txs=allTxs.filter(tx=>tx.type===currentHistoryFilter);
   if(!txs.length){ wrap.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No '+currentHistoryFilter+' Records</div><div class="empty-text">Your '+currentHistoryFilter.toLowerCase()+' history will appear here.</div></div>'; return; }
   const icons={Deposit:'💳',Withdrawal:'💸',Bonus:'🎁',Referral:'🔗',Profit:'📈','Re-Invest':'🔄'};
-  wrap.innerHTML='<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody>'+txs.map((tx,idx)=>{
+  wrap.innerHTML='<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></thead><tbody>'+txs.map((tx,idx)=>{
     const pos=tx.amount>=0; 
     const isPending=tx.status==='pending';
     const isFailed=tx.status==='failed';
@@ -1045,7 +1123,7 @@ function renderHistory(){
     const statusBadge=isPending?'⏳ Pending':isFailed?'❌ Failed':'✅ Completed';
     const amountColor=isPending?'gold':isFailed?'negative':'positive';
     return `<tr><td class="mono">${idx+1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type]||'💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending?'⏳':isFailed?'':pos?'+'+fmt(tx.amount):fmt(tx.amount)}</td><td class="status">${statusBadge}</td></tr>`;
-  }).join('')+'</tbody> </table></div>';
+  }).join('')+'</tbody></table></div>';
 }
 
 function renderTeam(){
@@ -1077,60 +1155,109 @@ function renderTeam(){
 function getDateKey(d){ return d.toISOString().slice(0,10); }
 function addDays(d,n){ const r=new Date(d); r.setUTCDate(r.getUTCDate()+n); return r; }
 
+// RUN DAILY PROFITS - Calculated from STAKE only
 function runDailyProfits(){
   if(!currentUser||!currentUsername) return;
-  const deposits=currentUser.deposits?Object.entries(currentUser.deposits):[];
-  if(!deposits.length) return;
-  const todayKey=getDateKey(new Date());
-  let totalProfit=0;
-  let anyPaid=false;
-  const updates = { ...currentUser };
-  for(const [key,dep] of deposits){
-    let daysRun=dep.daysRun||0;
-    if(daysRun>=56) continue;
-    const startDate=new Date(dep.startDate);
-    const lastPaid=dep.lastPaidDate||getDateKey(startDate);
-    let cursor=addDays(new Date(lastPaid),1);
-    while(getDateKey(cursor)<=todayKey && daysRun<56){
-      const dateKey=getDateKey(cursor);
-      const profit=Math.floor(dep.amount*0.10);
-      totalProfit+=profit;
-      const txKey='txp_'+dateKey.replace(/-/g,'')+'_'+key.slice(-5);
-      if(!updates.transactions) updates.transactions = {};
-      updates.transactions[txKey]={type:'Profit',amount:profit,note:'Daily 10% profit — Day '+(daysRun+1)+'/56',date:dateKey+' 00:00'};
-      if(!updates.deposits) updates.deposits = {};
-      if(!updates.deposits[key]) updates.deposits[key] = {};
-      updates.deposits[key].daysRun=daysRun+1;
-      updates.deposits[key].lastPaidDate=dateKey;
-      daysRun++; anyPaid=true;
-      cursor=addDays(cursor,1);
-    }
+  
+  // Check if user has active investment
+  if(!currentUser.activeInvestment || currentUser.activeInvestment.daysRun >= 56){
+    return;
   }
-  if(anyPaid){
-    updates.balance = (currentUser.balance||0) + totalProfit;
+  
+  const stake = currentUser.stake || 0;
+  if(stake <= 0) return;
+  
+  const todayKey = getDateKey(new Date());
+  const lastProfitDate = currentUser.lastProfitDate || getDateKey(new Date(Date.now() - 86400000));
+  
+  // Only process if last profit was before today
+  if(lastProfitDate >= todayKey) return;
+  
+  // Calculate days to process
+  let currentDate = new Date(lastProfitDate);
+  let daysProcessed = 0;
+  let totalProfit = 0;
+  let newDaysRun = currentUser.activeInvestment.daysRun || 0;
+  
+  while(getDateKey(currentDate) < todayKey && newDaysRun < 56){
+    currentDate = addDays(currentDate, 1);
+    const profit = Math.floor(stake * 0.10);
+    totalProfit += profit;
+    newDaysRun++;
+    daysProcessed++;
+  }
+  
+  if(totalProfit > 0){
+    // Add profit to BALANCE (available for withdrawal)
+    const newBalance = (currentUser.balance || 0) + totalProfit;
+    
+    // Update transactions
+    const updates = { ...currentUser };
+    updates.balance = newBalance;
+    updates.lastProfitDate = todayKey;
+    
+    if(updates.activeInvestment){
+      updates.activeInvestment.daysRun = newDaysRun;
+    }
+    
+    if(!updates.transactions) updates.transactions = {};
+    const txKey = 'tx_profit_' + Date.now();
+    updates.transactions[txKey] = {
+      type: 'Profit',
+      amount: totalProfit,
+      note: `Daily 10% profit on UGX ${stake.toLocaleString()} STAKE (Day ${newDaysRun}/56)`,
+      date: dateStr(),
+      status: 'completed'
+    };
+    
     saveUser(currentUsername, updates);
     currentUser = updates;
     updateBalanceUI();
     renderHistory();
+    
+    showToast(`📈 +${fmt(totalProfit)} daily profit added to BALANCE!`, 'var(--success)');
   }
 }
 
 function startDailyProfitLoop(){
   if(profitInterval) clearInterval(profitInterval);
+  // Check every 5 minutes for daily profits
   profitInterval = setInterval(() => {
     if(currentUser && currentUsername){
       runDailyProfits();
     }
-  }, 60000);
+  }, 300000); // 5 minutes
 }
 
 function loadDashboard(){
   const u=currentUser;
   if(!u) return;
+  
+  // Ensure new user structure
+  if(u.stake === undefined) u.stake = 0;
+  if(u.balance === undefined) u.balance = u.invested ? 0 : (u.balance || 5000);
+  if(u.withdrawn === undefined) u.withdrawn = calculateTotalWithdrawn(u);
+  if(u.activeInvestment === undefined && u.deposits){
+    // Migrate old deposits to activeInvestment
+    const deposits = Object.values(u.deposits);
+    if(deposits.length > 0){
+      const latest = deposits[deposits.length - 1];
+      u.activeInvestment = {
+        amount: latest.amount,
+        startDate: latest.startDate,
+        daysRun: latest.daysRun || 0,
+        lastPaidDate: latest.lastPaidDate
+      };
+      u.stake = latest.amount;
+      saveUser(currentUsername, u);
+    }
+  }
+  
   const ctry=u.country==='KE'?'🇰🇪 Kenya':'🇺🇬 Uganda';
   const dashUsername = document.getElementById('dash-username');
   if(dashUsername) dashUsername.textContent=u.username;
   updateAvatarInUI(u.username);
+  
   const siteBase=window.location.origin+window.location.pathname.replace(/\/[^\/]*$/,'/');
   const refLink=siteBase+'?ref='+encodeURIComponent(u.username);
   const refUrl = document.getElementById('ref-url');
@@ -1146,7 +1273,6 @@ function loadDashboard(){
   const profileCountry = document.getElementById('profile-country-header-main');
   if(profileCountry) profileCountry.innerHTML=`${ctry==='-'?'🌍':ctry} ${ctry==='-'?'Unknown':ctry}`;
   
-  // New simplified profile elements
   const profileUserSimple = document.getElementById('profile-user-simple');
   if(profileUserSimple) profileUserSimple.textContent=u.username;
   const profilePhoneSimple = document.getElementById('profile-phone-simple');
@@ -1156,21 +1282,19 @@ function loadDashboard(){
   const profileStatusSimple = document.getElementById('profile-status-simple');
   if(profileStatusSimple) profileStatusSimple.textContent=u.activated?'🟢 Active':'⏳ Inactive';
   
-  const deposits=u.deposits?Object.values(u.deposits):[];
-  const totalInvested=deposits.reduce((sum,d)=>sum+(d.amount||0),0);
-  const totalEarned=u.profitEarned||0;
-  const daysActive=u.daysActive||0;
-  const activeDeposits=deposits.filter(d=>d.status!=='completed').length;
-  
   const withPhoneDisplay = document.getElementById('with-phone-display');
   if(withPhoneDisplay) withPhoneDisplay.textContent=u.phone;
   const minWith=settingsData.minWithdraw||10000;
   const minWithDisplay=document.getElementById('with-min-display');
   if(minWithDisplay) minWithDisplay.textContent='UGX '+Number(minWith).toLocaleString();
+  
   hideLoading();
-  updateBalanceUI(); renderHistory(); renderTeam();
+  updateBalanceUI();
+  renderHistory();
+  renderTeam();
   updateDepMinNote();
   updateWhatsAppButton();
+  runDailyProfits(); // Run immediately on load
 }
 
 function toggleTheme(){
@@ -1215,16 +1339,15 @@ function showTerms(){
 Welcome to ProfitPulse – Your Gateway to Smart Investing
 
 1. INVESTMENT PROGRAM
-ProfitPulse offers a structured investment program with 10% daily returns over 56 days, providing a 560% total return on your investment. Our platform is designed for users in Uganda and Kenya.
+ProfitPulse offers a structured investment program with 10% daily returns over 56 days, providing a 560% total return on your investment. Your deposit goes to STAKE (locked) and generates daily profits added to your BALANCE.
 
 2. ELIGIBILITY
 • Must be 18 years or older
 • Valid mobile money account (MTN or Airtel)
 • Genuine personal information required
-• One active investment per user at a time
 
 3. RETURNS & EARNINGS
-• Daily Profit: 10% of your deposit amount
+• Daily Profit: 10% of your STAKE amount
 • Investment Period: 56 days
 • Total Potential Return: 560% of initial deposit
 • Referral Bonuses: Earn 10% (Level 1), 4% (Level 2), 2% (Level 3)
@@ -1232,39 +1355,14 @@ ProfitPulse offers a structured investment program with 10% daily returns over 5
 
 4. WITHDRAWAL POLICY
 • Minimum Withdrawal: UGX 10,000
-• Processing Time: 24-48 hours
 • Withdrawal Charge: 10% of withdrawal amount
-• Available Balance: Earned profits + bonuses
-• Early Withdrawal: Allowed anytime, pending charges apply
+• You receive 90% of requested amount
+• Withdrawals are from BALANCE only (profits + bonuses)
 
 5. USER RESPONSIBILITIES
 • Keep your login credentials secure
 • Report suspicious activity immediately
 • Provide accurate personal information
-• Comply with all platform rules
-• Do not share your account with others
-
-6. PLATFORM RULES
-• One active deposit per user
-• Referral link sharing is encouraged
-• No withdrawal of principal during earning period
-• Automatic daily profit calculations
-• 30-day inactivity auto-logout for security
-
-7. REFUNDS & DISPUTES
-• Investment disputes must be reported within 7 days
-• Withdrawal delays should be reported to support
-• All decisions are final after 14 days
-• Contact: support@profitpulse.ug
-
-8. DISCLAIMER
-Investment returns are calculated based on the stated 10% daily rate. Past performance is not a guarantee of future results. Users invest at their own risk. ProfitPulse is not liable for external factors affecting mobile money networks.
-
-9. TERMINATION
-We reserve the right to suspend or terminate accounts that violate these terms, including suspicious activity or fraud attempts.
-
-10. CHANGES TO TERMS
-ProfitPulse may update these terms anytime. Continued use means acceptance of new terms.
 
 Thank you for choosing ProfitPulse. Start investing today! 🚀`;
   showModal('📋', 'Terms of Service', termsText);
@@ -1283,69 +1381,25 @@ At ProfitPulse, we believe in transparency and protecting your personal informat
 • Country (Uganda or Kenya)
 • Investment History
 • Transaction Records
-• Device Information (for security)
 
 2. WHY WE COLLECT THIS DATA
 ✓ Process your investments safely
-✓ Verify your identity (KYC compliance)
+✓ Verify your identity
 ✓ Enable mobile money withdrawals
 ✓ Calculate and transfer your daily profits
 ✓ Prevent fraud and unauthorized access
-✓ Improve our services
 
 3. HOW WE PROTECT YOUR DATA
 🔐 Bank-level encryption for all data
-🔐 Secure local storage (no cloud exposure)
+🔐 Secure local storage
 🔐 Password-protected accounts
 🔐 No third-party data sharing
-🔐 Regular security audits
-🔐 SSL encryption for all transactions
 
-4. DATA SHARING
-We NEVER share your data with:
-✗ Advertisers or marketers
-✗ Third-party companies
-✗ Social media platforms
-✗ Any unauthorized parties
-
-Your data is only used to serve YOU better.
-
-5. YOUR RIGHTS
+4. YOUR RIGHTS
 ✓ Access your data anytime
 ✓ Request data deletion
 ✓ Update your information
 ✓ Export your transaction history
-✓ Change privacy settings
-
-6. COOKIES & TRACKING
-We use minimal cookies for:
-• Keeping you logged in
-• Remembering preferences
-• Theme selection (dark/light)
-• Preventing fraud
-
-No tracking or advertising cookies.
-
-7. ACCOUNT SECURITY
-• Two-factor authentication available
-• 30-minute inactivity auto-logout
-• Suspicious login alerts
-• IP address monitoring
-• Session management
-
-8. MOBILE MONEY DATA
-Mobile money integrations are:
-✓ Encrypted end-to-end
-✓ PCI-DSS compliant
-✓ Partner-verified
-✓ Never stored unnecessarily
-
-9. CHILDREN'S PRIVACY
-ProfitPulse is only for users 18+. We don't knowingly collect data from minors.
-
-10. CONTACT US
-Email: privacy@profitpulse.ug
-Response Time: 24-48 hours
 
 Your trust matters to us. Invest with confidence! 💪`;
   showModal('🔒', 'Privacy Policy', privacyText);
@@ -1369,7 +1423,6 @@ function initApp(){
       loadDashboard();
       showDashboard();
       switchTab('home');
-      runDailyProfits();
       startDailyProfitLoop();
       startInactivityWatcher();
     } else {
@@ -1408,7 +1461,6 @@ function doLogin(){
   loadDashboard(); 
   showDashboard(); 
   switchTab('home');
-  runDailyProfits();
   startDailyProfitLoop();
   startInactivityWatcher();
 }
@@ -1439,12 +1491,17 @@ function doRegister(){
   const newUser={
     username, password, country,
     phone: fullPhone,
-    balance:5000, invested:0, withdrawn:0, profitEarned:0,
-    activated:false, locked:false,
-    referredBy:refCode,
-    joinedDate:new Date().getFullYear().toString(),
-    transactions: { t0:{type:'Bonus',amount:5000,note:'Registration Bonus 🎁',date:now} },
-    referrals: {}, deposits: {}
+    stake: 0,
+    balance: 5000,
+    withdrawn: 0,
+    activated: false,
+    locked: false,
+    referredBy: refCode,
+    joinedDate: new Date().getFullYear().toString(),
+    lastProfitDate: getDateKey(new Date()),
+    transactions: { t0:{type:'Bonus',amount:5000,note:'Registration Bonus 🎁',date:now,status:'completed'} },
+    referrals: {},
+    activeInvestment: null
   };
   saveUser(username, newUser);
   
@@ -1483,9 +1540,9 @@ function doRegister(){
     } else {
       const johnUser = {
         username:'John', password:'John123', country:'UG',
-        phone:'+256700000000', balance:0, invested:0, withdrawn:0, profitEarned:0,
+        phone:'+256700000000', stake:0, balance:0, withdrawn:0,
         activated:false, locked:false, referredBy:'', joinedDate:'2024',
-        transactions:{}, referrals:{}, deposits:{}
+        transactions:{}, referrals:{}, activeInvestment:null
       };
       johnUser.referrals[safeKey(username)] = {username, invested:0, level:1};
       saveUser('John', johnUser);
@@ -1534,28 +1591,53 @@ function doDeposit(){
   const now = dateStr();
   const txKey = 'tx_dep_' + Date.now();
   
-  // Simulate deposit
   setTimeout(() => {
     const profit = Math.floor(amount * 0.10);
-    const newInvested = (currentUser.invested || 0) + amount;
-    const newBalance = (currentUser.balance || 0) + profit;
-    const depKey = 'dep_'+Date.now();
     
     const updates = { ...currentUser };
-    updates.invested = newInvested;
-    updates.balance = newBalance;
-    updates.activated = true;
-    if(!updates.transactions) updates.transactions = {};
-    updates.transactions[txKey] = {type:'Deposit', amount:amount, depositPhone:fullPhone, note:'Deposit confirmed ✅', date:now, status:'completed'};
-    const profitTxKey = 'txp_inst_'+Date.now();
-    updates.transactions[profitTxKey] = {type:'Profit', amount:profit, note:'10% instant profit on deposit', date:now};
-    if(!updates.deposits) updates.deposits = {};
-    updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:getDateKey(new Date()), bonusPaid: false};
     
-    // Handle referral upgrade
-    if(amount >= 300000 && updates.referredBy && updates.referredBy !== 'John'){
-      updates.referredBy = 'John';
+    // Add to STAKE (locked investment)
+    const newStake = (currentUser.stake || 0) + amount;
+    updates.stake = newStake;
+    updates.activated = true;
+    
+    // Add instant profit to BALANCE
+    const newBalance = (currentUser.balance || 0) + profit;
+    updates.balance = newBalance;
+    
+    // Update active investment
+    if(!updates.activeInvestment || updates.activeInvestment.daysRun >= 56){
+      // New investment cycle
+      updates.activeInvestment = {
+        amount: newStake,
+        startDate: new Date().toISOString(),
+        daysRun: 0,
+        lastPaidDate: getDateKey(new Date())
+      };
+    } else {
+      // Add to existing investment
+      updates.activeInvestment.amount = newStake;
     }
+    
+    // Record transactions
+    if(!updates.transactions) updates.transactions = {};
+    updates.transactions[txKey] = {
+      type:'Deposit',
+      amount:amount,
+      depositPhone:fullPhone,
+      note:'Deposit added to STAKE ✅',
+      date:now,
+      status:'completed'
+    };
+    
+    const profitTxKey = 'txp_inst_'+Date.now();
+    updates.transactions[profitTxKey] = {
+      type:'Profit',
+      amount:profit,
+      note:'10% instant profit on deposit (added to BALANCE)',
+      date:now,
+      status:'completed'
+    };
     
     saveUser(currentUsername, updates);
     currentUser = updates;
@@ -1564,12 +1646,12 @@ function doDeposit(){
     creditReferralBonuses(currentUsername, amount);
     
     btn.disabled = false;
-    btn.textContent = '💳 SUBMIT DEPOSIT';
+    btn.textContent = '💳 INVEST NOW';
     document.getElementById('dep-phone').value='';
     document.getElementById('dep-amount').value='';
     updateBalanceUI();
     renderHistory();
-    showToast('✓ Deposit of '+fmt(amount)+' confirmed! +'+fmt(profit)+' profit added. 📈');
+    showToast(`✓ ${fmt(amount)} added to STAKE! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
   }, 1500);
 }
 
@@ -1595,7 +1677,8 @@ function creditReferralBonuses(depositorUsername, amount){
           type: 'Referral',
           amount: bonus1,
           note: 'Level 1 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-          date: dateStr()
+          date: dateStr(),
+          status: 'completed'
         };
         if(upline1Data.referrals && upline1Data.referrals[safeKey(depositorUsername)]){
           upline1Data.referrals[safeKey(depositorUsername)].invested = 
@@ -1617,7 +1700,8 @@ function creditReferralBonuses(depositorUsername, amount){
               type: 'Referral',
               amount: bonus2,
               note: 'Level 2 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-              date: dateStr()
+              date: dateStr(),
+              status: 'completed'
             };
             if(upline2Data.referrals && upline2Data.referrals[safeKey(depositorUsername)]){
               upline2Data.referrals[safeKey(depositorUsername)].invested = 
@@ -1638,7 +1722,8 @@ function creditReferralBonuses(depositorUsername, amount){
                     type: 'Referral',
                     amount: bonus3,
                     note: 'Level 3 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-                    date: dateStr()
+                    date: dateStr(),
+                    status: 'completed'
                   };
                   if(upline3Data.referrals && upline3Data.referrals[safeKey(depositorUsername)]){
                     upline3Data.referrals[safeKey(depositorUsername)].invested = 
@@ -1659,15 +1744,17 @@ function doWithdraw(){
   clearErrors('with-amount-err');
   if(settingsData.withdrawLocked){ showModal('🔒','Locked','Withdrawals are currently disabled.'); return; }
   if(!currentUser.activated){ showModal('🔒','Account Not Activated','Make a deposit first to activate your account.'); return; }
+  
   const minWith = settingsData.minWithdraw||5000;
   const amount = parseInt(document.getElementById('with-amount').value)||0;
   if(amount<minWith){ setErr('with-amount-err',true,'Minimum withdrawal is '+fmt(minWith)); return; }
   
   const balance = currentUser.balance || 0;
-  if(balance < amount){ setErr('with-amount-err',true,'Insufficient balance.'); return; }
+  if(balance < amount){ setErr('with-amount-err',true,'Insufficient BALANCE.'); return; }
 
   const chargeRate = (settingsData.withdrawCharge||10)/100;
-  const sendAmount = Math.floor(amount*(1-chargeRate));
+  const sendAmount = Math.floor(amount * (1 - chargeRate));
+  const fee = amount - sendAmount;
   const phone = currentUser.phone;
   const now = dateStr();
   const txKey = 'tx_wd_'+Date.now();
@@ -1675,19 +1762,29 @@ function doWithdraw(){
   const btn = document.getElementById('with-submit-btn');
   btn.disabled = true; btn.textContent = '⏳ Processing...';
 
-  // Deduct balance
+  // Deduct from BALANCE only
   const updates = { ...currentUser };
-  updates.balance = (currentUser.balance||0) - amount;
+  updates.balance = (currentUser.balance || 0) - amount;
+  updates.withdrawn = (currentUser.withdrawn || 0) + amount;
+  
   if(!updates.transactions) updates.transactions = {};
-  updates.transactions[txKey] = {type:'Withdrawal', amount:-amount, note:'Withdrawal processed to '+phone, date:now, status:'completed'};
+  updates.transactions[txKey] = {
+    type:'Withdrawal',
+    amount:-amount,
+    note:`Withdrawal to ${phone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})`,
+    date:now,
+    status:'completed'
+  };
+  
   saveUser(currentUsername, updates);
   currentUser = updates;
   updateBalanceUI();
   renderHistory();
 
-  btn.disabled = false; btn.textContent = '💸 CASHOUT';
+  btn.disabled = false; btn.textContent = '💸 WITHDRAW';
   document.getElementById('with-amount').value='';
-  showToast('💸 Withdrawal of '+fmt(amount)+' processed! Net received: '+fmt(sendAmount));
+  document.getElementById('withdraw-preview').style.display='none';
+  showToast(`💸 Withdrawal of ${fmt(amount)} processed! You received: ${fmt(sendAmount)}`, 'var(--success)');
 }
 
 function doReinvest(){
@@ -1696,32 +1793,61 @@ function doReinvest(){
   if(amount<10000){setErr('reinvest-amount-err',true,'Minimum re-invest is UGX 10,000');return;}
   
   const balance = currentUser.balance || 0;
-  if(balance < amount){setErr('reinvest-amount-err',true,'Insufficient balance.');return;}
+  if(balance < amount){setErr('reinvest-amount-err',true,'Insufficient BALANCE.');return;}
   
-  const profit=Math.floor(amount*0.10);
-  const newInvested=(currentUser.invested||0)+amount;
-  const depKey='dep_'+Date.now();
-  const now=dateStr();
-  const tx1Key='tx_'+Date.now()+'a';
-  const tx2Key='tx_'+Date.now()+'b';
-  const todayKey=getDateKey(new Date());
+  const profit = Math.floor(amount * 0.10);
+  const now = dateStr();
+  const tx1Key = 'tx_reinvest_' + Date.now() + '_a';
+  const tx2Key = 'tx_reinvest_' + Date.now() + '_b';
   
   const updates = { ...currentUser };
-  updates.balance = (currentUser.balance||0) - amount + profit;
-  updates.invested = newInvested;
+  
+  // Deduct from BALANCE
+  updates.balance = (currentUser.balance || 0) - amount;
+  
+  // Add to STAKE
+  const newStake = (currentUser.stake || 0) + amount;
+  updates.stake = newStake;
+  
+  // Add instant profit to BALANCE
+  updates.balance = updates.balance + profit;
+  
+  // Update or create active investment
+  if(!updates.activeInvestment || updates.activeInvestment.daysRun >= 56){
+    updates.activeInvestment = {
+      amount: newStake,
+      startDate: new Date().toISOString(),
+      daysRun: 0,
+      lastPaidDate: getDateKey(new Date())
+    };
+  } else {
+    updates.activeInvestment.amount = newStake;
+  }
+  
   updates.activated = true;
-  if(!updates.deposits) updates.deposits = {};
-  updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:todayKey, bonusPaid: true};
+  
   if(!updates.transactions) updates.transactions = {};
-  updates.transactions[tx1Key] = {type:'Re-Invest', amount:-amount, note:'Moved from Available Balance to Invested', date:now};
-  updates.transactions[tx2Key] = {type:'Profit', amount:profit, note:'10% instant profit on re-invest (56 days)', date:now};
+  updates.transactions[tx1Key] = {
+    type:'Re-Invest',
+    amount:-amount,
+    note:'Moved from BALANCE to STAKE',
+    date:now,
+    status:'completed'
+  };
+  updates.transactions[tx2Key] = {
+    type:'Profit',
+    amount:profit,
+    note:'10% instant profit on re-invest (added to BALANCE)',
+    date:now,
+    status:'completed'
+  };
   
   saveUser(currentUsername, updates);
   currentUser = updates;
   document.getElementById('reinvest-amount').value='';
   updateBalanceUI();
   renderHistory();
-  showToast('✓ Re-invested! +'+fmt(profit)+' profit added. 📈');
+  showToast(`✓ Re-invested ${fmt(amount)}! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
 }
 
 function resetInactivityTimer(){
