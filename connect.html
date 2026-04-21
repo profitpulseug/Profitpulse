@@ -450,7 +450,6 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="settings-title">💬 WhatsApp Links</div>
         <div class="settings-row"><span class="settings-label">WhatsApp Group Link</span><input type="url" class="settings-input" id="wa-group-input" placeholder="https://chat.whatsapp.com/..."><button class="btn btn-save" onclick="saveWaGroup()">Save</button></div>
         <div class="settings-row"><span class="settings-label">WhatsApp Support Link</span><input type="url" class="settings-input" id="wa-support-input" placeholder="https://wa.me/..."><button class="btn btn-save" onclick="saveWaSupport()">Save</button></div>
-        <div class="settings-row"><span class="settings-label">WhatsApp Customer Care</span><input type="url" class="settings-input" id="whatsapp-link-input" placeholder="https://wa.me/256... or +256..."><button class="btn btn-save" onclick="saveWhatsappLink()">Save</button></div>
       </div>
       <div class="settings-section">
         <div class="settings-title">💰 Deposit & Withdrawal Settings</div>
@@ -562,7 +561,7 @@ function loadAllData() {
   allUsers = getAllUsers();
   allSettings = loadFromLocalStorage(STORAGE_SETTINGS, {
     withdrawCharge: 10, refL1: 10, refL2: 4, refL3: 2,
-    waGroup: '', waSupport: '', whatsappLink: '', withdrawLocked: false,
+    waGroup: '', waSupport: '', withdrawLocked: false,
     minWithdraw: 10000
   });
   allWithdrawals = loadFromLocalStorage(STORAGE_PENDING_WITHDRAWALS, {});
@@ -1110,7 +1109,6 @@ function loadSettingsUI(){
   const s=allSettings; 
   document.getElementById('wa-group-input').value=s.waGroup||''; 
   document.getElementById('wa-support-input').value=s.waSupport||''; 
-  document.getElementById('whatsapp-link-input').value=s.whatsappLink||''; 
   document.getElementById('wa-number-input').value=s.waNumber||'700000000'; 
   document.getElementById('with-charge-input').value=s.withdrawCharge||10; 
   document.getElementById('ref-l1-input').value=s.refL1||10; 
@@ -1167,12 +1165,6 @@ function saveWaSupport(){
   allSettings.waSupport = document.getElementById('wa-support-input').value.trim();
   saveAllSettings();
   toast('✅ WhatsApp Support link saved'); 
-}
-
-function saveWhatsappLink(){ 
-  allSettings.whatsappLink = document.getElementById('whatsapp-link-input').value.trim();
-  saveAllSettings();
-  toast('✅ WhatsApp Customer Care link saved'); 
 }
 
 function saveWithCharge(){ 
