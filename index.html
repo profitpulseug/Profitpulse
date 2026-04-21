@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>ProfitPulse — Grow Your Wealth</title>
-<meta property="og:type" content="website">
-<meta property="og:title" content="ProfitPulse — Grow Your Wealth">
-<meta property="og:description" content="Earn 10% daily returns on your investments. Join thousands of investors in Uganda & Kenya.">
-<meta property="og:site_name" content="ProfitPulse">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="Earn 10% daily returns. Join thousands of investors today!">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -25,10 +19,6 @@
   --gold:#d4af37;
   --text:#f5f1ed;
   --muted:#a89968;
-  --table-header:#2a211a;
-  --table-border:#3a2f26;
-  --avatar-bg:#d4af37;
-  --ref-bg:#d4af37;
   --success:#10b981;
   --danger:#ef4444;
 }
@@ -37,17 +27,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* Avatar Styles */
 .avatar{
-  background:linear-gradient(135deg, var(--avatar-bg) 0%, var(--accent) 100%);
+  background:linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:700;
-  color:#ffffff;
+  color:#fff;
   text-transform:uppercase;
   flex-shrink:0;
   border:2px solid var(--accent);
-  box-shadow:0 2px 8px rgba(0,217,255,0.3);
 }
 .avatar-sm{width:38px;height:38px;font-size:14px;}
 .avatar-lg{width:72px;height:72px;font-size:28px;margin:0 auto 14px;}
@@ -362,7 +351,7 @@ input[type="password"]{padding-right:46px;}
 <div class="loading-screen" id="loading-screen">
   <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--accent);margin-bottom:10px;">ProfitPulse</div>
   <div class="loading-spinner"></div>
-  <div class="loading-text">Loading your wallet...</div>
+  <div class="loading-text">Connecting to secure server...</div>
 </div>
 
 <!-- LOGIN -->
@@ -376,9 +365,9 @@ input[type="password"]{padding-right:46px;}
     <div class="auth-title">Welcome Back</div>
     <div class="auth-subtitle">Sign in to your investment account</div>
     <div class="field-group">
-      <label class="field-label">Username</label>
-      <div class="field-wrap"><span class="field-icon">👤</span><input type="text" id="login-username" placeholder="Enter username" autocomplete="username"></div>
-      <div class="field-error" id="login-user-err">Please enter your username</div>
+      <label class="field-label">Email</label>
+      <div class="field-wrap"><span class="field-icon">📧</span><input type="email" id="login-email" placeholder="Enter your email" autocomplete="email"></div>
+      <div class="field-error" id="login-email-err">Please enter your email</div>
     </div>
     <div class="field-group">
       <label class="field-label">Password</label>
@@ -405,6 +394,11 @@ input[type="password"]{padding-right:46px;}
       <label class="field-label">Username</label>
       <div class="field-wrap"><span class="field-icon">👤</span><input type="text" id="reg-username" placeholder="Choose a username" autocomplete="off"></div>
       <div class="field-error" id="reg-user-err">Username is required</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Email</label>
+      <div class="field-wrap"><span class="field-icon">📧</span><input type="email" id="reg-email" placeholder="Your email address" autocomplete="email"></div>
+      <div class="field-error" id="reg-email-err">Valid email is required</div>
     </div>
     <div class="field-group">
       <label class="field-label">Country</label>
@@ -439,7 +433,7 @@ input[type="password"]{padding-right:46px;}
     </div>
     <div class="field-group">
       <label class="field-label">Referred By</label>
-      <div style="background:#fff0f4;padding:12px 14px;border-radius:8px;border:1px solid var(--border);color:var(--accent);font-weight:600;" id="reg-referrer-display">John</div>
+      <div style="background:#fff0f4;padding:12px 14px;border-radius:8px;border:1px solid var(--border);color:var(--accent);font-weight:600;" id="reg-referrer-display">None</div>
     </div>
     <div class="field-error" id="reg-general-err" style="text-align:center;margin-bottom:10px;font-size:12px;"></div>
     <button class="submit-btn" onclick="doRegister()">Create Account & Earn 🎁</button>
@@ -622,6 +616,10 @@ input[type="password"]{padding-right:46px;}
           <span class="profile-simple-value" id="profile-user-simple">—</span>
         </div>
         <div class="profile-simple-item">
+          <span class="profile-simple-label">Email</span>
+          <span class="profile-simple-value" id="profile-email-simple">—</span>
+        </div>
+        <div class="profile-simple-item">
           <span class="profile-simple-label">Phone Number</span>
           <span class="profile-simple-value" id="profile-phone-simple">—</span>
         </div>
@@ -760,581 +758,1077 @@ input[type="password"]{padding-right:46px;}
 <div class="toast" id="toast">✓ Done!</div>
 <div class="popup-banner" id="popup-banner"></div>
 
-<script>
-// ============================================================
-// PROFIT PULSE - LOCAL STORAGE VERSION (FIXED)
-// CORRECT FINANCIAL LOGIC:
-// - STAKE = Locked investment (generates 10% daily)
-// - BALANCE = Profits + Referral bonuses (available for withdrawal)
-// - WITHDRAWN = Total withdrawals ever made
-// - Daily profits calculated from STAKE only
-// ============================================================
+<!-- Firebase SDK -->
+<script type="module">
+  // ============================================================
+  // FIREBASE CONFIGURATION - REPLACE WITH YOUR ACTUAL CONFIG
+  // ============================================================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-// Storage keys
-const STORAGE_USERS = 'profitpulse_users';
-const STORAGE_SETTINGS = 'profitpulse_settings';
-const STORAGE_CURRENT_USER = 'profitpulse_current_user';
-const STORAGE_PENDING_WITHDRAWALS = 'profitpulse_pending_withdrawals';
-const STORAGE_ADMINS = 'profitpulse_admins';
-const STORAGE_CURRENT_ADMIN = 'profitpulse_current_admin';
-const STORAGE_ADMIN_SESSION = 'profitpulse_admin_session';
-const STORAGE_DEBIT_HISTORY = 'profitpulse_debit_history';
-const STORAGE_ADMIN_NOTIFICATIONS = 'profitpulse_admin_notifications';
+  // Your web app's Firebase configuration - REPLACE THIS WITH YOUR CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyCeoGpFkD07sdvJcnrPxvIUgdr0jxQ3uXI",
+    authDomain: "profitpulse-51bfb.firebaseapp.com",
+    projectId: "profitpulse-51bfb",
+    storageBucket: "profitpulse-51bfb.firebasestorage.app",
+    messagingSenderId: "415940134220",
+    appId: "1:415940134220:web:0243ec9163e424042ebbe9"
+  };
 
-// Helper functions
-function saveToLocalStorage(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-function loadFromLocalStorage(key, defaultValue = {}) {
-  const data = localStorage.getItem(key);
-  if (data) {
+  // Make auth and db available globally
+  window.auth = auth;
+  window.db = db;
+  window.Timestamp = Timestamp;
+  window.serverTimestamp = serverTimestamp;
+
+  // ============================================================
+  // PROFIT PULSE - FIREBASE VERSION
+  // ============================================================
+
+  // Helper functions
+  function fmt(n) { return 'UGX ' + Number(n || 0).toLocaleString(); }
+  function dateStr() { 
+    const d = new Date(); 
+    return d.toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }); 
+  }
+  function getDateKey(d) { return d.toISOString().slice(0, 10); }
+  function addDays(d, n) { const r = new Date(d); r.setUTCDate(r.getUTCDate() + n); return r; }
+  function safeKey(u) { return (u || '').replace(/[^a-zA-Z0-9]/g, '_'); }
+
+  let currentUserData = null;
+  let currentUserId = null;
+  let settingsData = {
+    withdrawCharge: 10,
+    refL1: 10, refL2: 4, refL3: 2,
+    waGroup: '', waSupport: '',
+    withdrawLocked: false,
+    minDeposit: 10000,
+    minWithdraw: 10000,
+    waNumber: '700000000'
+  };
+  let profitInterval = null;
+  let userUnsubscribe = null;
+
+  // Load settings from Firestore
+  async function loadSettings() {
     try {
-      return JSON.parse(data);
-    } catch(e) {
-      return defaultValue;
-    }
-  }
-  return defaultValue;
-}
-
-function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
-function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
-function safeKey(u){ return (u||'').replace(/[^a-zA-Z0-9]/g,'_'); }
-function genUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{ const r=Math.random()*16|0, v=c==='x'?r:(r&0x3|0x8); return v.toString(16); }); }
-
-// Default settings
-let settingsData = {
-  withdrawCharge: 10,
-  refL1: 10, refL2: 4, refL3: 2,
-  waGroup: '', waSupport: '',
-  withdrawLocked: false,
-  withdrawManual: false,
-  minDeposit: 10000,
-  minWithdraw: 10000,
-  waNumber: '700000000'
-};
-
-// Initialize default settings if not exists
-function initSettings() {
-  const saved = loadFromLocalStorage(STORAGE_SETTINGS);
-  if (Object.keys(saved).length === 0) {
-    saveToLocalStorage(STORAGE_SETTINGS, settingsData);
-  } else {
-    settingsData = saved;
-  }
-}
-
-// User management
-function getAllUsers() {
-  return loadFromLocalStorage(STORAGE_USERS, {});
-}
-
-function saveUser(username, userData) {
-  const users = getAllUsers();
-  users[username] = userData;
-  saveToLocalStorage(STORAGE_USERS, users);
-}
-
-function getUser(username) {
-  const users = getAllUsers();
-  return users[username] || null;
-}
-
-// Current user session
-let currentUser = null;
-let currentUsername = null;
-
-// Store active intervals
-let profitInterval = null;
-let inactivityTimer = null;
-const INACTIVITY_LIMIT = 60 * 60 * 1000;
-
-const tabMap = {home:'sec-home',history:'sec-history',team:'sec-team',plan:'sec-plan',profile:'sec-profile',deposit:'sec-deposit',withdraw:'sec-withdraw',reinvest:'sec-reinvest'};
-const navOrder = ['home','history','team','plan','profile'];
-let currentHistoryFilter = 'Deposit';
-
-// Avatar Generation
-function generateAvatarInitials(username){
-  if(!username) return '?';
-  const parts = username.split(/[\s._-]+/);
-  if(parts.length >= 2){
-    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-  }
-  return username.substring(0,2).toUpperCase();
-}
-
-function createAvatarElement(username, sizeClass){
-  const initials = generateAvatarInitials(username);
-  const div = document.createElement('div');
-  div.className = `avatar ${sizeClass}`;
-  div.textContent = initials;
-  div.title = username;
-  return div;
-}
-
-function updateAvatarInUI(username){
-  const topbarAvatar = document.getElementById('topbar-avatar');
-  if(topbarAvatar && username){
-    topbarAvatar.innerHTML = '';
-    const avatar = createAvatarElement(username, 'avatar-sm');
-    topbarAvatar.appendChild(avatar);
-  }
-}
-
-function updateWhatsAppButton(){
-  const waBtn = document.getElementById('whatsapp-float-btn');
-  if(waBtn && currentUser){
-    const phone = settingsData.waNumber || '700000000';
-    const message = `Hey, I'm ${currentUser.username}, I need assistance with my ProfitPulse investment account. Please help me! 📈`;
-    waBtn.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-  }
-}
-
-// UI Helpers
-function showAuth(id){
-  document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-  const t=document.getElementById(id); 
-  if(t){ t.style.display='flex'; t.classList.add('active'); }
-  if(id==='register-page'){
-    const urlParams=new URLSearchParams(window.location.search);
-    const refCode=urlParams.get('ref')||'John';
-    const refDisplay=document.getElementById('reg-referrer-display');
-    if(refDisplay) refDisplay.textContent=refCode;
-  }
-}
-
-function showDashboard(){
-  document.querySelectorAll('.auth-page').forEach(p=>{p.classList.remove('active');p.style.display='none';});
-  const dashPage = document.getElementById('dashboard-page');
-  if(dashPage){
-    dashPage.style.display='block';
-    dashPage.classList.add('active');
-  }
-  updateWhatsAppButton();
-}
-
-function hideLoading(){ document.getElementById('loading-screen').style.display='none'; }
-
-function switchTab(tab){
-  if(tab==='withdraw' && settingsData.withdrawLocked){ showModal('🔒','Withdrawals Locked','Withdrawals are currently disabled. Please contact support.'); return; }
-  Object.values(tabMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-  const t=document.getElementById(tabMap[tab]); if(t)t.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const idx=navOrder.indexOf(tab); if(idx>=0){const navEl=document.querySelectorAll('.nav-item')[idx];if(navEl)navEl.classList.add('active');}
-  closeMenu();
-}
-
-function menuNav(tab){ switchTab(tab); }
-function openMenu(){ 
-  const menu = document.getElementById('side-menu');
-  const overlay = document.getElementById('menu-overlay');
-  if(menu) menu.classList.add('open'); 
-  if(overlay) overlay.classList.add('open'); 
-}
-function closeMenu(){ 
-  const menu = document.getElementById('side-menu');
-  const overlay = document.getElementById('menu-overlay');
-  if(menu) menu.classList.remove('open'); 
-  if(overlay) overlay.classList.remove('open'); 
-}
-
-function showModal(icon,title,msg){ 
-  const modalIcon = document.getElementById('modal-icon');
-  const modalTitle = document.getElementById('modal-title');
-  const modalMsg = document.getElementById('modal-msg');
-  const modalOverlay = document.getElementById('modal-overlay');
-  if(modalIcon) modalIcon.textContent=icon; 
-  if(modalTitle) modalTitle.textContent=title; 
-  if(modalMsg) modalMsg.textContent=msg; 
-  if(modalOverlay) modalOverlay.classList.add('open'); 
-}
-
-function closeModal(){ 
-  const modalOverlay = document.getElementById('modal-overlay');
-  if(modalOverlay) modalOverlay.classList.remove('open'); 
-}
-
-function showToast(msg,color){
-  const t=document.getElementById('toast');
-  if(!t)return;
-  t.textContent=msg;
-  t.style.background=color||'var(--accent3)';
-  t.classList.add('show');
-  setTimeout(()=>{if(t)t.classList.remove('show');},2800);
-}
-
-function setErr(id,show,msg){
-  const el=document.getElementById(id);
-  if(!el)return;
-  if(show){el.classList.add('show');if(msg)el.textContent=msg;}
-  else{el.classList.remove('show');}
-}
-
-function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
-
-function toggleEye(inputId,btn){
-  const inp=document.getElementById(inputId);
-  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
-  else{inp.type='password';btn.textContent='👁️';}
-}
-
-function checkStrength(pw){
-  const b=[document.getElementById('pw-b1'),document.getElementById('pw-b2'),document.getElementById('pw-b3')];
-  b.forEach(x=>{if(x){x.className='pw-bar';}});
-  if(!pw){ return; }
-  if(pw.length>=6){b[0].classList.add('weak');}
-  if(pw.length>=8&&/[0-9]/.test(pw)){b[0].classList.add('strong');b[1].classList.add('medium');}
-  if(pw.length>=10&&/[^A-Za-z0-9]/.test(pw)){b[0].classList.add('strong');b[1].classList.add('strong');b[2].classList.add('strong');}
-}
-
-function applyWithdrawLock(){
-  const msg=document.getElementById('withdraw-locked-msg');
-  if(msg) msg.style.display=settingsData.withdrawLocked?'block':'none';
-}
-
-function updateDepMinNote(){
-  const minDep=settingsData.minDeposit||10000;
-  const note=document.getElementById('dep-min-note');
-  if(note) note.innerHTML=`✅ Minimum deposit is <strong>${fmt(minDep)}</strong>. Your deposit goes to STAKE and earns 10% daily for 56 days.`;
-}
-
-function updateRegPrefix(){
-  const c=document.getElementById('reg-country').value;
-  const pr=document.getElementById('reg-prefix');
-  if(pr) pr.textContent=c==='KE'?'+254':'+256';
-}
-
-function regPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
-function depPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
-
-function copyRef(){
-  const url=document.getElementById('ref-url-new');
-  if(url&&url.value){
-    navigator.clipboard.writeText(url.value).then(()=>showToast('✓ Referral link copied!')).catch(()=>showToast('✓ Link ready to share!'));
-  }
-}
-
-function openWaGroup(){ if(settingsData.waGroup) window.open(settingsData.waGroup,'_blank'); else showModal('💬','Coming Soon','WhatsApp group link will be available soon. Contact support for now.'); }
-
-// Withdraw preview
-function updateWithdrawPreview(){
-  const amount = parseInt(document.getElementById('with-amount').value) || 0;
-  const fee = Math.floor(amount * 0.10);
-  const net = amount - fee;
-  const preview = document.getElementById('withdraw-preview');
-  const netEl = document.getElementById('withdraw-net-amount');
-  const feeEl = document.getElementById('withdraw-fee-amount');
-  if(amount > 0){
-    preview.style.display = 'block';
-    if(netEl) netEl.textContent = fmt(net);
-    if(feeEl) feeEl.textContent = fmt(fee);
-  } else {
-    preview.style.display = 'none';
-  }
-}
-
-// Listen to withdraw amount input
-document.addEventListener('DOMContentLoaded', function(){
-  const withAmount = document.getElementById('with-amount');
-  if(withAmount){
-    withAmount.addEventListener('input', updateWithdrawPreview);
-  }
-});
-
-// Update UI with STAKE and BALANCE
-function updateBalanceUI(){
-  if(!currentUser) return;
-  const stake = currentUser.stake || 0;
-  const balance = currentUser.balance || 0;
-  const withdrawn = currentUser.withdrawn || 0;
-  
-  document.getElementById('stat-stake').textContent = fmt(stake);
-  document.getElementById('stat-balance').textContent = fmt(balance);
-  document.getElementById('stat-withdrawn').textContent = fmt(withdrawn);
-  
-  const reinvestBalance = document.getElementById('reinvest-balance-display');
-  if(reinvestBalance) reinvestBalance.textContent = fmt(balance);
-  
-  // Update active investment display
-  updateActiveInvestmentDisplay();
-}
-
-// Calculate total withdrawn from transaction history
-function calculateTotalWithdrawn(user){
-  let total = 0;
-  if(user.transactions){
-    Object.values(user.transactions).forEach(tx => {
-      if(tx.type === 'Withdrawal' && tx.status === 'completed'){
-        total += Math.abs(tx.amount || 0);
+      const settingsDoc = await getDoc(doc(db, 'settings', 'platform'));
+      if (settingsDoc.exists()) {
+        settingsData = { ...settingsData, ...settingsDoc.data() };
+      } else {
+        // Create default settings
+        await setDoc(doc(db, 'settings', 'platform'), settingsData);
       }
-    });
+      updateUIWithSettings();
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
   }
-  return total;
-}
 
-// Update active investment card
-function updateActiveInvestmentDisplay(){
-  const section = document.getElementById('active-investment-section');
-  if(!currentUser || !currentUser.activeInvestment){
-    if(section) section.style.display = 'none';
-    return;
-  }
-  
-  const inv = currentUser.activeInvestment;
-  const stakeAmount = inv.amount || 0;
-  const daysRun = inv.daysRun || 0;
-  const totalDays = 56;
-  const progress = (daysRun / totalDays) * 100;
-  
-  document.getElementById('active-stake-amount').textContent = fmt(stakeAmount);
-  document.getElementById('investment-progress-fill').style.width = progress + '%';
-  document.getElementById('days-completed').textContent = daysRun;
-  
-  if(daysRun >= totalDays){
-    document.getElementById('investment-status').textContent = '✅ Investment completed! Re-invest to continue earning.';
-  } else {
-    const remaining = totalDays - daysRun;
-    document.getElementById('investment-status').textContent = `📈 Generating 10% daily profit — ${remaining} days remaining`;
-  }
-  
-  if(section) section.style.display = 'block';
-}
-
-function filterHistory(type, tabEl){
-  currentHistoryFilter = type;
-  document.querySelectorAll('.tx-tab').forEach(t=>t.classList.remove('active'));
-  if(tabEl && tabEl.classList) tabEl.classList.add('active');
-  renderHistory();
-}
-
-function renderHistory(){
-  const wrap=document.getElementById('history-list');
-  if(!currentUser){ wrap.innerHTML=''; return; }
-  const allTxs=currentUser.transactions?Object.values(currentUser.transactions).reverse():[];
-  const txs=allTxs.filter(tx=>tx.type===currentHistoryFilter);
-  if(!txs.length){ wrap.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No '+currentHistoryFilter+' Records</div><div class="empty-text">Your '+currentHistoryFilter.toLowerCase()+' history will appear here.</div></div>'; return; }
-  const icons={Deposit:'💳',Withdrawal:'💸',Bonus:'🎁',Referral:'🔗',Profit:'📈','Re-Invest':'🔄'};
-  wrap.innerHTML='<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></thead><tbody>'+txs.map((tx,idx)=>{
-    const pos=tx.amount>=0; 
-    const isPending=tx.status==='pending';
-    const isFailed=tx.status==='failed';
-    const timeStr=tx.date?tx.date.split(' ')[1]||'':' ';
-    const statusBadge=isPending?'⏳ Pending':isFailed?'❌ Failed':'✅ Completed';
-    const amountColor=isPending?'gold':isFailed?'negative':'positive';
-    return `<tr><td class="mono">${idx+1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type]||'💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending?'⏳':isFailed?'':pos?'+'+fmt(tx.amount):fmt(tx.amount)}</td><td class="status">${statusBadge}</td></tr>`;
-  }).join('')+'</tbody></table></div>';
-}
-
-function renderTeam(){
-  if(!currentUser) return;
-  document.getElementById('ref-pct-l1-new').textContent=settingsData.refL1+'%';
-  document.getElementById('ref-pct-l2-new').textContent=settingsData.refL2+'%';
-  document.getElementById('ref-pct-l3-new').textContent=settingsData.refL3+'%';
-  
-  let totalRefBonus = 0;
-  if(currentUser.transactions){
-    Object.values(currentUser.transactions).forEach(tx => {
-      if(tx.type === 'Referral') totalRefBonus += tx.amount;
-    });
-  }
-  document.getElementById('total-ref-earned-new').textContent=fmt(totalRefBonus);
-  
-  const refs=currentUser.referrals?Object.values(currentUser.referrals):[];
-  document.getElementById('ref-team-count').textContent=refs.length;
-  
-  const membersWrap=document.getElementById('ref-members-new');
-  if(!refs.length){ membersWrap.innerHTML='<div class="ref-empty-state"><div class="ref-empty-msg">No team members yet</div><div class="ref-empty-hint">Invite friends to start earning</div></div>'; return; }
-  membersWrap.innerHTML='<div class="ref-members-list">'+refs.map((r,i)=>{
-    const isActive=(r.invested||0)>0;
-    const statusIcon=isActive?'🟢':'⏳';
-    return `<div class="ref-member-item"><div class="ref-member-name">${r.username}</div><div class="ref-member-info"><span class="ref-member-level">L${r.level}</span><span class="ref-member-status">${statusIcon} ${isActive?'Active':'Inactive'}</span></div></div>`;
-  }).join('')+'</div>';
-}
-
-function getDateKey(d){ return d.toISOString().slice(0,10); }
-function addDays(d,n){ const r=new Date(d); r.setUTCDate(r.getUTCDate()+n); return r; }
-
-// RUN DAILY PROFITS - Calculated from STAKE only
-function runDailyProfits(){
-  if(!currentUser||!currentUsername) return;
-  
-  // Check if user has active investment
-  if(!currentUser.activeInvestment || currentUser.activeInvestment.daysRun >= 56){
-    return;
-  }
-  
-  const stake = currentUser.stake || 0;
-  if(stake <= 0) return;
-  
-  const todayKey = getDateKey(new Date());
-  const lastProfitDate = currentUser.lastProfitDate || getDateKey(new Date(Date.now() - 86400000));
-  
-  // Only process if last profit was before today
-  if(lastProfitDate >= todayKey) return;
-  
-  // Calculate days to process
-  let currentDate = new Date(lastProfitDate);
-  let daysProcessed = 0;
-  let totalProfit = 0;
-  let newDaysRun = currentUser.activeInvestment.daysRun || 0;
-  
-  while(getDateKey(currentDate) < todayKey && newDaysRun < 56){
-    currentDate = addDays(currentDate, 1);
-    const profit = Math.floor(stake * 0.10);
-    totalProfit += profit;
-    newDaysRun++;
-    daysProcessed++;
-  }
-  
-  if(totalProfit > 0){
-    // Add profit to BALANCE (available for withdrawal)
-    const newBalance = (currentUser.balance || 0) + totalProfit;
+  function updateUIWithSettings() {
+    const minDep = settingsData.minDeposit || 10000;
+    const minWith = settingsData.minWithdraw || 10000;
+    const depNote = document.getElementById('dep-min-note');
+    if (depNote) depNote.innerHTML = `✅ Minimum deposit is <strong>${fmt(minDep)}</strong>. Your deposit goes to STAKE and earns 10% daily for 56 days.`;
+    const withMinDisplay = document.getElementById('with-min-display');
+    if (withMinDisplay) withMinDisplay.textContent = fmt(minWith);
+    const withdrawLockedMsg = document.getElementById('withdraw-locked-msg');
+    if (withdrawLockedMsg) withdrawLockedMsg.style.display = settingsData.withdrawLocked ? 'block' : 'none';
     
-    // Update transactions
-    const updates = { ...currentUser };
-    updates.balance = newBalance;
-    updates.lastProfitDate = todayKey;
+    // Update referral percentages
+    const pctL1 = document.getElementById('ref-pct-l1-new');
+    const pctL2 = document.getElementById('ref-pct-l2-new');
+    const pctL3 = document.getElementById('ref-pct-l3-new');
+    if (pctL1) pctL1.textContent = settingsData.refL1 + '%';
+    if (pctL2) pctL2.textContent = settingsData.refL2 + '%';
+    if (pctL3) pctL3.textContent = settingsData.refL3 + '%';
+  }
+
+  // Update WhatsApp button
+  function updateWhatsAppButton() {
+    const waBtn = document.getElementById('whatsapp-float-btn');
+    if (waBtn && currentUserData) {
+      const phone = settingsData.waNumber || '700000000';
+      const message = `Hey, I'm ${currentUserData.username}, I need assistance with my ProfitPulse investment account. Please help me! 📈`;
+      waBtn.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+  }
+
+  // Open WhatsApp group
+  window.openWaGroup = function() {
+    if (settingsData.waGroup) {
+      window.open(settingsData.waGroup, '_blank');
+    } else {
+      showModal('💬', 'Coming Soon', 'WhatsApp group link will be available soon. Contact support for now.');
+    }
+  };
+
+  // Copy referral link
+  window.copyRef = function() {
+    const url = document.getElementById('ref-url-new');
+    if (url && url.value) {
+      navigator.clipboard.writeText(url.value).then(() => showToast('✓ Referral link copied!')).catch(() => showToast('✓ Link ready to share!'));
+    }
+  };
+
+  // Update balance UI
+  function updateBalanceUI() {
+    if (!currentUserData) return;
+    const stake = currentUserData.stake || 0;
+    const balance = currentUserData.balance || 0;
+    const withdrawn = currentUserData.withdrawn || 0;
     
-    if(updates.activeInvestment){
-      updates.activeInvestment.daysRun = newDaysRun;
+    const statStake = document.getElementById('stat-stake');
+    const statBalance = document.getElementById('stat-balance');
+    const statWithdrawn = document.getElementById('stat-withdrawn');
+    const reinvestBalance = document.getElementById('reinvest-balance-display');
+    
+    if (statStake) statStake.textContent = fmt(stake);
+    if (statBalance) statBalance.textContent = fmt(balance);
+    if (statWithdrawn) statWithdrawn.textContent = fmt(withdrawn);
+    if (reinvestBalance) reinvestBalance.textContent = fmt(balance);
+    
+    updateActiveInvestmentDisplay();
+  }
+
+  // Update active investment display
+  function updateActiveInvestmentDisplay() {
+    const section = document.getElementById('active-investment-section');
+    if (!currentUserData || !currentUserData.activeInvestment || (currentUserData.stake || 0) === 0) {
+      if (section) section.style.display = 'none';
+      return;
     }
     
-    if(!updates.transactions) updates.transactions = {};
-    const txKey = 'tx_profit_' + Date.now();
-    updates.transactions[txKey] = {
-      type: 'Profit',
-      amount: totalProfit,
-      note: `Daily 10% profit on UGX ${stake.toLocaleString()} STAKE (Day ${newDaysRun}/56)`,
-      date: dateStr(),
-      status: 'completed'
-    };
+    const inv = currentUserData.activeInvestment;
+    const stakeAmount = currentUserData.stake || 0;
+    const daysRun = inv.daysRun || 0;
+    const totalDays = 56;
+    const progress = (daysRun / totalDays) * 100;
     
-    saveUser(currentUsername, updates);
-    currentUser = updates;
-    updateBalanceUI();
-    renderHistory();
+    const activeStake = document.getElementById('active-stake-amount');
+    const progressFill = document.getElementById('investment-progress-fill');
+    const daysCompleted = document.getElementById('days-completed');
+    const investmentStatus = document.getElementById('investment-status');
     
-    showToast(`📈 +${fmt(totalProfit)} daily profit added to BALANCE!`, 'var(--success)');
-  }
-}
-
-function startDailyProfitLoop(){
-  if(profitInterval) clearInterval(profitInterval);
-  // Check every 5 minutes for daily profits
-  profitInterval = setInterval(() => {
-    if(currentUser && currentUsername){
-      runDailyProfits();
+    if (activeStake) activeStake.textContent = fmt(stakeAmount);
+    if (progressFill) progressFill.style.width = progress + '%';
+    if (daysCompleted) daysCompleted.textContent = daysRun;
+    
+    if (investmentStatus) {
+      if (daysRun >= totalDays) {
+        investmentStatus.textContent = '✅ Investment completed! Re-invest to continue earning.';
+      } else {
+        const remaining = totalDays - daysRun;
+        investmentStatus.textContent = `📈 Generating 10% daily profit — ${remaining} days remaining`;
+      }
     }
-  }, 300000); // 5 minutes
-}
+    
+    if (section) section.style.display = 'block';
+  }
 
-function loadDashboard(){
-  const u=currentUser;
-  if(!u) return;
-  
-  // Ensure new user structure
-  if(u.stake === undefined) u.stake = 0;
-  if(u.balance === undefined) u.balance = u.invested ? 0 : (u.balance || 5000);
-  if(u.withdrawn === undefined) u.withdrawn = calculateTotalWithdrawn(u);
-  if(u.activeInvestment === undefined && u.deposits){
-    // Migrate old deposits to activeInvestment
-    const deposits = Object.values(u.deposits);
-    if(deposits.length > 0){
-      const latest = deposits[deposits.length - 1];
-      u.activeInvestment = {
-        amount: latest.amount,
-        startDate: latest.startDate,
-        daysRun: latest.daysRun || 0,
-        lastPaidDate: latest.lastPaidDate
+  // Run daily profits
+  async function runDailyProfits() {
+    if (!currentUserData || !currentUserId) return;
+    
+    const stake = currentUserData.stake || 0;
+    if (stake <= 0) return;
+    
+    // Check if user has active investment and not completed
+    if (!currentUserData.activeInvestment || currentUserData.activeInvestment.daysRun >= 56) {
+      return;
+    }
+    
+    const todayKey = getDateKey(new Date());
+    const lastProfitDate = currentUserData.lastProfitDate || getDateKey(new Date(Date.now() - 86400000));
+    
+    if (lastProfitDate >= todayKey) return;
+    
+    // Calculate days to process
+    let currentDate = new Date(lastProfitDate);
+    let daysProcessed = 0;
+    let totalProfit = 0;
+    let newDaysRun = currentUserData.activeInvestment.daysRun || 0;
+    
+    while (getDateKey(currentDate) < todayKey && newDaysRun < 56) {
+      currentDate = addDays(currentDate, 1);
+      const profit = Math.floor(stake * 0.10);
+      totalProfit += profit;
+      newDaysRun++;
+      daysProcessed++;
+    }
+    
+    if (totalProfit > 0) {
+      const newBalance = (currentUserData.balance || 0) + totalProfit;
+      const updates = {
+        balance: newBalance,
+        lastProfitDate: todayKey,
+        [`activeInvestment.daysRun`]: newDaysRun,
+        [`transactions.profit_${Date.now()}`]: {
+          type: 'Profit',
+          amount: totalProfit,
+          note: `Daily 10% profit on UGX ${stake.toLocaleString()} STAKE (Day ${newDaysRun}/56)`,
+          date: dateStr(),
+          status: 'completed',
+          timestamp: serverTimestamp()
+        }
       };
-      u.stake = latest.amount;
-      saveUser(currentUsername, u);
+      
+      try {
+        await updateDoc(doc(db, 'users', currentUserId), updates);
+        showToast(`📈 +${fmt(totalProfit)} daily profit added to BALANCE!`, 'var(--success)');
+      } catch (error) {
+        console.error('Error updating daily profit:', error);
+      }
     }
   }
-  
-  const ctry=u.country==='KE'?'🇰🇪 Kenya':'🇺🇬 Uganda';
-  const dashUsername = document.getElementById('dash-username');
-  if(dashUsername) dashUsername.textContent=u.username;
-  updateAvatarInUI(u.username);
-  
-  const siteBase=window.location.origin+window.location.pathname.replace(/\/[^\/]*$/,'/');
-  const refLink=siteBase+'?ref='+encodeURIComponent(u.username);
-  const refUrl = document.getElementById('ref-url');
-  if(refUrl) refUrl.textContent=refLink;
-  const refUrlNew = document.getElementById('ref-url-new');
-  if(refUrlNew) refUrlNew.value=refLink;
-  
-  const avatarInitials=u.username.substring(0,2).toUpperCase();
-  const profileAvatar = document.getElementById('profile-avatar-lg-main');
-  if(profileAvatar) profileAvatar.textContent=avatarInitials;
-  const profileName = document.getElementById('profile-name-header');
-  if(profileName) profileName.textContent=u.username;
-  const profileCountry = document.getElementById('profile-country-header-main');
-  if(profileCountry) profileCountry.innerHTML=`${ctry==='-'?'🌍':ctry} ${ctry==='-'?'Unknown':ctry}`;
-  
-  const profileUserSimple = document.getElementById('profile-user-simple');
-  if(profileUserSimple) profileUserSimple.textContent=u.username;
-  const profilePhoneSimple = document.getElementById('profile-phone-simple');
-  if(profilePhoneSimple) profilePhoneSimple.textContent=u.phone||'—';
-  const profileDateSimple = document.getElementById('profile-date-simple');
-  if(profileDateSimple) profileDateSimple.textContent=u.joinedDate||'2025';
-  const profileStatusSimple = document.getElementById('profile-status-simple');
-  if(profileStatusSimple) profileStatusSimple.textContent=u.activated?'🟢 Active':'⏳ Inactive';
-  
-  const withPhoneDisplay = document.getElementById('with-phone-display');
-  if(withPhoneDisplay) withPhoneDisplay.textContent=u.phone;
-  const minWith=settingsData.minWithdraw||10000;
-  const minWithDisplay=document.getElementById('with-min-display');
-  if(minWithDisplay) minWithDisplay.textContent='UGX '+Number(minWith).toLocaleString();
-  
-  hideLoading();
-  updateBalanceUI();
-  renderHistory();
-  renderTeam();
-  updateDepMinNote();
-  updateWhatsAppButton();
-  runDailyProfits(); // Run immediately on load
-}
 
-function toggleTheme(){
-  const root = document.documentElement;
-  const isDark = localStorage.getItem('pp_theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  
-  localStorage.setItem('pp_theme', newTheme);
-  applyTheme(newTheme);
-}
-
-function applyTheme(theme){
-  const root = document.documentElement;
-  const toggle = document.getElementById('theme-toggle');
-  
-  if(theme === 'light'){
-    root.style.setProperty('--bg', '#f5f1ed');
-    root.style.setProperty('--surface', '#ffffff');
-    root.style.setProperty('--surface2', '#ede8e3');
-    root.style.setProperty('--surface3', '#e0dbd4');
-    root.style.setProperty('--border', '#d0c9c0');
-    root.style.setProperty('--text', '#1a1410');
-    root.style.setProperty('--muted', '#8b7d73');
-    root.style.setProperty('--accent3', '#8b5a3c');
-    if(toggle) toggle.textContent = '☀️';
-  } else {
-    root.style.setProperty('--bg', '#1a1410');
-    root.style.setProperty('--surface', '#2a211a');
-    root.style.setProperty('--surface2', '#3a2f26');
-    root.style.setProperty('--surface3', '#4a3f34');
-    root.style.setProperty('--border', '#5a4f44');
-    root.style.setProperty('--text', '#f5f1ed');
-    root.style.setProperty('--muted', '#a89968');
-    root.style.setProperty('--accent3', '#e8b55f');
-    if(toggle) toggle.textContent = '🌙';
+  // Start daily profit loop
+  function startDailyProfitLoop() {
+    if (profitInterval) clearInterval(profitInterval);
+    profitInterval = setInterval(() => {
+      if (currentUserData && currentUserId) {
+        runDailyProfits();
+      }
+    }, 300000); // 5 minutes
   }
-}
 
-function showTerms(){
-  const termsText = `📋 ProfitPulse Terms of Service
+  // Listen to user document changes in real-time
+  function subscribeToUser(userId) {
+    if (userUnsubscribe) userUnsubscribe();
+    userUnsubscribe = onSnapshot(doc(db, 'users', userId), (docSnap) => {
+      if (docSnap.exists()) {
+        currentUserData = { id: docSnap.id, ...docSnap.data() };
+        updateBalanceUI();
+        renderHistory();
+        renderTeam();
+        updateWhatsAppButton();
+        updateReferralLink();
+        updateProfileUI();
+      }
+    }, (error) => {
+      console.error('Error listening to user:', error);
+    });
+  }
+
+  // Update referral link
+  function updateReferralLink() {
+    if (!currentUserData) return;
+    const siteBase = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+    const refLink = siteBase + '?ref=' + encodeURIComponent(currentUserData.username);
+    const refUrl = document.getElementById('ref-url');
+    const refUrlNew = document.getElementById('ref-url-new');
+    if (refUrl) refUrl.textContent = refLink;
+    if (refUrlNew) refUrlNew.value = refLink;
+  }
+
+  // Update profile UI
+  function updateProfileUI() {
+    if (!currentUserData) return;
+    const username = document.getElementById('dash-username');
+    if (username) username.textContent = currentUserData.username;
+    
+    const profileUser = document.getElementById('profile-user-simple');
+    const profileEmail = document.getElementById('profile-email-simple');
+    const profilePhone = document.getElementById('profile-phone-simple');
+    const profileDate = document.getElementById('profile-date-simple');
+    const profileStatus = document.getElementById('profile-status-simple');
+    
+    if (profileUser) profileUser.textContent = currentUserData.username || '—';
+    if (profileEmail) profileEmail.textContent = currentUserData.email || '—';
+    if (profilePhone) profilePhone.textContent = currentUserData.phone || '—';
+    if (profileDate) profileDate.textContent = currentUserData.joinedDate || '2025';
+    if (profileStatus) profileStatus.textContent = currentUserData.activated ? '🟢 Active' : '⏳ Inactive';
+    
+    const withPhoneDisplay = document.getElementById('with-phone-display');
+    if (withPhoneDisplay) withPhoneDisplay.textContent = currentUserData.phone || '—';
+  }
+
+  // Render transaction history
+  let currentHistoryFilter = 'Deposit';
+  
+  window.filterHistory = function(type, tabEl) {
+    currentHistoryFilter = type;
+    document.querySelectorAll('.tx-tab').forEach(t => t.classList.remove('active'));
+    if (tabEl && tabEl.classList) tabEl.classList.add('active');
+    renderHistory();
+  };
+  
+  function renderHistory() {
+    const wrap = document.getElementById('history-list');
+    if (!currentUserData) { if (wrap) wrap.innerHTML = ''; return; }
+    const allTxs = currentUserData.transactions ? Object.values(currentUserData.transactions).reverse() : [];
+    const txs = allTxs.filter(tx => tx.type === currentHistoryFilter);
+    if (!txs.length) {
+      if (wrap) wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No ' + currentHistoryFilter + ' Records</div><div class="empty-text">Your ' + currentHistoryFilter.toLowerCase() + ' history will appear here.</div></div>';
+      return;
+    }
+    const icons = { Deposit: '💳', Withdrawal: '💸', Bonus: '🎁', Referral: '🔗', Profit: '📈', 'Re-Invest': '🔄' };
+    if (wrap) {
+      wrap.innerHTML = '<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody>' + 
+        txs.map((tx, idx) => {
+          const isPending = tx.status === 'pending';
+          const isFailed = tx.status === 'failed';
+          const timeStr = tx.date ? tx.date.split(' ')[1] || '' : '';
+          const statusBadge = isPending ? '⏳ Pending' : isFailed ? '❌ Failed' : '✅ Completed';
+          const amountColor = isPending ? 'gold' : isFailed ? 'negative' : 'positive';
+          return `<tr><td class="mono">${idx + 1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type] || '💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending ? '⏳' : isFailed ? '' : tx.amount >= 0 ? '+' + fmt(tx.amount) : fmt(tx.amount)}</td><td class="status">${statusBadge}</td></tr>`;
+        }).join('') + '</tbody></table></div>';
+    }
+  }
+
+  // Render team members
+  function renderTeam() {
+    if (!currentUserData) return;
+    let totalRefBonus = 0;
+    if (currentUserData.transactions) {
+      Object.values(currentUserData.transactions).forEach(tx => {
+        if (tx.type === 'Referral') totalRefBonus += tx.amount;
+      });
+    }
+    const totalRefEarned = document.getElementById('total-ref-earned-new');
+    if (totalRefEarned) totalRefEarned.textContent = fmt(totalRefBonus);
+    
+    const refs = currentUserData.referrals ? Object.values(currentUserData.referrals) : [];
+    const teamCount = document.getElementById('ref-team-count');
+    if (teamCount) teamCount.textContent = refs.length;
+    
+    const membersWrap = document.getElementById('ref-members-new');
+    if (!refs.length) {
+      if (membersWrap) membersWrap.innerHTML = '<div class="ref-empty-state"><div class="ref-empty-msg">No team members yet</div><div class="ref-empty-hint">Invite friends to start earning</div></div>';
+      return;
+    }
+    if (membersWrap) {
+      membersWrap.innerHTML = '<div class="ref-members-list">' + refs.map((r, i) => {
+        const isActive = (r.invested || 0) > 0;
+        const statusIcon = isActive ? '🟢' : '⏳';
+        return `<div class="ref-member-item"><div class="ref-member-name">${r.username}</div><div class="ref-member-info"><span class="ref-member-level">L${r.level}</span><span class="ref-member-status">${statusIcon} ${isActive ? 'Active' : 'Inactive'}</span></div></div>`;
+      }).join('') + '</div>';
+    }
+  }
+
+  // Credit referral bonuses
+  async function creditReferralBonuses(depositorId, depositorUsername, amount) {
+    try {
+      const depositorDoc = await getDoc(doc(db, 'users', depositorId));
+      const depositorData = depositorDoc.data();
+      if (!depositorData.referredBy) return;
+      
+      const pctL1 = (settingsData.refL1 || 10) / 100;
+      const pctL2 = (settingsData.refL2 || 4) / 100;
+      const pctL3 = (settingsData.refL3 || 2) / 100;
+      
+      // Level 1
+      const upline1Id = depositorData.referredBy;
+      if (upline1Id) {
+        const upline1Doc = await getDoc(doc(db, 'users', upline1Id));
+        if (upline1Doc.exists()) {
+          const upline1Data = upline1Doc.data();
+          const bonus1 = Math.floor(amount * pctL1);
+          if (bonus1 > 0) {
+            const newBalance = (upline1Data.balance || 0) + bonus1;
+            const updates = {
+              balance: newBalance,
+              [`transactions.ref_${Date.now()}_l1`]: {
+                type: 'Referral',
+                amount: bonus1,
+                note: `Level 1 bonus from ${depositorUsername} (Deposit: ${fmt(amount)})`,
+                date: dateStr(),
+                status: 'completed',
+                timestamp: serverTimestamp()
+              }
+            };
+            if (upline1Data.referrals && upline1Data.referrals[safeKey(depositorUsername)]) {
+              updates[`referrals.${safeKey(depositorUsername)}.invested`] = (upline1Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+            }
+            await updateDoc(doc(db, 'users', upline1Id), updates);
+          }
+          
+          // Level 2
+          const upline2Id = upline1Data.referredBy;
+          if (upline2Id) {
+            const upline2Doc = await getDoc(doc(db, 'users', upline2Id));
+            if (upline2Doc.exists()) {
+              const upline2Data = upline2Doc.data();
+              const bonus2 = Math.floor(amount * pctL2);
+              if (bonus2 > 0) {
+                const newBalance2 = (upline2Data.balance || 0) + bonus2;
+                const updates2 = {
+                  balance: newBalance2,
+                  [`transactions.ref_${Date.now()}_l2`]: {
+                    type: 'Referral',
+                    amount: bonus2,
+                    note: `Level 2 bonus from ${depositorUsername} (Deposit: ${fmt(amount)})`,
+                    date: dateStr(),
+                    status: 'completed',
+                    timestamp: serverTimestamp()
+                  }
+                };
+                if (upline2Data.referrals && upline2Data.referrals[safeKey(depositorUsername)]) {
+                  updates2[`referrals.${safeKey(depositorUsername)}.invested`] = (upline2Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+                }
+                await updateDoc(doc(db, 'users', upline2Id), updates2);
+                
+                // Level 3
+                const upline3Id = upline2Data.referredBy;
+                if (upline3Id) {
+                  const upline3Doc = await getDoc(doc(db, 'users', upline3Id));
+                  if (upline3Doc.exists()) {
+                    const upline3Data = upline3Doc.data();
+                    const bonus3 = Math.floor(amount * pctL3);
+                    if (bonus3 > 0) {
+                      const newBalance3 = (upline3Data.balance || 0) + bonus3;
+                      const updates3 = {
+                        balance: newBalance3,
+                        [`transactions.ref_${Date.now()}_l3`]: {
+                          type: 'Referral',
+                          amount: bonus3,
+                          note: `Level 3 bonus from ${depositorUsername} (Deposit: ${fmt(amount)})`,
+                          date: dateStr(),
+                          status: 'completed',
+                          timestamp: serverTimestamp()
+                        }
+                      };
+                      if (upline3Data.referrals && upline3Data.referrals[safeKey(depositorUsername)]) {
+                        updates3[`referrals.${safeKey(depositorUsername)}.invested`] = (upline3Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
+                      }
+                      await updateDoc(doc(db, 'users', upline3Id), updates3);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error crediting referral bonuses:', error);
+    }
+  }
+
+  // Deposit function
+  window.doDeposit = async function() {
+    clearErrors('dep-phone-err', 'dep-amount-err');
+    const phoneDigits = document.getElementById('dep-phone').value.trim();
+    if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) {
+      setErr('dep-phone-err', true, 'Enter 9 digits starting with 7');
+      return;
+    }
+    const minDep = settingsData.minDeposit || 10000;
+    const maxDep = 2350000;
+    const amount = parseInt(document.getElementById('dep-amount').value) || 0;
+    if (amount < minDep) {
+      setErr('dep-amount-err', true, 'Minimum deposit is ' + fmt(minDep));
+      return;
+    }
+    if (amount > maxDep) {
+      setErr('dep-amount-err', true, 'Maximum deposit per transaction is ' + fmt(maxDep));
+      return;
+    }
+
+    const btn = document.getElementById('dep-submit-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Processing...';
+
+    const fullPhone = '+256' + phoneDigits;
+    const now = dateStr();
+    const profit = Math.floor(amount * 0.10);
+    
+    try {
+      const userRef = doc(db, 'users', currentUserId);
+      const userDoc = await getDoc(userRef);
+      const currentData = userDoc.data();
+      
+      const newStake = (currentData.stake || 0) + amount;
+      const newBalance = (currentData.balance || 0) + profit;
+      let newActiveInvestment = currentData.activeInvestment || null;
+      
+      if (!newActiveInvestment || newActiveInvestment.daysRun >= 56) {
+        newActiveInvestment = {
+          amount: newStake,
+          startDate: new Date().toISOString(),
+          daysRun: 0,
+          lastPaidDate: getDateKey(new Date())
+        };
+      } else {
+        newActiveInvestment.amount = newStake;
+      }
+      
+      const updates = {
+        stake: newStake,
+        balance: newBalance,
+        activated: true,
+        activeInvestment: newActiveInvestment,
+        [`transactions.dep_${Date.now()}`]: {
+          type: 'Deposit',
+          amount: amount,
+          depositPhone: fullPhone,
+          note: 'Deposit added to STAKE ✅',
+          date: now,
+          status: 'completed',
+          timestamp: serverTimestamp()
+        },
+        [`transactions.profit_inst_${Date.now()}`]: {
+          type: 'Profit',
+          amount: profit,
+          note: '10% instant profit on deposit (added to BALANCE)',
+          date: now,
+          status: 'completed',
+          timestamp: serverTimestamp()
+        }
+      };
+      
+      await updateDoc(userRef, updates);
+      
+      // Credit referral bonuses
+      await creditReferralBonuses(currentUserId, currentUserData.username, amount);
+      
+      btn.disabled = false;
+      btn.textContent = '💳 INVEST NOW';
+      document.getElementById('dep-phone').value = '';
+      document.getElementById('dep-amount').value = '';
+      showToast(`✓ ${fmt(amount)} added to STAKE! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
+    } catch (error) {
+      console.error('Deposit error:', error);
+      btn.disabled = false;
+      btn.textContent = '💳 INVEST NOW';
+      showToast('Error processing deposit. Please try again.', '#f87171');
+    }
+  };
+
+  // Withdraw function
+  window.doWithdraw = async function() {
+    clearErrors('with-amount-err');
+    if (settingsData.withdrawLocked) {
+      showModal('🔒', 'Locked', 'Withdrawals are currently disabled.');
+      return;
+    }
+    if (!currentUserData.activated) {
+      showModal('🔒', 'Account Not Activated', 'Make a deposit first to activate your account.');
+      return;
+    }
+    
+    const minWith = settingsData.minWithdraw || 5000;
+    const amount = parseInt(document.getElementById('with-amount').value) || 0;
+    if (amount < minWith) {
+      setErr('with-amount-err', true, 'Minimum withdrawal is ' + fmt(minWith));
+      return;
+    }
+    
+    const balance = currentUserData.balance || 0;
+    if (balance < amount) {
+      setErr('with-amount-err', true, 'Insufficient BALANCE.');
+      return;
+    }
+
+    const chargeRate = (settingsData.withdrawCharge || 10) / 100;
+    const sendAmount = Math.floor(amount * (1 - chargeRate));
+    const fee = amount - sendAmount;
+    const now = dateStr();
+
+    const btn = document.getElementById('with-submit-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Processing...';
+
+    try {
+      const userRef = doc(db, 'users', currentUserId);
+      const newBalance = balance - amount;
+      const newWithdrawn = (currentUserData.withdrawn || 0) + amount;
+      
+      const updates = {
+        balance: newBalance,
+        withdrawn: newWithdrawn,
+        [`transactions.wd_${Date.now()}`]: {
+          type: 'Withdrawal',
+          amount: -amount,
+          note: `Withdrawal to ${currentUserData.phone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})`,
+          date: now,
+          status: 'completed',
+          timestamp: serverTimestamp()
+        }
+      };
+      
+      await updateDoc(userRef, updates);
+      
+      btn.disabled = false;
+      btn.textContent = '💸 WITHDRAW';
+      document.getElementById('with-amount').value = '';
+      document.getElementById('withdraw-preview').style.display = 'none';
+      showToast(`💸 Withdrawal of ${fmt(amount)} processed! You received: ${fmt(sendAmount)}`, 'var(--success)');
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      btn.disabled = false;
+      btn.textContent = '💸 WITHDRAW';
+      showToast('Error processing withdrawal. Please try again.', '#f87171');
+    }
+  };
+
+  // Re-invest function
+  window.doReinvest = async function() {
+    clearErrors('reinvest-amount-err');
+    const amount = parseInt(document.getElementById('reinvest-amount').value) || 0;
+    if (amount < 10000) {
+      setErr('reinvest-amount-err', true, 'Minimum re-invest is UGX 10,000');
+      return;
+    }
+    
+    const balance = currentUserData.balance || 0;
+    if (balance < amount) {
+      setErr('reinvest-amount-err', true, 'Insufficient BALANCE.');
+      return;
+    }
+    
+    const profit = Math.floor(amount * 0.10);
+    const now = dateStr();
+    
+    const btn = document.querySelector('#sec-reinvest .green-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Processing...';
+    
+    try {
+      const userRef = doc(db, 'users', currentUserId);
+      const newBalance = (currentUserData.balance || 0) - amount + profit;
+      const newStake = (currentUserData.stake || 0) + amount;
+      let newActiveInvestment = currentUserData.activeInvestment || null;
+      
+      if (!newActiveInvestment || newActiveInvestment.daysRun >= 56) {
+        newActiveInvestment = {
+          amount: newStake,
+          startDate: new Date().toISOString(),
+          daysRun: 0,
+          lastPaidDate: getDateKey(new Date())
+        };
+      } else {
+        newActiveInvestment.amount = newStake;
+      }
+      
+      const updates = {
+        stake: newStake,
+        balance: newBalance,
+        activated: true,
+        activeInvestment: newActiveInvestment,
+        [`transactions.reinvest_${Date.now()}_a`]: {
+          type: 'Re-Invest',
+          amount: -amount,
+          note: 'Moved from BALANCE to STAKE',
+          date: now,
+          status: 'completed',
+          timestamp: serverTimestamp()
+        },
+        [`transactions.reinvest_${Date.now()}_b`]: {
+          type: 'Profit',
+          amount: profit,
+          note: '10% instant profit on re-invest (added to BALANCE)',
+          date: now,
+          status: 'completed',
+          timestamp: serverTimestamp()
+        }
+      };
+      
+      await updateDoc(userRef, updates);
+      
+      btn.disabled = false;
+      btn.textContent = '🔄 RE-INVEST NOW';
+      document.getElementById('reinvest-amount').value = '';
+      showToast(`✓ Re-invested ${fmt(amount)}! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
+    } catch (error) {
+      console.error('Reinvest error:', error);
+      btn.disabled = false;
+      btn.textContent = '🔄 RE-INVEST NOW';
+      showToast('Error processing re-investment. Please try again.', '#f87171');
+    }
+  };
+
+  // Withdraw preview
+  function updateWithdrawPreview() {
+    const amount = parseInt(document.getElementById('with-amount').value) || 0;
+    const fee = Math.floor(amount * 0.10);
+    const net = amount - fee;
+    const preview = document.getElementById('withdraw-preview');
+    const netEl = document.getElementById('withdraw-net-amount');
+    const feeEl = document.getElementById('withdraw-fee-amount');
+    if (amount > 0) {
+      if (preview) preview.style.display = 'block';
+      if (netEl) netEl.textContent = fmt(net);
+      if (feeEl) feeEl.textContent = fmt(fee);
+    } else {
+      if (preview) preview.style.display = 'none';
+    }
+  }
+
+  // UI Helper Functions
+  function showToast(msg, color) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.background = color || 'var(--accent3)';
+    t.classList.add('show');
+    setTimeout(() => { if (t) t.classList.remove('show'); }, 2800);
+  }
+
+  function showModal(icon, title, msg) {
+    const modalIcon = document.getElementById('modal-icon');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMsg = document.getElementById('modal-msg');
+    const modalOverlay = document.getElementById('modal-overlay');
+    if (modalIcon) modalIcon.textContent = icon;
+    if (modalTitle) modalTitle.textContent = title;
+    if (modalMsg) modalMsg.textContent = msg;
+    if (modalOverlay) modalOverlay.classList.add('open');
+  }
+
+  window.closeModal = function() {
+    const modalOverlay = document.getElementById('modal-overlay');
+    if (modalOverlay) modalOverlay.classList.remove('open');
+  };
+
+  function setErr(id, show, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (show) { el.classList.add('show'); if (msg) el.textContent = msg; }
+    else { el.classList.remove('show'); }
+  }
+
+  function clearErrors(...ids) { ids.forEach(id => setErr(id, false)); }
+
+  window.toggleEye = function(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁️'; }
+  };
+
+  function checkStrength(pw) {
+    const b = [document.getElementById('pw-b1'), document.getElementById('pw-b2'), document.getElementById('pw-b3')];
+    b.forEach(x => { if (x) { x.className = 'pw-bar'; } });
+    if (!pw) return;
+    if (pw.length >= 6) { if (b[0]) b[0].classList.add('weak'); }
+    if (pw.length >= 8 && /[0-9]/.test(pw)) { if (b[0]) b[0].classList.add('strong'); if (b[1]) b[1].classList.add('medium'); }
+    if (pw.length >= 10 && /[^A-Za-z0-9]/.test(pw)) { if (b[0]) b[0].classList.add('strong'); if (b[1]) b[1].classList.add('strong'); if (b[2]) b[2].classList.add('strong'); }
+  }
+  window.checkStrength = checkStrength;
+
+  function updateRegPrefix() {
+    const c = document.getElementById('reg-country').value;
+    const pr = document.getElementById('reg-prefix');
+    if (pr) pr.textContent = c === 'KE' ? '+254' : '+256';
+  }
+  window.updateRegPrefix = updateRegPrefix;
+
+  function regPhoneInput(inp) { inp.value = inp.value.replace(/[^0-9]/g, '').slice(0, 9); }
+  window.regPhoneInput = regPhoneInput;
+  function depPhoneInput(inp) { inp.value = inp.value.replace(/[^0-9]/g, '').slice(0, 9); }
+  window.depPhoneInput = depPhoneInput;
+
+  // Auth Functions
+  window.doLogin = async function() {
+    clearErrors('login-email-err', 'login-pw-err');
+    setErr('login-general-err', false);
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email) { setErr('login-email-err', true); return; }
+    if (!password) { setErr('login-pw-err', true); return; }
+    
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userId = userCredential.user.uid;
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (!userDoc.exists()) {
+        await signOut(auth);
+        setErr('login-general-err', true, 'Account not found. Please register.');
+        return;
+      }
+      const userData = userDoc.data();
+      if (userData.locked) {
+        await signOut(auth);
+        setErr('login-general-err', true, '🔒 Your account has been locked. Contact support.');
+        return;
+      }
+      currentUserId = userId;
+      currentUserData = { id: userId, ...userData };
+      subscribeToUser(userId);
+      updateBalanceUI();
+      renderHistory();
+      renderTeam();
+      updateReferralLink();
+      updateProfileUI();
+      updateWhatsAppButton();
+      showDashboard();
+      switchTab('home');
+      startDailyProfitLoop();
+      showToast('Welcome back, ' + userData.username);
+    } catch (error) {
+      console.error('Login error:', error);
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        setErr('login-general-err', true, '❌ Invalid email or password');
+      } else if (error.code === 'auth/invalid-email') {
+        setErr('login-general-err', true, '❌ Invalid email format');
+      } else {
+        setErr('login-general-err', true, '❌ Login failed. Please try again.');
+      }
+    }
+  };
+
+  window.doRegister = async function() {
+    clearErrors('reg-user-err', 'reg-email-err', 'reg-country-err', 'reg-phone-err', 'reg-pw-err', 'reg-confirm-err', 'reg-general-err');
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const country = document.getElementById('reg-country').value;
+    const phoneDigits = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref') || null;
+    
+    let ok = true;
+    if (!username) { setErr('reg-user-err', true, 'Username is required'); ok = false; }
+    if (!email || !email.includes('@')) { setErr('reg-email-err', true, 'Valid email is required'); ok = false; }
+    if (!country) { setErr('reg-country-err', true, 'Please select your country'); ok = false; }
+    if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) { setErr('reg-phone-err', true, 'Enter 9 digits starting with 7'); ok = false; }
+    if (!password || password.length < 6) { setErr('reg-pw-err', true, 'Password must be at least 6 characters'); ok = false; }
+    if (!confirm || confirm !== password) { setErr('reg-confirm-err', true, 'Passwords do not match'); ok = false; }
+    if (!ok) return;
+    
+    // Check if username already exists
+    const usersQuery = query(collection(db, 'users'), where('username', '==', username));
+    const existingUsers = await getDocs(usersQuery);
+    if (!existingUsers.empty) {
+      setErr('reg-user-err', true, 'Username already taken');
+      return;
+    }
+    
+    const prefix = country === 'KE' ? '+254' : '+256';
+    const fullPhone = prefix + phoneDigits;
+    const now = dateStr();
+    
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userId = userCredential.user.uid;
+      
+      const newUser = {
+        username: username,
+        email: email,
+        country: country,
+        phone: fullPhone,
+        stake: 0,
+        balance: 5000,
+        withdrawn: 0,
+        activated: false,
+        locked: false,
+        referredBy: refCode,
+        joinedDate: new Date().getFullYear().toString(),
+        lastProfitDate: getDateKey(new Date()),
+        transactions: {
+          t0: {
+            type: 'Bonus',
+            amount: 5000,
+            note: 'Registration Bonus 🎁',
+            date: now,
+            status: 'completed',
+            timestamp: serverTimestamp()
+          }
+        },
+        referrals: {},
+        activeInvestment: null
+      };
+      
+      await setDoc(doc(db, 'users', userId), newUser);
+      
+      // Handle referral
+      if (refCode) {
+        const referrerQuery = query(collection(db, 'users'), where('username', '==', refCode));
+        const referrerDocs = await getDocs(referrerQuery);
+        if (!referrerDocs.empty) {
+          const referrerDoc = referrerDocs.docs[0];
+          const referrerId = referrerDoc.id;
+          const referrerData = referrerDoc.data();
+          
+          const updates = {
+            [`referrals.${safeKey(username)}`]: { username: username, invested: 0, level: 1 }
+          };
+          await updateDoc(doc(db, 'users', referrerId), updates);
+          
+          // Level 2
+          if (referrerData.referredBy) {
+            const level2Query = query(collection(db, 'users'), where('username', '==', referrerData.referredBy));
+            const level2Docs = await getDocs(level2Query);
+            if (!level2Docs.empty) {
+              const level2Id = level2Docs.docs[0].id;
+              const updates2 = {
+                [`referrals.${safeKey(username)}`]: { username: username, invested: 0, level: 2 }
+              };
+              await updateDoc(doc(db, 'users', level2Id), updates2);
+              
+              // Level 3
+              const level2Data = level2Docs.docs[0].data();
+              if (level2Data.referredBy) {
+                const level3Query = query(collection(db, 'users'), where('username', '==', level2Data.referredBy));
+                const level3Docs = await getDocs(level3Query);
+                if (!level3Docs.empty) {
+                  const level3Id = level3Docs.docs[0].id;
+                  const updates3 = {
+                    [`referrals.${safeKey(username)}`]: { username: username, invested: 0, level: 3 }
+                  };
+                  await updateDoc(doc(db, 'users', level3Id), updates3);
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      // Auto login after registration
+      currentUserId = userId;
+      currentUserData = newUser;
+      subscribeToUser(userId);
+      updateBalanceUI();
+      renderHistory();
+      renderTeam();
+      updateReferralLink();
+      updateProfileUI();
+      updateWhatsAppButton();
+      showDashboard();
+      switchTab('home');
+      startDailyProfitLoop();
+      showToast('✓ Account created! Welcome to ProfitPulse! 🎉');
+      
+    } catch (error) {
+      console.error('Registration error:', error);
+      if (error.code === 'auth/email-already-in-use') {
+        setErr('reg-general-err', true, '❌ Email already registered. Please login.');
+      } else if (error.code === 'auth/weak-password') {
+        setErr('reg-pw-err', true, 'Password is too weak. Use at least 6 characters.');
+      } else {
+        setErr('reg-general-err', true, '❌ Registration failed. Please try again.');
+      }
+    }
+  };
+
+  window.doLogout = async function() {
+    if (profitInterval) clearInterval(profitInterval);
+    if (userUnsubscribe) userUnsubscribe();
+    try {
+      await signOut(auth);
+    } catch (e) { console.error('Logout error:', e); }
+    currentUserData = null;
+    currentUserId = null;
+    closeMenu();
+    showToast('Signed out', '#f87171');
+    setTimeout(() => {
+      const dashPage = document.getElementById('dashboard-page');
+      if (dashPage) {
+        dashPage.style.display = 'none';
+        dashPage.classList.remove('active');
+      }
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-password').value = '';
+      showAuth('login-page');
+    }, 800);
+  };
+
+  function showAuth(id) {
+    document.querySelectorAll('.auth-page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+    const t = document.getElementById(id);
+    if (t) { t.style.display = 'flex'; t.classList.add('active'); }
+    if (id === 'register-page') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get('ref') || null;
+      const refDisplay = document.getElementById('reg-referrer-display');
+      if (refDisplay) refDisplay.textContent = refCode || 'None';
+    }
+  }
+  window.showAuth = showAuth;
+
+  function showDashboard() {
+    document.querySelectorAll('.auth-page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+    const dashPage = document.getElementById('dashboard-page');
+    if (dashPage) {
+      dashPage.style.display = 'block';
+      dashPage.classList.add('active');
+    }
+  }
+
+  const tabMap = { home: 'sec-home', history: 'sec-history', team: 'sec-team', plan: 'sec-plan', profile: 'sec-profile', deposit: 'sec-deposit', withdraw: 'sec-withdraw', reinvest: 'sec-reinvest' };
+  const navOrder = ['home', 'history', 'team', 'plan', 'profile'];
+  
+  window.switchTab = function(tab) {
+    if (tab === 'withdraw' && settingsData.withdrawLocked) {
+      showModal('🔒', 'Withdrawals Locked', 'Withdrawals are currently disabled. Please contact support.');
+      return;
+    }
+    Object.values(tabMap).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
+    const t = document.getElementById(tabMap[tab]);
+    if (t) t.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const idx = navOrder.indexOf(tab);
+    if (idx >= 0) { const navEl = document.querySelectorAll('.nav-item')[idx]; if (navEl) navEl.classList.add('active'); }
+    closeMenu();
+  };
+  window.menuNav = window.switchTab;
+
+  function openMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
+    if (menu) menu.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+  }
+  window.openMenu = openMenu;
+  
+  function closeMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
+    if (menu) menu.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+  }
+  window.closeMenu = closeMenu;
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    const isDark = localStorage.getItem('pp_theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    localStorage.setItem('pp_theme', newTheme);
+    applyTheme(newTheme);
+  }
+  window.toggleTheme = toggleTheme;
+
+  function applyTheme(theme) {
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    if (theme === 'light') {
+      root.style.setProperty('--bg', '#f5f1ed');
+      root.style.setProperty('--surface', '#ffffff');
+      root.style.setProperty('--surface2', '#ede8e3');
+      root.style.setProperty('--surface3', '#e0dbd4');
+      root.style.setProperty('--border', '#d0c9c0');
+      root.style.setProperty('--text', '#1a1410');
+      root.style.setProperty('--muted', '#8b7d73');
+      root.style.setProperty('--accent3', '#8b5a3c');
+      if (toggle) toggle.textContent = '☀️';
+    } else {
+      root.style.setProperty('--bg', '#1a1410');
+      root.style.setProperty('--surface', '#2a211a');
+      root.style.setProperty('--surface2', '#3a2f26');
+      root.style.setProperty('--surface3', '#4a3f34');
+      root.style.setProperty('--border', '#5a4f44');
+      root.style.setProperty('--text', '#f5f1ed');
+      root.style.setProperty('--muted', '#a89968');
+      root.style.setProperty('--accent3', '#e8b55f');
+      if (toggle) toggle.textContent = '🌙';
+    }
+  }
+
+  function initTheme() {
+    const savedTheme = localStorage.getItem('pp_theme') || 'dark';
+    applyTheme(savedTheme);
+  }
+
+  window.showTerms = function() {
+    const termsText = `📋 ProfitPulse Terms of Service
 
 Welcome to ProfitPulse – Your Gateway to Smart Investing
 
@@ -1365,11 +1859,11 @@ ProfitPulse offers a structured investment program with 10% daily returns over 5
 • Provide accurate personal information
 
 Thank you for choosing ProfitPulse. Start investing today! 🚀`;
-  showModal('📋', 'Terms of Service', termsText);
-}
+    showModal('📋', 'Terms of Service', termsText);
+  };
 
-function showPrivacy(){
-  const privacyText = `🔒 ProfitPulse Privacy Policy
+  window.showPrivacy = function() {
+    const privacyText = `🔒 ProfitPulse Privacy Policy
 
 Your Privacy is Our Priority ✓
 
@@ -1391,7 +1885,7 @@ At ProfitPulse, we believe in transparency and protecting your personal informat
 
 3. HOW WE PROTECT YOUR DATA
 🔐 Bank-level encryption for all data
-🔐 Secure local storage
+🔐 Secure cloud storage
 🔐 Password-protected accounts
 🔐 No third-party data sharing
 
@@ -1402,477 +1896,59 @@ At ProfitPulse, we believe in transparency and protecting your personal informat
 ✓ Export your transaction history
 
 Your trust matters to us. Invest with confidence! 💪`;
-  showModal('🔒', 'Privacy Policy', privacyText);
-}
+    showModal('🔒', 'Privacy Policy', privacyText);
+  };
 
-function initTheme(){
-  const savedTheme = localStorage.getItem('pp_theme') || 'dark';
-  applyTheme(savedTheme);
-}
-
-function initApp(){
-  initTheme();
-  initSettings();
-  
-  const savedUser = localStorage.getItem(STORAGE_CURRENT_USER);
-  if(savedUser){
-    currentUsername = savedUser;
-    const userData = getUser(savedUser);
-    if(userData && !userData.locked){
-      currentUser = userData;
-      loadDashboard();
-      showDashboard();
-      switchTab('home');
-      startDailyProfitLoop();
-      startInactivityWatcher();
+  // Auth state listener
+  onAuthStateChanged(auth, async (user) => {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (user) {
+      currentUserId = user.uid;
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        currentUserData = { id: user.uid, ...userDoc.data() };
+        subscribeToUser(user.uid);
+        updateBalanceUI();
+        renderHistory();
+        renderTeam();
+        updateReferralLink();
+        updateProfileUI();
+        updateWhatsAppButton();
+        showDashboard();
+        switchTab('home');
+        startDailyProfitLoop();
+        runDailyProfits();
+      }
     } else {
-      localStorage.removeItem(STORAGE_CURRENT_USER);
-      hideLoading();
+      if (profitInterval) clearInterval(profitInterval);
+      if (userUnsubscribe) userUnsubscribe();
+      currentUserData = null;
+      currentUserId = null;
       showAuth('login-page');
     }
-  } else {
-    hideLoading();
-    const openReg=sessionStorage.getItem('pp_open_register');
-    if(openReg){ sessionStorage.removeItem('pp_open_register'); showAuth('register-page'); }
-    else showAuth('login-page');
-  }
-}
-
-function doLogin(){
-  clearErrors('login-user-err','login-pw-err'); setErr('login-general-err',false);
-  const username=document.getElementById('login-username').value.trim();
-  const password=document.getElementById('login-password').value;
-  if(!username){setErr('login-user-err',true);return;}
-  if(!password){setErr('login-pw-err',true);return;}
-  
-  const userData = getUser(username);
-  if(!userData || userData.password !== password){ 
-    setErr('login-general-err',true,'❌ Invalid username or password'); 
-    return; 
-  }
-  if(userData.locked){ 
-    setErr('login-general-err',true,'🔒 Your account has been locked. Contact support.'); 
-    return; 
-  }
-  
-  currentUser=userData; 
-  currentUsername=username;
-  localStorage.setItem(STORAGE_CURRENT_USER, username);
-  loadDashboard(); 
-  showDashboard(); 
-  switchTab('home');
-  startDailyProfitLoop();
-  startInactivityWatcher();
-}
-
-function doRegister(){
-  clearErrors('reg-user-err','reg-country-err','reg-phone-err','reg-pw-err','reg-confirm-err','reg-general-err');
-  const username=document.getElementById('reg-username').value.trim();
-  const country=document.getElementById('reg-country').value;
-  const phoneDigits=document.getElementById('reg-phone').value.trim();
-  const password=document.getElementById('reg-password').value;
-  const confirm=document.getElementById('reg-confirm').value;
-  const urlParams=new URLSearchParams(window.location.search);
-  const refCode=urlParams.get('ref')||'John';
-  let ok=true;
-  if(!username){setErr('reg-user-err',true,'Username is required');ok=false;}
-  if(!country){setErr('reg-country-err',true,'Please select your country');ok=false;}
-  if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){setErr('reg-phone-err',true,'Enter 9 digits starting with 7');ok=false;}
-  if(!password||password.length<6){setErr('reg-pw-err',true,'Password must be at least 6 characters');ok=false;}
-  if(!confirm||confirm!==password){setErr('reg-confirm-err',true,'Passwords do not match');ok=false;}
-  if(!ok)return;
-  
-  const existingUser = getUser(username);
-  if(existingUser){setErr('reg-user-err',true,'Username already taken');return;}
-  
-  const prefix=country==='KE'?'+254':'+256';
-  const fullPhone=prefix+phoneDigits;
-  const now=dateStr();
-  const newUser={
-    username, password, country,
-    phone: fullPhone,
-    stake: 0,
-    balance: 5000,
-    withdrawn: 0,
-    activated: false,
-    locked: false,
-    referredBy: refCode,
-    joinedDate: new Date().getFullYear().toString(),
-    lastProfitDate: getDateKey(new Date()),
-    transactions: { t0:{type:'Bonus',amount:5000,note:'Registration Bonus 🎁',date:now,status:'completed'} },
-    referrals: {},
-    activeInvestment: null
-  };
-  saveUser(username, newUser);
-  
-  // Handle referral
-  if(refCode && refCode !== 'John'){
-    const ref1 = getUser(refCode);
-    if(ref1){
-      if(!ref1.referrals) ref1.referrals = {};
-      ref1.referrals[safeKey(username)] = {username, invested:0, level:1};
-      saveUser(refCode, ref1);
-      
-      if(ref1.referredBy && ref1.referredBy !== 'John'){
-        const ref2 = getUser(ref1.referredBy);
-        if(ref2){
-          if(!ref2.referrals) ref2.referrals = {};
-          ref2.referrals[safeKey(username)] = {username, invested:0, level:2};
-          saveUser(ref1.referredBy, ref2);
-          
-          if(ref2.referredBy && ref2.referredBy !== 'John'){
-            const ref3 = getUser(ref2.referredBy);
-            if(ref3){
-              if(!ref3.referrals) ref3.referrals = {};
-              ref3.referrals[safeKey(username)] = {username, invested:0, level:3};
-              saveUser(ref2.referredBy, ref3);
-            }
-          }
-        }
-      }
-    }
-  } else if(refCode === 'John'){
-    const john = getUser('John');
-    if(john){
-      if(!john.referrals) john.referrals = {};
-      john.referrals[safeKey(username)] = {username, invested:0, level:1};
-      saveUser('John', john);
-    } else {
-      const johnUser = {
-        username:'John', password:'John123', country:'UG',
-        phone:'+256700000000', stake:0, balance:0, withdrawn:0,
-        activated:false, locked:false, referredBy:'', joinedDate:'2024',
-        transactions:{}, referrals:{}, activeInvestment:null
-      };
-      johnUser.referrals[safeKey(username)] = {username, invested:0, level:1};
-      saveUser('John', johnUser);
-    }
-  }
-  
-  ['reg-username','reg-phone','reg-password','reg-confirm'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('reg-country').value=''; updateRegPrefix(); checkStrength('');
-  setTimeout(()=>showAuth('login-page'),1200);
-}
-
-function doLogout(){
-  if(inactivityTimer){ clearTimeout(inactivityTimer); inactivityTimer=null; }
-  if(profitInterval){ clearInterval(profitInterval); profitInterval=null; }
-  localStorage.removeItem(STORAGE_CURRENT_USER);
-  currentUser=null; currentUsername=null;
-  closeMenu();
-  showToast('Signed out','#f87171');
-  setTimeout(()=>{
-    const dashPage = document.getElementById('dashboard-page');
-    if(dashPage){
-      dashPage.style.display='none';
-      dashPage.classList.remove('active');
-    }
-    document.getElementById('login-username').value='';
-    document.getElementById('login-password').value='';
-    showAuth('login-page');
-  },800);
-}
-
-function doDeposit(){
-  clearErrors('dep-phone-err','dep-amount-err');
-  const phoneDigits = document.getElementById('dep-phone').value.trim();
-  if(!phoneDigits||phoneDigits.length!==9||!phoneDigits.startsWith('7')){ setErr('dep-phone-err',true,'Enter 9 digits starting with 7'); return; }
-  const minDep = settingsData.minDeposit||10000;
-  const maxDep = 2350000;
-  const amount = parseInt(document.getElementById('dep-amount').value)||0;
-  if(amount<minDep){ setErr('dep-amount-err',true,'Minimum deposit is '+fmt(minDep)); return; }
-  if(amount>maxDep){ setErr('dep-amount-err',true,'Maximum deposit per transaction is '+fmt(maxDep)); return; }
-
-  const btn = document.getElementById('dep-submit-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Processing...';
-
-  const fullPhone = '+256' + phoneDigits;
-  const now = dateStr();
-  const txKey = 'tx_dep_' + Date.now();
-  
-  setTimeout(() => {
-    const profit = Math.floor(amount * 0.10);
-    
-    const updates = { ...currentUser };
-    
-    // Add to STAKE (locked investment)
-    const newStake = (currentUser.stake || 0) + amount;
-    updates.stake = newStake;
-    updates.activated = true;
-    
-    // Add instant profit to BALANCE
-    const newBalance = (currentUser.balance || 0) + profit;
-    updates.balance = newBalance;
-    
-    // Update active investment
-    if(!updates.activeInvestment || updates.activeInvestment.daysRun >= 56){
-      // New investment cycle
-      updates.activeInvestment = {
-        amount: newStake,
-        startDate: new Date().toISOString(),
-        daysRun: 0,
-        lastPaidDate: getDateKey(new Date())
-      };
-    } else {
-      // Add to existing investment
-      updates.activeInvestment.amount = newStake;
-    }
-    
-    // Record transactions
-    if(!updates.transactions) updates.transactions = {};
-    updates.transactions[txKey] = {
-      type:'Deposit',
-      amount:amount,
-      depositPhone:fullPhone,
-      note:'Deposit added to STAKE ✅',
-      date:now,
-      status:'completed'
-    };
-    
-    const profitTxKey = 'txp_inst_'+Date.now();
-    updates.transactions[profitTxKey] = {
-      type:'Profit',
-      amount:profit,
-      note:'10% instant profit on deposit (added to BALANCE)',
-      date:now,
-      status:'completed'
-    };
-    
-    saveUser(currentUsername, updates);
-    currentUser = updates;
-    
-    // Credit referral bonuses
-    creditReferralBonuses(currentUsername, amount);
-    
-    btn.disabled = false;
-    btn.textContent = '💳 INVEST NOW';
-    document.getElementById('dep-phone').value='';
-    document.getElementById('dep-amount').value='';
-    updateBalanceUI();
-    renderHistory();
-    showToast(`✓ ${fmt(amount)} added to STAKE! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
-  }, 1500);
-}
-
-function creditReferralBonuses(depositorUsername, amount){
-  const depositor = getUser(depositorUsername);
-  if(!depositor) return;
-  if(!depositor.referredBy || depositor.referredBy === 'John') return;
-  
-  const pctL1 = (settingsData.refL1 || 10) / 100;
-  const pctL2 = (settingsData.refL2 || 4) / 100;
-  const pctL3 = (settingsData.refL3 || 2) / 100;
-  
-  let upline1 = depositor.referredBy;
-  if(upline1 && upline1 !== 'John'){
-    const upline1Data = getUser(upline1);
-    if(upline1Data){
-      const bonus1 = Math.floor(amount * pctL1);
-      if(bonus1 > 0){
-        upline1Data.balance = (upline1Data.balance || 0) + bonus1;
-        if(!upline1Data.transactions) upline1Data.transactions = {};
-        const txKey1 = 'tx_ref_' + Date.now() + '_l1';
-        upline1Data.transactions[txKey1] = {
-          type: 'Referral',
-          amount: bonus1,
-          note: 'Level 1 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-          date: dateStr(),
-          status: 'completed'
-        };
-        if(upline1Data.referrals && upline1Data.referrals[safeKey(depositorUsername)]){
-          upline1Data.referrals[safeKey(depositorUsername)].invested = 
-            (upline1Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
-        }
-        saveUser(upline1, upline1Data);
-      }
-      
-      let upline2 = upline1Data.referredBy;
-      if(upline2 && upline2 !== 'John'){
-        const upline2Data = getUser(upline2);
-        if(upline2Data){
-          const bonus2 = Math.floor(amount * pctL2);
-          if(bonus2 > 0){
-            upline2Data.balance = (upline2Data.balance || 0) + bonus2;
-            if(!upline2Data.transactions) upline2Data.transactions = {};
-            const txKey2 = 'tx_ref_' + Date.now() + '_l2';
-            upline2Data.transactions[txKey2] = {
-              type: 'Referral',
-              amount: bonus2,
-              note: 'Level 2 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-              date: dateStr(),
-              status: 'completed'
-            };
-            if(upline2Data.referrals && upline2Data.referrals[safeKey(depositorUsername)]){
-              upline2Data.referrals[safeKey(depositorUsername)].invested = 
-                (upline2Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
-            }
-            saveUser(upline2, upline2Data);
-            
-            let upline3 = upline2Data.referredBy;
-            if(upline3 && upline3 !== 'John'){
-              const upline3Data = getUser(upline3);
-              if(upline3Data){
-                const bonus3 = Math.floor(amount * pctL3);
-                if(bonus3 > 0){
-                  upline3Data.balance = (upline3Data.balance || 0) + bonus3;
-                  if(!upline3Data.transactions) upline3Data.transactions = {};
-                  const txKey3 = 'tx_ref_' + Date.now() + '_l3';
-                  upline3Data.transactions[txKey3] = {
-                    type: 'Referral',
-                    amount: bonus3,
-                    note: 'Level 3 bonus from ' + depositorUsername + ' (Deposit: ' + fmt(amount) + ')',
-                    date: dateStr(),
-                    status: 'completed'
-                  };
-                  if(upline3Data.referrals && upline3Data.referrals[safeKey(depositorUsername)]){
-                    upline3Data.referrals[safeKey(depositorUsername)].invested = 
-                      (upline3Data.referrals[safeKey(depositorUsername)].invested || 0) + amount;
-                  }
-                  saveUser(upline3, upline3Data);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-function doWithdraw(){
-  clearErrors('with-amount-err');
-  if(settingsData.withdrawLocked){ showModal('🔒','Locked','Withdrawals are currently disabled.'); return; }
-  if(!currentUser.activated){ showModal('🔒','Account Not Activated','Make a deposit first to activate your account.'); return; }
-  
-  const minWith = settingsData.minWithdraw||5000;
-  const amount = parseInt(document.getElementById('with-amount').value)||0;
-  if(amount<minWith){ setErr('with-amount-err',true,'Minimum withdrawal is '+fmt(minWith)); return; }
-  
-  const balance = currentUser.balance || 0;
-  if(balance < amount){ setErr('with-amount-err',true,'Insufficient BALANCE.'); return; }
-
-  const chargeRate = (settingsData.withdrawCharge||10)/100;
-  const sendAmount = Math.floor(amount * (1 - chargeRate));
-  const fee = amount - sendAmount;
-  const phone = currentUser.phone;
-  const now = dateStr();
-  const txKey = 'tx_wd_'+Date.now();
-
-  const btn = document.getElementById('with-submit-btn');
-  btn.disabled = true; btn.textContent = '⏳ Processing...';
-
-  // Deduct from BALANCE only
-  const updates = { ...currentUser };
-  updates.balance = (currentUser.balance || 0) - amount;
-  updates.withdrawn = (currentUser.withdrawn || 0) + amount;
-  
-  if(!updates.transactions) updates.transactions = {};
-  updates.transactions[txKey] = {
-    type:'Withdrawal',
-    amount:-amount,
-    note:`Withdrawal to ${phone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})`,
-    date:now,
-    status:'completed'
-  };
-  
-  saveUser(currentUsername, updates);
-  currentUser = updates;
-  updateBalanceUI();
-  renderHistory();
-
-  btn.disabled = false; btn.textContent = '💸 WITHDRAW';
-  document.getElementById('with-amount').value='';
-  document.getElementById('withdraw-preview').style.display='none';
-  showToast(`💸 Withdrawal of ${fmt(amount)} processed! You received: ${fmt(sendAmount)}`, 'var(--success)');
-}
-
-function doReinvest(){
-  clearErrors('reinvest-amount-err');
-  const amount=parseInt(document.getElementById('reinvest-amount').value)||0;
-  if(amount<10000){setErr('reinvest-amount-err',true,'Minimum re-invest is UGX 10,000');return;}
-  
-  const balance = currentUser.balance || 0;
-  if(balance < amount){setErr('reinvest-amount-err',true,'Insufficient BALANCE.');return;}
-  
-  const profit = Math.floor(amount * 0.10);
-  const now = dateStr();
-  const tx1Key = 'tx_reinvest_' + Date.now() + '_a';
-  const tx2Key = 'tx_reinvest_' + Date.now() + '_b';
-  
-  const updates = { ...currentUser };
-  
-  // Deduct from BALANCE
-  updates.balance = (currentUser.balance || 0) - amount;
-  
-  // Add to STAKE
-  const newStake = (currentUser.stake || 0) + amount;
-  updates.stake = newStake;
-  
-  // Add instant profit to BALANCE
-  updates.balance = updates.balance + profit;
-  
-  // Update or create active investment
-  if(!updates.activeInvestment || updates.activeInvestment.daysRun >= 56){
-    updates.activeInvestment = {
-      amount: newStake,
-      startDate: new Date().toISOString(),
-      daysRun: 0,
-      lastPaidDate: getDateKey(new Date())
-    };
-  } else {
-    updates.activeInvestment.amount = newStake;
-  }
-  
-  updates.activated = true;
-  
-  if(!updates.transactions) updates.transactions = {};
-  updates.transactions[tx1Key] = {
-    type:'Re-Invest',
-    amount:-amount,
-    note:'Moved from BALANCE to STAKE',
-    date:now,
-    status:'completed'
-  };
-  updates.transactions[tx2Key] = {
-    type:'Profit',
-    amount:profit,
-    note:'10% instant profit on re-invest (added to BALANCE)',
-    date:now,
-    status:'completed'
-  };
-  
-  saveUser(currentUsername, updates);
-  currentUser = updates;
-  document.getElementById('reinvest-amount').value='';
-  updateBalanceUI();
-  renderHistory();
-  showToast(`✓ Re-invested ${fmt(amount)}! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
-}
-
-function resetInactivityTimer(){
-  if(!currentUser) return;
-  if(inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(()=>{ if(currentUser){ doLogout(); } }, INACTIVITY_LIMIT);
-}
-
-function startInactivityWatcher(){
-  ['click','touchstart','scroll','keydown'].forEach(evt=>{
-    document.addEventListener(evt, resetInactivityTimer, {passive:true});
+    if (loadingScreen) loadingScreen.style.display = 'none';
   });
-  resetInactivityTimer();
-}
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    const lp=document.getElementById('login-page');
-    const rp=document.getElementById('register-page');
-    if(lp&&lp.classList.contains('active')) doLogin();
-    else if(rp&&rp.classList.contains('active')) doRegister();
+  // Initialize
+  function init() {
+    initTheme();
+    loadSettings();
+    
+    // Withdraw amount listener
+    const withAmount = document.getElementById('with-amount');
+    if (withAmount) {
+      withAmount.addEventListener('input', updateWithdrawPreview);
+    }
+    
+    // Check for ref code in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    if (refCode && !localStorage.getItem(STORAGE_CURRENT_USER)) {
+      sessionStorage.setItem('pp_open_register', 'true');
+    }
   }
-});
-
-initApp();
+  
+  init();
 </script>
 </body>
 </html>

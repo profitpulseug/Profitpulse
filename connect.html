@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProfitPulse Command Center</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 :root{
@@ -187,9 +186,9 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
       <div class="auth-sub">Command Center Login</div>
     </div>
     <div class="f-group">
-      <label class="f-label">Username</label>
-      <div class="f-wrap"><span class="f-icon">👤</span><input type="text" class="f-input" id="login-username" placeholder="Enter username"></div>
-      <div class="f-err" id="login-user-err">Please enter username</div>
+      <label class="f-label">Email</label>
+      <div class="f-wrap"><span class="f-icon">📧</span><input type="email" class="f-input" id="login-email" placeholder="Enter admin email"></div>
+      <div class="f-err" id="login-email-err">Please enter email</div>
     </div>
     <div class="f-group">
       <label class="f-label">Password</label>
@@ -207,6 +206,11 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
       <div class="auth-logo-icon">📝</div>
       <div class="auth-title">Admin Registration</div>
       <div class="auth-sub">Limited to 3 members only</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">Email</label>
+      <div class="f-wrap"><span class="f-icon">📧</span><input type="email" class="f-input" id="reg-email" placeholder="Admin email"></div>
+      <div class="f-err" id="reg-email-err">Valid email required</div>
     </div>
     <div class="f-group">
       <label class="f-label">Phone Number</label>
@@ -310,7 +314,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         </div>
         <table>
           <thead>
-            <tr><th>Username</th><th>Phone</th><th>Password</th><th>STAKE</th><th>BALANCE</th><th>Withdrawn</th><th>Referrals</th><th>Status</th><th>Actions</th></tr>
+            <tr><th>Username</th><th>Email</th><th>Phone</th><th>STAKE</th><th>BALANCE</th><th>Withdrawn</th><th>Referrals</th><th>Status</th><th>Actions</th></tr>
           </thead>
           <tbody id="users-table-body"><tr class="empty-row"><td colspan="9">Loading...</tr></tbody>
         </table>
@@ -371,7 +375,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
           <thead>
             <tr><th>Date</th><th>Username</th><th>Phone</th><th>Amount</th><th>Fee (10%)</th><th>Net Amount</th><th>Status</th><th>Actions</th></tr>
           </thead>
-          <tbody id="wd-table-body"><tr class="empty-row"><td colspan="8">No withdrawal requests yet<\/tr></tbody>
+          <tbody id="wd-table-body"><tr class="empty-row"><td colspan="8">No withdrawal requests yet</tr></tbody>
         </table>
       </div>
     </div>
@@ -403,7 +407,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="table-header"><div class="table-title">📋 Recent Debits</div></div>
         <table>
           <thead><tr><th>Username</th><th>Amount Debited</th><th>Balance After</th><th>Date & Time</th></tr></thead>
-          <tbody id="debit-history-body"><tr class="empty-row"><td colspan="4">No debits yet<\/tr></tbody>
+          <tbody id="debit-history-body"><tr class="empty-row"><td colspan="4">No debits yet</tr></tbody>
         </table>
       </div>
     </div>
@@ -411,7 +415,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
     <div class="page" id="pg-sog">
       <div class="page-title">🗑️ SOG - Search & Obliterate</div>
       <div class="page-sub">Wipe user financial data (keeps account structure) - Account becomes brand new</div>
-      <div style="background:#fff0f4;border:1px solid var(--border);padding:16px;border-radius:12px;margin-bottom:20px;"><strong style="color:var(--warn);">⚠️ WARNING:</strong> This will reset ALL user financial data (STAKE, BALANCE, WITHDRAWN, transactions, active investment) to zero. The user account will look brand new but username, password, phone, country, joined date, referral list, and referrer info will remain. This cannot be undone.</div>
+      <div style="background:#fff0f4;border:1px solid var(--border);padding:16px;border-radius:12px;margin-bottom:20px;"><strong style="color:var(--warn);">⚠️ WARNING:</strong> This will reset ALL user financial data (STAKE, BALANCE, WITHDRAWN, transactions, active investment) to zero. The user account will look brand new but username, email, phone, country, joined date, referral list, and referrer info will remain. This cannot be undone.</div>
       <div style="display:flex;gap:12px;margin-bottom:20px;">
         <input type="text" class="f-input" id="sog-username-search" placeholder="Enter username to search..." oninput="searchSOGUser()" style="flex:1;padding:11px 14px;">
         <button class="btn btn-approve" onclick="clearSOGSearch()">Clear</button>
@@ -467,7 +471,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
   </div>
 </div>
 
-<div class="modal-ov" id="edit-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:24px;"><div class="modal-box" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:440px;"><div class="modal-title" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:800;margin-bottom:18px;color:var(--accent);">✏️ Edit User</div><input type="hidden" id="edit-username"><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label" style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;">Password</label><input type="text" class="modal-input" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;" id="edit-password"></div><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label">Phone Number</label><input type="text" class="modal-input" id="edit-phone-modal" placeholder="+256..."></div><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label">STAKE (UGX)</label><input type="number" class="modal-input" id="edit-stake" min="0"></div><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label">BALANCE (UGX)</label><input type="number" class="modal-input" id="edit-balance" min="0"></div><div class="modal-actions" style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;"><button class="modal-cancel" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;" onclick="closeEditModal()">Cancel</button><button class="btn btn-save" onclick="saveEditUser()">Save Changes</button></div></div></div>
+<div class="modal-ov" id="edit-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:24px;"><div class="modal-box" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:440px;"><div class="modal-title" style="font-family:'Playfair Display',serif;font-size:17px;font-weight:800;margin-bottom:18px;color:var(--accent);">✏️ Edit User</div><input type="hidden" id="edit-user-id"><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label" style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;">Email</label><input type="email" class="modal-input" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;" id="edit-email"></div><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label">Phone Number</label><input type="text" class="modal-input" id="edit-phone-modal" placeholder="+256..."></div><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label">STAKE (UGX)</label><input type="number" class="modal-input" id="edit-stake" min="0"></div><div class="modal-row" style="margin-bottom:14px;"><label class="modal-label">BALANCE (UGX)</label><input type="number" class="modal-input" id="edit-balance" min="0"></div><div class="modal-actions" style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;"><button class="modal-cancel" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;" onclick="closeEditModal()">Cancel</button><button class="btn btn-save" onclick="saveEditUser()">Save Changes</button></div></div></div>
 
 <div class="toast" id="toast" style="position:fixed;top:24px;right:24px;background:var(--accent3);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;padding:12px 24px;border-radius:12px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;transform:translateY(-10px);"></div>
 <div class="notif-overlay" id="notif-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:350;display:none;" onclick="closeNotifDrawer()"></div>
@@ -485,868 +489,652 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
   </div>
 </footer>
 
-<script>
-// ============================================================
-// PROFIT PULSE COMMAND CENTER - LOCAL STORAGE VERSION
-// Updated for new financial structure (STAKE, BALANCE, WITHDRAWN)
-// ============================================================
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, orderBy, onSnapshot, deleteDoc, Timestamp, serverTimestamp, writeBatch, addDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-// Storage keys (must match index.html)
-const STORAGE_USERS = 'profitpulse_users';
-const STORAGE_SETTINGS = 'profitpulse_settings';
-const STORAGE_PENDING_WITHDRAWALS = 'profitpulse_pending_withdrawals';
-const STORAGE_ADMINS = 'profitpulse_admins';
-const STORAGE_CURRENT_ADMIN = 'profitpulse_current_admin';
-const STORAGE_ADMIN_SESSION = 'profitpulse_admin_session';
-const STORAGE_DEBIT_HISTORY = 'profitpulse_debit_history';
-const STORAGE_ADMIN_NOTIFICATIONS = 'profitpulse_admin_notifications';
+  // Firebase Config - REPLACE WITH YOUR CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyCeoGpFkD07sdvJcnrPxvIUgdr0jxQ3uXI",
+    authDomain: "profitpulse-51bfb.firebaseapp.com",
+    projectId: "profitpulse-51bfb",
+    storageBucket: "profitpulse-51bfb.firebasestorage.app",
+    messagingSenderId: "415940134220",
+    appId: "1:415940134220:web:0243ec9163e424042ebbe9"
+  };
 
-function loadFromLocalStorage(key, defaultValue = {}) {
-  const data = localStorage.getItem(key);
-  if (data) {
-    try {
-      return JSON.parse(data);
-    } catch(e) {
-      return defaultValue;
-    }
-  }
-  return defaultValue;
-}
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-function saveToLocalStorage(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
+  // Global variables
+  let allUsers = {};
+  let allSettings = {};
+  let currentAdmin = null;
+  let searchFilter = '';
+  let txFilter = 'all';
+  let wdFilter = 'pending';
+  let debitTargetUserId = null;
+  let debitHistory = [];
+  let allWithdrawals = {};
+  let allAdmins = {};
+  let usersUnsubscribe = null;
+  let settingsUnsubscribe = null;
+  let withdrawalsUnsubscribe = null;
 
-function getAllUsers() {
-  return loadFromLocalStorage(STORAGE_USERS, {});
-}
+  // Helper functions
+  function fmt(n) { return 'UGX ' + Number(n || 0).toLocaleString(); }
+  function dateStr() { const d = new Date(); return d.toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }); }
+  function toast(msg, color) { const t = document.getElementById('toast'); t.textContent = msg; t.style.background = color || 'var(--accent3)'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
+  function confirmAction(title, text) { return Swal.fire({ title, text, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d4af37', confirmButtonText: 'Yes, proceed!' }).then(result => result.isConfirmed); }
+  function setErr(id, show, msg) { const el = document.getElementById(id); if (!el) return; if (show) { el.classList.add('show'); if (msg) el.textContent = msg; } else { el.classList.remove('show'); } }
+  function clearErrors(...ids) { ids.forEach(id => setErr(id, false)); }
 
-function saveUser(username, userData) {
-  const users = getAllUsers();
-  users[username] = userData;
-  saveToLocalStorage(STORAGE_USERS, users);
-}
-
-function fmt(n){ return 'UGX '+Number(n||0).toLocaleString(); }
-function safeKey(u){ return (u||'').replace(/[^a-zA-Z0-9]/g,'_'); }
-function dateStr(){ const d=new Date(); return d.toLocaleDateString('en-UG',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'}); }
-function toast(msg,color){ const t=document.getElementById('toast'); t.textContent=msg; t.style.background=color||'var(--accent3)'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
-
-// Admin management
-let allUsers = {};
-let allSettings = {};
-let currentAdmin = null;
-let searchFilter = '';
-let txFilter = 'all';
-let wdFilter = 'pending';
-let debitTargetUser = null;
-let debitHistory = [];
-let allWithdrawals = {};
-let allAdmins = {};
-
-function loadAllData() {
-  allUsers = getAllUsers();
-  allSettings = loadFromLocalStorage(STORAGE_SETTINGS, {
-    withdrawCharge: 10, refL1: 10, refL2: 4, refL3: 2,
-    waGroup: '', waSupport: '', withdrawLocked: false,
-    minDeposit: 10000, minWithdraw: 10000, waNumber: '700000000'
-  });
-  allWithdrawals = loadFromLocalStorage(STORAGE_PENDING_WITHDRAWALS, {});
-  debitHistory = loadFromLocalStorage(STORAGE_DEBIT_HISTORY, []);
-  allAdmins = loadFromLocalStorage(STORAGE_ADMINS, {});
-}
-
-function saveAllSettings() {
-  saveToLocalStorage(STORAGE_SETTINGS, allSettings);
-}
-
-function saveAllWithdrawals() {
-  saveToLocalStorage(STORAGE_PENDING_WITHDRAWALS, allWithdrawals);
-}
-
-function saveDebitHistory() {
-  saveToLocalStorage(STORAGE_DEBIT_HISTORY, debitHistory);
-}
-
-function saveAllAdmins() {
-  saveToLocalStorage(STORAGE_ADMINS, allAdmins);
-}
-
-function checkAdminSession(){
-  const session = localStorage.getItem(STORAGE_ADMIN_SESSION);
-  const savedAdmin = localStorage.getItem(STORAGE_CURRENT_ADMIN);
-  if(session === 'true' && savedAdmin){
-    try{
-      currentAdmin = JSON.parse(savedAdmin);
-      document.getElementById('auth-wrap').style.display='none';
-      document.getElementById('admin-wrap').classList.add('active');
-      loadAllData();
-      renderDashboard();
-      renderUsersTable();
-      renderTube();
-      renderTransactions();
-      renderWithdrawalsTable();
-      updateWithdrawalsBadge();
-      renderWithdrawalsStats();
+  // Load settings from Firestore with real-time listener
+  function loadSettings() {
+    if (settingsUnsubscribe) settingsUnsubscribe();
+    settingsUnsubscribe = onSnapshot(doc(db, 'settings', 'platform'), (docSnap) => {
+      if (docSnap.exists()) {
+        allSettings = docSnap.data();
+      } else {
+        allSettings = {
+          withdrawCharge: 10, refL1: 10, refL2: 4, refL3: 2,
+          waGroup: '', waSupport: '', withdrawLocked: false,
+          minDeposit: 10000, minWithdraw: 10000, waNumber: '700000000'
+        };
+        setDoc(doc(db, 'settings', 'platform'), allSettings);
+      }
       loadSettingsUI();
-      startNotifListener();
-      toast('Welcome back, '+currentAdmin.username);
-    } catch(e){ console.warn(e); }
-  } else {
-    localStorage.removeItem(STORAGE_ADMIN_SESSION);
-    localStorage.removeItem(STORAGE_CURRENT_ADMIN);
-    currentAdmin = null;
-    document.getElementById('auth-wrap').style.display='flex';
-    document.getElementById('admin-wrap').classList.remove('active');
-    document.getElementById('loading-screen').style.display='none';
+      updateDashboardStats();
+    });
   }
-}
 
-function adminLogin(){
-  clearErrors('login-user-err','login-pw-err');
-  document.getElementById('login-general-err').classList.remove('show');
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  if(!username){ setErr('login-user-err',true); return; }
-  if(!password){ setErr('login-pw-err',true); return; }
-  
-  loadAllData();
-  
-  let foundAdmin = null;
-  for(const key in allAdmins){
-    if(allAdmins[key].username === username && allAdmins[key].password === password){
-      foundAdmin = allAdmins[key];
-      break;
-    }
-  }
-  
-  if(!foundAdmin){
-    document.getElementById('login-general-err').textContent = '❌ Invalid username or password';
-    document.getElementById('login-general-err').classList.add('show');
-    return;
-  }
-  
-  currentAdmin = foundAdmin;
-  localStorage.setItem(STORAGE_ADMIN_SESSION, 'true');
-  localStorage.setItem(STORAGE_CURRENT_ADMIN, JSON.stringify(foundAdmin));
-  document.getElementById('auth-wrap').style.display='none';
-  document.getElementById('admin-wrap').classList.add('active');
-  renderDashboard();
-  renderUsersTable();
-  renderTube();
-  renderTransactions();
-  renderWithdrawalsTable();
-  updateWithdrawalsBadge();
-  renderWithdrawalsStats();
-  loadSettingsUI();
-  startNotifListener();
-  toast('✅ Welcome, '+foundAdmin.username+' ('+foundAdmin.position+')');
-}
-
-function adminRegister(){
-  clearErrors('reg-phone-err','reg-position-err','reg-username-err','reg-pw-err','reg-confirm-err','reg-second-pw-err','reg-second-confirm-err','reg-general-err');
-  
-  const phoneDigits = document.getElementById('reg-phone').value.trim();
-  const position = document.getElementById('reg-position').value;
-  const username = document.getElementById('reg-username').value.trim();
-  const password = document.getElementById('reg-password').value;
-  const confirm = document.getElementById('reg-confirm').value;
-  const secondPw = document.getElementById('reg-second-pw').value;
-  const secondConfirm = document.getElementById('reg-second-confirm').value;
-  
-  let ok=true;
-  if(!phoneDigits || phoneDigits.length!==9 || !phoneDigits.startsWith('7')){ setErr('reg-phone-err',true,'Enter 9 digits starting with 7'); ok=false; }
-  if(!position){ setErr('reg-position-err',true,'Please select your position'); ok=false; }
-  if(!username){ setErr('reg-username-err',true,'Username is required'); ok=false; }
-  if(!password || password.length<9){ setErr('reg-pw-err',true,'Password must be at least 9 characters'); ok=false; }
-  if(password !== confirm){ setErr('reg-confirm-err',true,'Passwords do not match'); ok=false; }
-  if(!secondPw || secondPw.length<9){ setErr('reg-second-pw-err',true,'Second password must be at least 9 characters'); ok=false; }
-  if(secondPw !== secondConfirm){ setErr('reg-second-confirm-err',true,'Second passwords do not match'); ok=false; }
-  if(!ok) return;
-  
-  const fullPhone = '+256' + phoneDigits;
-  loadAllData();
-  const adminCount = Object.keys(allAdmins).length;
-  
-  if(adminCount >= 3){
-    document.getElementById('reg-general-err').textContent = '❌ Maximum 3 admin accounts allowed. Cannot register more.';
-    document.getElementById('reg-general-err').classList.add('show');
-    return;
-  }
-  
-  for(const key in allAdmins){
-    if(allAdmins[key].username === username){
-      document.getElementById('reg-general-err').textContent = '❌ Username already taken';
-      document.getElementById('reg-general-err').classList.add('show');
-      return;
-    }
-  }
-  
-  const adminKey = 'admin_' + Date.now();
-  allAdmins[adminKey] = { username, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr() };
-  saveAllAdmins();
-  toast('✅ Admin registered successfully! You can now login.');
-  showLoginForm();
-  document.getElementById('reg-phone').value='';
-  document.getElementById('reg-position').value='';
-  document.getElementById('reg-username').value='';
-  document.getElementById('reg-password').value='';
-  document.getElementById('reg-confirm').value='';
-  document.getElementById('reg-second-pw').value='';
-  document.getElementById('reg-second-confirm').value='';
-}
-
-function showRegisterForm(){ document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block'; }
-function showLoginForm(){ document.getElementById('login-form').style.display='block'; document.getElementById('register-form').style.display='none'; }
-function toggleLoginPw(){ const inp=document.getElementById('login-password'); const btn=document.getElementById('login-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
-function toggleRegPw(){ const inp=document.getElementById('reg-password'); const btn=document.getElementById('reg-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
-function toggleRegConfirm(){ const inp=document.getElementById('reg-confirm'); const btn=document.getElementById('reg-confirm-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
-function toggleRegSecond(){ const inp=document.getElementById('reg-second-pw'); const btn=document.getElementById('reg-second-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
-function toggleRegSecondConfirm(){ const inp=document.getElementById('reg-second-confirm'); const btn=document.getElementById('reg-second-confirm-eye'); if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}else{inp.type='password';btn.textContent='👁️';} }
-
-function adminLogout(){
-  localStorage.removeItem(STORAGE_ADMIN_SESSION);
-  localStorage.removeItem(STORAGE_CURRENT_ADMIN);
-  currentAdmin = null;
-  document.getElementById('admin-wrap').classList.remove('active');
-  document.getElementById('auth-wrap').style.display='flex';
-  showLoginForm();
-  document.getElementById('login-username').value='';
-  document.getElementById('login-password').value='';
-  toast('Signed out');
-}
-
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={'pg-dashboard':0,'pg-users':1,'pg-tube':2,'pg-transactions':3,'pg-withdrawals':4,'pg-debit':5,'pg-sog':6,'pg-settings':7};
-  if(map[id]!==undefined) document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
-  if(id==='pg-transactions'){ renderTransactions(); }
-  if(id==='pg-withdrawals') renderWithdrawalsTable();
-  if(id==='pg-debit') renderDebitHistory();
-}
-
-let sogTargetUser=null;
-function searchSOGUser(){ 
-  loadAllData();
-  const q=document.getElementById('sog-username-search').value.trim().toLowerCase(); 
-  const found=document.getElementById('sog-user-found'); 
-  const notFound=document.getElementById('sog-not-found'); 
-  sogTargetUser=null; 
-  found.style.display='none'; 
-  notFound.style.display='none'; 
-  if(!q) return; 
-  const user=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); 
-  if(user){ 
-    sogTargetUser=user; 
-    const userDisplay='Username: <strong>'+user.username+'</strong><br>Phone: '+(user.phone||'—')+'<br>STAKE: '+fmt(user.stake||0)+' | BALANCE: '+fmt(user.balance||0)+' | Withdrawn: '+fmt(user.withdrawn||0); 
-    document.getElementById('sog-user-display').innerHTML=userDisplay; 
-    found.style.display='block'; 
-  } else { 
-    notFound.style.display='block'; 
-  } 
-}
-
-function clearSOGSearch(){ 
-  sogTargetUser=null; 
-  document.getElementById('sog-username-search').value=''; 
-  document.getElementById('sog-user-found').style.display='none'; 
-  document.getElementById('sog-not-found').style.display='none'; 
-}
-
-function obliterateUserData(){ 
-  if(!sogTargetUser){ toast('No user selected','#f87171'); return; } 
-  confirmAction('🗑️ OBLITERATE ALL FINANCIAL DATA?', 'Delete ALL financial data for ' + sogTargetUser.username + '? STAKE, BALANCE, WITHDRAWN, transactions, and active investment will be reset to zero. Account will become brand new. THIS CANNOT BE UNDONE.').then(confirmed=>{ 
-    if(confirmed){ 
-      sogTargetUser.stake = 0;
-      sogTargetUser.balance = 0;
-      sogTargetUser.withdrawn = 0;
-      sogTargetUser.activated = false;
-      sogTargetUser.transactions = {};
-      sogTargetUser.activeInvestment = null;
-      sogTargetUser.lastProfitDate = new Date().toISOString().slice(0,10);
-      saveUser(sogTargetUser.username, sogTargetUser);
-      loadAllData();
+  // Load users with real-time listener
+  function loadUsers() {
+    if (usersUnsubscribe) usersUnsubscribe();
+    usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
+      allUsers = {};
+      snapshot.forEach(doc => {
+        allUsers[doc.id] = { id: doc.id, ...doc.data() };
+      });
       renderUsersTable();
-      renderDashboard();
-      toast('🗑️ All financial data obliterated for ' + sogTargetUser.username, '#f87171'); 
-      clearSOGSearch(); 
-    } 
-  }); 
-}
-
-function confirmAction(title, text){ return Swal.fire({title, text, icon:'warning', showCancelButton:true, confirmButtonColor:'#d4af37', confirmButtonText:'Yes, proceed!'}).then(result=>result.isConfirmed); }
-
-function renderDashboard(){
-  loadAllData();
-  const users=Object.values(allUsers);
-  let totalStake=0, totalBalance=0, totalWithdrawn=0, locked=0, activeInvestors=0;
-  users.forEach(u=>{ 
-    totalStake += u.stake || 0; 
-    totalBalance += u.balance || 0; 
-    totalWithdrawn += u.withdrawn || 0; 
-    if(u.locked) locked++; 
-    if((u.stake || 0) > 0) activeInvestors++;
-  });
-  document.getElementById('d-total-users').textContent=users.length;
-  document.getElementById('d-total-stake').textContent=fmt(totalStake);
-  document.getElementById('d-total-balance').textContent=fmt(totalBalance);
-  document.getElementById('d-total-withdrawn').textContent=fmt(totalWithdrawn);
-  document.getElementById('d-locked').textContent=locked;
-  document.getElementById('d-min-deposit').textContent=fmt(allSettings.minDeposit||10000);
-  document.getElementById('d-active-investors').textContent=activeInvestors;
-  const s=allSettings;
-  document.getElementById('pct-summary').innerHTML='<div class="pct-pill">Min Deposit <span>'+fmt(s.minDeposit||10000)+'</span></div><div class="pct-pill">Withdrawal Charge <span>'+(s.withdrawCharge||10)+'%</span></div><div class="pct-pill">Ref L1 <span>'+(s.refL1||10)+'%</span></div><div class="pct-pill">Ref L2 <span>'+(s.refL2||4)+'%</span></div><div class="pct-pill">Ref L3 <span>'+(s.refL3||2)+'%</span></div><div class="pct-pill">Withdrawals <span style="color:'+(s.withdrawLocked?'var(--warn)':'var(--success)')+';">'+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN')+'</span></div>';
-}
-
-function filterUsers(val){ searchFilter=val; renderUsersTable(); }
-function renderUsersTable(){
-  loadAllData();
-  const users=Object.values(allUsers);
-  const filtered=searchFilter?users.filter(u=>u.username&&u.username.toLowerCase().includes(searchFilter.toLowerCase())):users;
-  const tbody=document.getElementById('users-table-body');
-  if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="9">No users found<\/tr>'; return; }
-  tbody.innerHTML=filtered.map(u=>{ const sk=safeKey(u.username||''); 
-    return '<tr><td><strong>'+ (u.username||'—') +'</strong></td><td class="mono">'+ (u.phone||'—') +'</strong></td><td><div class="pw-cell" id="pwcell_'+sk+'"><span class="pw-val" onclick="editPw(\''+sk+'\',\''+u.username+'\')">'+ (u.password||'—') +'</span></div></td><td class="mono" style="color:var(--gold)">'+fmt(u.stake)+'</td><td class="mono" style="color:var(--success);font-weight:700">'+fmt(u.balance)+'</td><td class="mono" style="color:var(--warn);">'+fmt(u.withdrawn)+'</td><td class="mono">'+ (u.referrals?Object.keys(u.referrals).length:0) +'</td><td><span class="badge '+(u.locked?'badge-locked':'badge-active')+'">'+(u.locked?'Locked':'Active')+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-edit" onclick="openEditModal(\''+u.username+'\')">✏️ Edit</button><button class="btn '+(u.locked?'btn-approve':'btn-reject')+'" onclick="toggleLock(\''+u.username+'\','+(!u.locked)+')">'+(u.locked?'🔓 Unlock':'🔒 Lock')+'</button><button class="btn btn-delete" onclick="deleteUser(\''+u.username+'\')">🗑️</button></td></tr>';
-  }).join('');
-}
-
-function editPw(sk, username){ 
-  const cell=document.getElementById('pwcell_'+sk); 
-  if(!cell) return; 
-  const cur=cell.querySelector('.pw-val'); 
-  const currentPw=cur?cur.textContent:''; 
-  cell.innerHTML='<input class="pw-edit-input" id="pwinput_'+sk+'" value="'+currentPw+'" type="text"><button class="pw-save-btn" onclick="savePw(\''+sk+'\',\''+username+'\')">✓</button>'; 
-  const inp=document.getElementById('pwinput_'+sk); 
-  if(inp){inp.focus();inp.onkeydown=e=>{if(e.key==='Enter')savePw(sk,username);if(e.key==='Escape')renderUsersTable();};} 
-}
-
-function savePw(sk, username){ 
-  const inp=document.getElementById('pwinput_'+sk); 
-  if(!inp) return; 
-  const newPw=inp.value.trim(); 
-  if(!newPw){toast('Password cannot be empty','#f87171');return;} 
-  const user = getAllUsers()[username];
-  if(user){
-    user.password = newPw;
-    saveUser(username, user);
-    toast('✅ Password updated for '+username);
-    renderUsersTable();
-  }
-}
-
-function openEditModal(username){ 
-  loadAllData();
-  const u=allUsers[username]; 
-  if(!u) return; 
-  document.getElementById('edit-username').value=username; 
-  document.getElementById('edit-password').value=u.password||''; 
-  document.getElementById('edit-phone-modal').value=u.phone||''; 
-  document.getElementById('edit-stake').value=u.stake||0; 
-  document.getElementById('edit-balance').value=u.balance||0; 
-  document.getElementById('edit-modal').style.display='flex'; 
-}
-
-function closeEditModal(){ document.getElementById('edit-modal').style.display='none'; }
-
-function saveEditUser(){
-  const username=document.getElementById('edit-username').value;
-  const newPassword=document.getElementById('edit-password').value;
-  const newPhone=document.getElementById('edit-phone-modal').value;
-  const newStake=parseInt(document.getElementById('edit-stake').value)||0;
-  const newBalance=parseInt(document.getElementById('edit-balance').value)||0;
-  
-  const user = allUsers[username];
-  if(!user) return;
-  
-  const oldStake = user.stake || 0;
-  user.password = newPassword;
-  user.phone = newPhone;
-  user.balance = newBalance;
-  user.stake = newStake;
-  user.activated = newStake > 0;
-  
-  if(newStake > oldStake && newStake > 0){
-    const addedAmount = newStake - oldStake;
-    const instantProfit = Math.floor(addedAmount * 0.10);
-    user.balance = newBalance + instantProfit;
-    const txKey1 = 'tx_admin_dep_' + Date.now();
-    const txKey2 = 'tx_admin_profit_' + Date.now();
-    if(!user.transactions) user.transactions = {};
-    user.transactions[txKey1] = { type:'Deposit', amount:addedAmount, note:'Admin credited to STAKE', date: dateStr(), status:'completed' };
-    user.transactions[txKey2] = { type:'Profit', amount:instantProfit, note:'10% instant profit on credited amount', date: dateStr(), status:'completed' };
-    
-    if(!user.activeInvestment || user.activeInvestment.daysRun >= 56){
-      user.activeInvestment = { amount: newStake, startDate: new Date().toISOString(), daysRun: 0, lastPaidDate: new Date().toISOString().slice(0,10) };
-    } else {
-      user.activeInvestment.amount = newStake;
-    }
-  }
-  
-  saveUser(username, user);
-  loadAllData();
-  closeEditModal();
-  renderUsersTable();
-  renderDashboard();
-  toast('✅ User '+username+' updated');
-}
-
-function toggleLock(username, lock){ 
-  const user = allUsers[username];
-  if(user){
-    user.locked = lock;
-    saveUser(username, user);
-    loadAllData();
-    renderUsersTable();
-    toast(lock?'🔒 User locked':'🔓 User unlocked', lock?'#f87171':undefined);
-  }
-}
-
-function deleteUser(username){ 
-  confirmAction('Delete User?', 'Delete user "'+username+'"? This cannot be undone.').then(confirmed=>{ 
-    if(confirmed){ 
-      const users = getAllUsers();
-      delete users[username];
-      saveToLocalStorage(STORAGE_USERS, users);
-      loadAllData();
-      renderUsersTable();
-      renderDashboard();
-      toast('🗑️ User deleted','#f87171'); 
-    } 
-  }); 
-}
-
-function renderTube(){ 
-  loadAllData();
-  const investors=Object.values(allUsers).filter(u=>(u.stake||0)>0); 
-  const grid=document.getElementById('tube-grid'); 
-  if(!investors.length){ grid.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">No investors yet.</div>'; return; } 
-  grid.innerHTML=investors.map(u=>'<div class="tube-card"><div class="tube-avatar">📈</div><div class="tube-name">'+u.username+'</div><div class="tube-amt">STAKE: '+fmt(u.stake)+'</div><div class="tube-amt" style="font-size:10px;color:var(--success)">BAL: '+fmt(u.balance)+'</div></div>').join(''); 
-}
-
-function filterTx(type){ txFilter=type; renderTransactions(); }
-
-function renderTransactions(){ 
-  loadAllData();
-  const tbody=document.getElementById('tx-table-body'); 
-  const countEl=document.getElementById('tx-count'); 
-  if(!tbody) return; 
-  const allTxs=[]; 
-  Object.values(allUsers).forEach(u=>{ 
-    if(!u.transactions) return; 
-    Object.values(u.transactions).forEach(tx=>{ 
-      allTxs.push({...tx,username:u.username}); 
-    }); 
-  }); 
-  allTxs.sort((a,b)=>(b.date||'').localeCompare(a.date||'')); 
-  let filtered=allTxs; 
-  if(txFilter==='deposit') filtered=allTxs.filter(t=>t.type==='Deposit'); 
-  else if(txFilter==='withdrawal') filtered=allTxs.filter(t=>t.type==='Withdrawal'); 
-  else if(txFilter==='profit') filtered=allTxs.filter(t=>t.type==='Profit'); 
-  else if(txFilter==='referral') filtered=allTxs.filter(t=>t.type==='Referral'); 
-  else if(txFilter==='bonus') filtered=allTxs.filter(t=>t.type==='Bonus'); 
-  if(countEl) countEl.textContent=filtered.length+' transactions'; 
-  if(!filtered.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="6">No transactions found<\/tr>'; return; } 
-  tbody.innerHTML=filtered.map(tx=>{ 
-    let statusColor='var(--gold)'; 
-    let statusText='⏳ Pending'; 
-    if(tx.status==='completed' || tx.status==='successful'){ statusColor='var(--success)'; statusText='✅ Completed'; } 
-    else if(tx.status==='failed'){ statusColor='var(--warn)'; statusText='❌ Failed'; }
-    const amountColor=tx.amount>0?'var(--success)':'var(--warn)';
-    const noteText = tx.note || '—';
-    return '<tr><td class="mono" style="font-size:11px;">'+(tx.date||'—')+'</td><td><strong>'+(tx.username||'—')+'</strong></td><td><span class="badge '+(tx.type==='Deposit'?'badge-approved':tx.type==='Profit'?'badge-approved':'badge-pending')+'">'+tx.type+'</span></td><td class="mono" style="color:'+amountColor+';">'+(tx.amount>0?'+'+fmt(tx.amount):fmt(tx.amount))+'</td><td style="font-size:11px;color:var(--muted);max-width:200px;">'+noteText+'</td><td><span style="font-size:11px;font-weight:700;color:'+statusColor+';">'+statusText+'</span></td></tr>';
-  }).join(''); 
-}
-
-function updateWithdrawalsBadge(){ 
-  const count=Object.values(allWithdrawals).filter(v=>v.status==='pending').length; 
-  const badge=document.getElementById('withdrawals-nav-badge'); 
-  if(!badge) return; 
-  if(count>0){ badge.textContent=count; badge.style.display='inline-flex'; } 
-  else { badge.style.display='none'; } 
-}
-
-function renderWithdrawalsStats(){ 
-  const vals=Object.values(allWithdrawals); 
-  const pending=vals.filter(v=>v.status==='pending'); 
-  const approved=vals.filter(v=>v.status==='approved'); 
-  const pendingAmt=pending.reduce((s,v)=>s+(v.amount||0),0); 
-  const e1=document.getElementById('wd-stat-pending'); 
-  const e2=document.getElementById('wd-stat-approved'); 
-  const e3=document.getElementById('wd-stat-amount'); 
-  if(e1)e1.textContent=pending.length; 
-  if(e2)e2.textContent=approved.length; 
-  if(e3)e3.textContent=fmt(pendingAmt); 
-}
-
-function filterWithdrawals(f){ wdFilter=f; renderWithdrawalsTable(); }
-
-function renderWithdrawalsTable(){ 
-  loadAllData();
-  const tbody=document.getElementById('wd-table-body'); 
-  const countEl=document.getElementById('wd-count'); 
-  if(!tbody) return; 
-  let entries=Object.entries(allWithdrawals); 
-  if(wdFilter!=='all') entries=entries.filter(([k,v])=>v.status===wdFilter); 
-  entries.sort((a,b)=>b[0].localeCompare(a[0])); 
-  if(countEl) countEl.textContent=entries.length+' requests'; 
-  if(!entries.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="8">No withdrawal requests yet<\/tr>'; return; } 
-  tbody.innerHTML=entries.map(([k,v])=>{ 
-    const sc=v.status==='approved'?'var(--success)':v.status==='rejected'?'var(--warn)':'var(--gold)'; 
-    const si=v.status==='approved'?'✅ Approved':v.status==='rejected'?'❌ Rejected':'⏳ Pending'; 
-    const fee=Math.round((v.amount||0)*0.10); 
-    const sendAmt=v.sendAmount||(v.amount-fee); 
-    const actions=v.status==='pending'?'<button class="btn btn-approve" onclick="approveWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+','+sendAmt+',\''+(v.txKey||k)+'\')">✅ Approve</button><button class="btn btn-reject" onclick="rejectWithdrawal(\''+k+'\',\''+(v.username||'')+'\','+(v.amount||0)+',\''+(v.txKey||k)+'\')">❌ Reject</button>':'—'; 
-    return '<tr><td class="mono" style="font-size:11px;">'+(v.date||'—')+'</td><td><strong>'+(v.username||'—')+'</strong></td><td class="mono">'+(v.phone||(allUsers[v.username]?.phone||'—'))+'</td><td class="mono" style="color:var(--warn);font-weight:800;">'+fmt(v.amount)+'</td><td class="mono" style="color:var(--gold);">'+fmt(fee)+'</td><td class="mono" style="color:var(--success);font-weight:800;">'+fmt(sendAmt)+'</td><td><span style="font-size:11px;font-weight:700;color:'+sc+';">'+si+'</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">'+actions+'</td></tr>';
-  }).join(''); 
-}
-
-function approveWithdrawal(reqKey, username, amount, sendAmount, txKey){
-  confirmAction('Approve Withdrawal?', 'Approve withdrawal for '+username+'? Amount: '+fmt(amount)+'. Net to send: '+fmt(sendAmount)).then(confirmed=>{
-    if(confirmed){
-      const user = allUsers[username];
-      if(user && user.transactions && user.transactions[txKey]){
-        user.transactions[txKey].status = 'completed';
-        user.transactions[txKey].note = 'Withdrawal Successful ✅ | Received: '+fmt(sendAmount);
-        saveUser(username, user);
-      }
-      if(allWithdrawals[reqKey]){
-        allWithdrawals[reqKey].status = 'approved';
-        saveAllWithdrawals();
-      }
-      loadAllData();
-      renderWithdrawalsTable();
-      renderWithdrawalsStats();
-      updateWithdrawalsBadge();
-      toast('✅ Withdrawal approved for '+username);
-    }
-  });
-}
-
-function rejectWithdrawal(reqKey, username, amount, txKey){ 
-  confirmAction('Reject Withdrawal?', 'Reject withdrawal of '+fmt(amount)+' for '+username+'? Full amount will be refunded to BALANCE.').then(confirmed=>{ 
-    if(confirmed){ 
-      const user = allUsers[username];
-      if(user){
-        user.balance = (user.balance || 0) + amount;
-        if(user.transactions && user.transactions[txKey]){
-          user.transactions[txKey].status = 'failed';
-          user.transactions[txKey].note = 'Withdrawal Rejected ❌ by Admin - Amount refunded';
-        }
-        saveUser(username, user);
-      }
-      if(allWithdrawals[reqKey]){
-        allWithdrawals[reqKey].status = 'rejected';
-        saveAllWithdrawals();
-      }
-      loadAllData();
-      renderWithdrawalsTable();
-      renderWithdrawalsStats();
-      updateWithdrawalsBadge();
-      toast('✅ Rejected — amount refunded to '+username);
-    } 
-  }); 
-}
-
-function deleteAllUsers(){ 
-  confirmAction('⚠️ DELETE ALL USERS?', 'Are you absolutely sure? This cannot be undone.').then(confirmed=>{ 
-    if(confirmed){ 
-      saveToLocalStorage(STORAGE_USERS, {});
-      loadAllData();
-      renderUsersTable();
-      renderDashboard();
       renderTube();
-      renderTransactions();
-      toast('🗑️ All users deleted','#f87171'); 
-    } 
-  }); 
-}
-
-function deleteAllData(){ 
-  confirmAction('💥 DELETE ALL DATA?', 'This will wipe everything! This cannot be undone. Are you 100% sure?').then(confirmed=>{ 
-    if(confirmed){ 
-      localStorage.clear();
-      toast('💥 All data deleted','#f87171');
-      setTimeout(()=>{ window.location.reload(); }, 1500);
-    } 
-  }); 
-}
-
-function loadSettingsUI(){ 
-  const s=allSettings; 
-  document.getElementById('wa-group-input').value=s.waGroup||''; 
-  document.getElementById('wa-support-input').value=s.waSupport||''; 
-  document.getElementById('wa-number-input').value=s.waNumber||'700000000'; 
-  document.getElementById('with-charge-input').value=s.withdrawCharge||10; 
-  document.getElementById('ref-l1-input').value=s.refL1||10; 
-  document.getElementById('ref-l2-input').value=s.refL2||4; 
-  document.getElementById('ref-l3-input').value=s.refL3||2; 
-  document.getElementById('min-deposit-input').value=s.minDeposit||10000; 
-  document.getElementById('min-withdraw-input').value=s.minWithdraw||10000; 
-  const ls=document.getElementById('lock-status'); 
-  if(ls){ 
-    ls.textContent='Status: Withdrawals are '+(s.withdrawLocked?'🔒 LOCKED':'🔓 OPEN'); 
-    ls.style.color=s.withdrawLocked?'var(--warn)':'var(--success)'; 
-  } 
-}
-
-function saveWaNumber(){ 
-  const val=document.getElementById('wa-number-input').value.trim().replace(/\D/g,''); 
-  if(val && val.length>=9){ 
-    allSettings.waNumber = val;
-    saveAllSettings();
-    toast('✅ WhatsApp number saved'); 
-  } else { 
-    toast('Enter a valid phone number (9 digits)','#f87171'); 
-  } 
-}
-
-function saveMinDeposit(){ 
-  const v=parseInt(document.getElementById('min-deposit-input').value)||10000; 
-  if(v<500){toast('Min deposit must be at least UGX 500','#f87171');return;} 
-  allSettings.minDeposit = v;
-  saveAllSettings();
-  toast('✅ Minimum deposit set to '+fmt(v)); 
-}
-
-function saveMinWithdraw(){ 
-  const v=parseInt(document.getElementById('min-withdraw-input').value)||5000; 
-  if(v<500){toast('Min withdrawal must be at least UGX 500','#f87171');return;} 
-  allSettings.minWithdraw = v;
-  saveAllSettings();
-  toast('✅ Minimum withdrawal set to '+fmt(v)); 
-}
-
-function saveWaGroup(){ 
-  allSettings.waGroup = document.getElementById('wa-group-input').value.trim();
-  saveAllSettings();
-  toast('✅ WhatsApp Group link saved'); 
-}
-
-function saveWaSupport(){ 
-  allSettings.waSupport = document.getElementById('wa-support-input').value.trim();
-  saveAllSettings();
-  toast('✅ WhatsApp Support link saved'); 
-}
-
-function saveWithCharge(){ 
-  const v=parseFloat(document.getElementById('with-charge-input').value)||10; 
-  allSettings.withdrawCharge = v;
-  saveAllSettings();
-  toast('✅ Withdrawal charge updated to '+v+'%'); 
-}
-
-function saveRefPct(){ 
-  allSettings.refL1 = parseFloat(document.getElementById('ref-l1-input').value)||10;
-  allSettings.refL2 = parseFloat(document.getElementById('ref-l2-input').value)||4;
-  allSettings.refL3 = parseFloat(document.getElementById('ref-l3-input').value)||2;
-  saveAllSettings();
-  toast('✅ Referral percentages updated'); 
-}
-
-function lockWithdrawals(lock){ 
-  allSettings.withdrawLocked = lock;
-  saveAllSettings();
-  loadSettingsUI();
-  toast(lock?'🔒 Withdrawals LOCKED':'🔓 Withdrawals UNLOCKED',lock?'#f87171':undefined); 
-}
-
-function searchDebitUser(){ 
-  loadAllData();
-  const q=document.getElementById('debit-search').value.trim().toLowerCase(); 
-  const infoBox=document.getElementById('debit-user-info'); 
-  const notFound=document.getElementById('debit-not-found'); 
-  debitTargetUser=null; 
-  infoBox.style.display='none'; 
-  notFound.style.display='none'; 
-  document.getElementById('debit-preview').style.display='none'; 
-  if(!q) return; 
-  const found=Object.values(allUsers).find(u=>(u.username||'').toLowerCase()===q); 
-  if(found){ 
-    debitTargetUser=found; 
-    document.getElementById('debit-user-name').textContent=found.username; 
-    document.getElementById('debit-user-phone').textContent=found.phone||'—'; 
-    const bal=found.balance||0; 
-    const balEl=document.getElementById('debit-user-balance'); 
-    balEl.textContent=fmt(bal); 
-    balEl.style.color=bal<0?'var(--warn)':'var(--success)'; 
-    document.getElementById('debit-user-stake').textContent=fmt(found.stake||0);
-    infoBox.style.display='block'; 
-  } else { 
-    notFound.style.display='block'; 
-  } 
-}
-
-function updateDebitPreview(){ 
-  const amt=parseInt(document.getElementById('debit-amount').value)||0; 
-  const prev=document.getElementById('debit-preview'); 
-  if(!debitTargetUser||amt<=0){ prev.style.display='none'; return; } 
-  const newBal=(debitTargetUser.balance||0)-amt; 
-  prev.style.display='block'; 
-  prev.innerHTML='<strong>⚠️ DEBIT WARNING</strong><br>BALANCE: '+fmt(debitTargetUser.balance||0)+' → After debit: <strong>'+fmt(newBal)+'</strong><br>STAKE remains: '+fmt(debitTargetUser.stake||0); 
-  prev.style.color=newBal<0?'var(--warn)':'var(--muted)'; 
-}
-
-function processDebit(){ 
-  if(!debitTargetUser){ toast('Search and select a user first','#f87171'); return; } 
-  const amt=parseInt(document.getElementById('debit-amount').value)||0; 
-  if(amt<=0){ toast('Enter a valid amount','#f87171'); return; } 
-  const currentBalance = debitTargetUser.balance || 0;
-  if(currentBalance < amt){ toast('Insufficient BALANCE! User only has '+fmt(currentBalance),'#f87171'); return; }
-  
-  confirmAction('Debit Balance?', 'Debit '+fmt(amt)+' from '+debitTargetUser.username+'\'s BALANCE?').then(confirmed=>{ 
-    if(confirmed){ 
-      const oldBal=debitTargetUser.balance||0; 
-      const newBal=oldBal-amt; 
-      const txKey='tx_debit_'+Date.now(); 
-      if(!debitTargetUser.transactions) debitTargetUser.transactions = {};
-      debitTargetUser.transactions[txKey]={type:'Withdrawal',amount:-amt,note:'Admin Debit from BALANCE',date:dateStr(),status:'completed'};
-      debitTargetUser.balance = newBal;
-      saveUser(debitTargetUser.username, debitTargetUser);
-      debitHistory.unshift({username:debitTargetUser.username,amount:amt,balAfter:newBal,date:dateStr()}); 
-      saveDebitHistory();
-      loadAllData();
-      document.getElementById('debit-search').value=''; 
-      document.getElementById('debit-amount').value=''; 
-      document.getElementById('debit-user-info').style.display='none'; 
-      document.getElementById('debit-preview').style.display='none'; 
-      debitTargetUser=null; 
-      renderDebitHistory(); 
-      renderUsersTable();
-      toast('✅ Debit of '+fmt(amt)+' processed from BALANCE',''); 
-    } 
-  }); 
-}
-
-function renderDebitHistory(){ 
-  const tbody=document.getElementById('debit-history-body'); 
-  if(!tbody) return; 
-  if(!debitHistory.length){ tbody.innerHTML='<tr class="empty-row"><td colspan="4">No debits yet<\/tr>'; return; } 
-  tbody.innerHTML=debitHistory.slice(0,20).map(d=>'<tr><td><strong>'+d.username+'</strong></td><td class="mono" style="color:var(--warn);">-'+fmt(d.amount)+'</td><td class="mono" style="color:'+(d.balAfter<0?'var(--warn)':'var(--success)')+';">'+fmt(d.balAfter)+'</td><td class="mono" style="font-size:11px;">'+d.date+'</td></tr>').join(''); 
-}
-
-// Notifications
-let adminNotifications = {};
-
-function startNotifListener(){
-  adminNotifications = loadFromLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, {});
-  updateNotifBadge();
-  renderNotifList();
-}
-
-function updateNotifBadge(){
-  const unread = Object.values(adminNotifications).filter(n => !n.read).length;
-  const badge = document.getElementById('notif-badge');
-  if(unread > 0){
-    badge.textContent = unread;
-    badge.classList.add('show');
-  } else {
-    badge.classList.remove('show');
+      updateDashboardStats();
+      updateWithdrawalsBadge();
+    });
   }
-}
 
-function renderNotifList(){
-  const list = document.getElementById('notif-list');
-  const keys = Object.keys(adminNotifications).sort().reverse();
-  if(!keys.length){
-    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
-    return;
+  // Load withdrawals with real-time listener
+  function loadWithdrawals() {
+    if (withdrawalsUnsubscribe) withdrawalsUnsubscribe();
+    withdrawalsUnsubscribe = onSnapshot(collection(db, 'withdrawals'), (snapshot) => {
+      allWithdrawals = {};
+      snapshot.forEach(doc => {
+        allWithdrawals[doc.id] = { id: doc.id, ...doc.data() };
+      });
+      renderWithdrawalsTable();
+      renderWithdrawalsStats();
+      updateWithdrawalsBadge();
+    });
   }
-  list.innerHTML = keys.map(k => {
-    const n = adminNotifications[k];
-    const isUnread = !n.read;
-    return '<div class="notif-item '+(isUnread?'unread':'')+'"><button class="notif-item-dismiss" onclick="dismissNotification(\''+k+'\')">✕</button><div class="notif-item-msg">'+(n.message||'Notification')+'</div><div class="notif-item-date">'+(n.date||'')+' · '+(n.username||'')+' · '+(n.amount?fmt(n.amount):'')+'</div></div>';
-  }).join('');
-}
 
-function dismissNotification(key){
-  delete adminNotifications[key];
-  saveToLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, adminNotifications);
-  updateNotifBadge();
-  renderNotifList();
-}
+  function updateDashboardStats() {
+    const users = Object.values(allUsers);
+    let totalStake = 0, totalBalance = 0, totalWithdrawn = 0, locked = 0, activeInvestors = 0;
+    users.forEach(u => {
+      totalStake += u.stake || 0;
+      totalBalance += u.balance || 0;
+      totalWithdrawn += u.withdrawn || 0;
+      if (u.locked) locked++;
+      if ((u.stake || 0) > 0) activeInvestors++;
+    });
+    document.getElementById('d-total-users').textContent = users.length;
+    document.getElementById('d-total-stake').textContent = fmt(totalStake);
+    document.getElementById('d-total-balance').textContent = fmt(totalBalance);
+    document.getElementById('d-total-withdrawn').textContent = fmt(totalWithdrawn);
+    document.getElementById('d-locked').textContent = locked;
+    document.getElementById('d-min-deposit').textContent = fmt(allSettings.minDeposit || 10000);
+    document.getElementById('d-active-investors').textContent = activeInvestors;
+    
+    const s = allSettings;
+    document.getElementById('pct-summary').innerHTML = '<div class="pct-pill">Min Deposit <span>' + fmt(s.minDeposit || 10000) + '</span></div><div class="pct-pill">Withdrawal Charge <span>' + (s.withdrawCharge || 10) + '%</span></div><div class="pct-pill">Ref L1 <span>' + (s.refL1 || 10) + '%</span></div><div class="pct-pill">Ref L2 <span>' + (s.refL2 || 4) + '%</span></div><div class="pct-pill">Ref L3 <span>' + (s.refL3 || 2) + '%</span></div><div class="pct-pill">Withdrawals <span style="color:' + (s.withdrawLocked ? 'var(--warn)' : 'var(--success)') + ';">' + (s.withdrawLocked ? '🔒 LOCKED' : '🔓 OPEN') + '</span></div>';
+  }
 
-function clearAllNotifications(){
-  confirmAction('Clear All Notifications?', 'Clear all notifications?').then(confirmed=>{
-    if(confirmed){
-      adminNotifications = {};
-      saveToLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, adminNotifications);
-      updateNotifBadge();
-      renderNotifList();
-      toast('🗑️ All notifications cleared');
+  function renderUsersTable() {
+    const users = Object.values(allUsers);
+    const filtered = searchFilter ? users.filter(u => u.username && u.username.toLowerCase().includes(searchFilter.toLowerCase())) : users;
+    const tbody = document.getElementById('users-table-body');
+    if (!filtered.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No users found<\/tr>'; return; }
+    tbody.innerHTML = filtered.map(u => {
+      const refCount = u.referrals ? Object.keys(u.referrals).length : 0;
+      return `<tr>
+        <td><strong>${u.username || '—'}</strong></td>
+        <td class="mono">${u.email || '—'}</td>
+        <td class="mono">${u.phone || '—'}</td>
+        <td class="mono" style="color:var(--gold)">${fmt(u.stake)}</td>
+        <td class="mono" style="color:var(--success);font-weight:700">${fmt(u.balance)}</td>
+        <td class="mono" style="color:var(--warn);">${fmt(u.withdrawn)}</td>
+        <td class="mono">${refCount}</td>
+        <td><span class="badge ${u.locked ? 'badge-locked' : 'badge-active'}">${u.locked ? 'Locked' : 'Active'}</span></td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-edit" onclick="openEditModal('${u.id}')">✏️ Edit</button>
+          <button class="btn ${u.locked ? 'btn-approve' : 'btn-reject'}" onclick="toggleLock('${u.id}', ${!u.locked})">${u.locked ? '🔓 Unlock' : '🔒 Lock'}</button>
+          <button class="btn btn-delete" onclick="deleteUser('${u.id}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderTube() {
+    const investors = Object.values(allUsers).filter(u => (u.stake || 0) > 0);
+    const grid = document.getElementById('tube-grid');
+    if (!investors.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px">No investors yet.</div>'; return; }
+    grid.innerHTML = investors.map(u => '<div class="tube-card"><div class="tube-avatar">📈</div><div class="tube-name">' + u.username + '</div><div class="tube-amt">STAKE: ' + fmt(u.stake) + '</div><div class="tube-amt" style="font-size:10px;color:var(--success)">BAL: ' + fmt(u.balance) + '</div></div>').join('');
+  }
+
+  function renderTransactions() {
+    const tbody = document.getElementById('tx-table-body');
+    const countEl = document.getElementById('tx-count');
+    const allTxs = [];
+    Object.values(allUsers).forEach(u => {
+      if (!u.transactions) return;
+      Object.values(u.transactions).forEach(tx => {
+        allTxs.push({ ...tx, username: u.username });
+      });
+    });
+    allTxs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    let filtered = allTxs;
+    if (txFilter === 'deposit') filtered = allTxs.filter(t => t.type === 'Deposit');
+    else if (txFilter === 'withdrawal') filtered = allTxs.filter(t => t.type === 'Withdrawal');
+    else if (txFilter === 'profit') filtered = allTxs.filter(t => t.type === 'Profit');
+    else if (txFilter === 'referral') filtered = allTxs.filter(t => t.type === 'Referral');
+    else if (txFilter === 'bonus') filtered = allTxs.filter(t => t.type === 'Bonus');
+    if (countEl) countEl.textContent = filtered.length + ' transactions';
+    if (!filtered.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No transactions found<\/tr>'; return; }
+    tbody.innerHTML = filtered.map(tx => {
+      let statusColor = 'var(--gold)', statusText = '⏳ Pending';
+      if (tx.status === 'completed' || tx.status === 'successful') { statusColor = 'var(--success)'; statusText = '✅ Completed'; }
+      else if (tx.status === 'failed') { statusColor = 'var(--warn)'; statusText = '❌ Failed'; }
+      const amountColor = tx.amount > 0 ? 'var(--success)' : 'var(--warn)';
+      return `<tr><td class="mono" style="font-size:11px;">${tx.date || '—'}</td><td><strong>${tx.username || '—'}</strong></td><td><span class="badge ${tx.type === 'Deposit' ? 'badge-approved' : tx.type === 'Profit' ? 'badge-approved' : 'badge-pending'}">${tx.type}</span></td><td class="mono" style="color:${amountColor};">${tx.amount > 0 ? '+' + fmt(tx.amount) : fmt(tx.amount)}</td><td style="font-size:11px;color:var(--muted);max-width:200px;">${tx.note || '—'}</td><td><span style="font-size:11px;font-weight:700;color:${statusColor};">${statusText}</span></td></tr>`;
+    }).join('');
+  }
+
+  function updateWithdrawalsBadge() {
+    const count = Object.values(allWithdrawals).filter(v => v.status === 'pending').length;
+    const badge = document.getElementById('withdrawals-nav-badge');
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-flex'; }
+    else { badge.style.display = 'none'; }
+  }
+
+  function renderWithdrawalsStats() {
+    const vals = Object.values(allWithdrawals);
+    const pending = vals.filter(v => v.status === 'pending');
+    const approved = vals.filter(v => v.status === 'approved');
+    const pendingAmt = pending.reduce((s, v) => s + (v.amount || 0), 0);
+    document.getElementById('wd-stat-pending').textContent = pending.length;
+    document.getElementById('wd-stat-approved').textContent = approved.length;
+    document.getElementById('wd-stat-amount').textContent = fmt(pendingAmt);
+  }
+
+  function renderWithdrawalsTable() {
+    const tbody = document.getElementById('wd-table-body');
+    const countEl = document.getElementById('wd-count');
+    let entries = Object.entries(allWithdrawals);
+    if (wdFilter !== 'all') entries = entries.filter(([k, v]) => v.status === wdFilter);
+    entries.sort((a, b) => b[0].localeCompare(a[0]));
+    if (countEl) countEl.textContent = entries.length + ' requests';
+    if (!entries.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No withdrawal requests yet<\/tr>'; return; }
+    tbody.innerHTML = entries.map(([k, v]) => {
+      const sc = v.status === 'approved' ? 'var(--success)' : v.status === 'rejected' ? 'var(--warn)' : 'var(--gold)';
+      const si = v.status === 'approved' ? '✅ Approved' : v.status === 'rejected' ? '❌ Rejected' : '⏳ Pending';
+      const fee = Math.round((v.amount || 0) * 0.10);
+      const sendAmt = v.sendAmount || (v.amount - fee);
+      const actions = v.status === 'pending' ? `<button class="btn btn-approve" onclick="approveWithdrawal('${k}', '${v.userId}', '${v.username}', ${v.amount}, ${sendAmt})">✅ Approve</button><button class="btn btn-reject" onclick="rejectWithdrawal('${k}', '${v.userId}', '${v.username}', ${v.amount})">❌ Reject</button>` : '—';
+      return `<tr><td class="mono" style="font-size:11px;">${v.date || '—'}</td><td><strong>${v.username || '—'}</strong></td><td class="mono">${v.phone || '—'}</td><td class="mono" style="color:var(--warn);font-weight:800;">${fmt(v.amount)}</td><td class="mono" style="color:var(--gold);">${fmt(fee)}</td><td class="mono" style="color:var(--success);font-weight:800;">${fmt(sendAmt)}</td><td><span style="font-size:11px;font-weight:700;color:${sc};">${si}</span></td><td style="display:flex;gap:6px;flex-wrap:wrap;">${actions}</td></tr>`;
+    }).join('');
+  }
+
+  window.approveWithdrawal = async function(reqKey, userId, username, amount, sendAmount) {
+    const confirmed = await confirmAction('Approve Withdrawal?', 'Approve withdrawal for ' + username + '? Amount: ' + fmt(amount) + '. Net to send: ' + fmt(sendAmount));
+    if (confirmed) {
+      try {
+        const userRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const txKey = 'wd_approved_' + Date.now();
+          const updates = {
+            [`transactions.${txKey}`]: {
+              type: 'Withdrawal',
+              amount: -amount,
+              note: 'Withdrawal Approved ✅',
+              date: dateStr(),
+              status: 'completed',
+              timestamp: serverTimestamp()
+            }
+          };
+          await updateDoc(userRef, updates);
+        }
+        await updateDoc(doc(db, 'withdrawals', reqKey), { status: 'approved' });
+        toast('✅ Withdrawal approved for ' + username);
+      } catch (error) { console.error('Error approving withdrawal:', error); toast('Error approving withdrawal', '#f87171'); }
     }
+  };
+
+  window.rejectWithdrawal = async function(reqKey, userId, username, amount) {
+    const confirmed = await confirmAction('Reject Withdrawal?', 'Reject withdrawal of ' + fmt(amount) + ' for ' + username + '? Full amount will be refunded to BALANCE.');
+    if (confirmed) {
+      try {
+        const userRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const newBalance = (userData.balance || 0) + amount;
+          const txKey = 'wd_rejected_' + Date.now();
+          const updates = {
+            balance: newBalance,
+            [`transactions.${txKey}`]: {
+              type: 'Withdrawal',
+              amount: -amount,
+              note: 'Withdrawal Rejected ❌ - Amount refunded',
+              date: dateStr(),
+              status: 'failed',
+              timestamp: serverTimestamp()
+            }
+          };
+          await updateDoc(userRef, updates);
+        }
+        await updateDoc(doc(db, 'withdrawals', reqKey), { status: 'rejected' });
+        toast('✅ Rejected — amount refunded to ' + username);
+      } catch (error) { console.error('Error rejecting withdrawal:', error); toast('Error rejecting withdrawal', '#f87171'); }
+    }
+  };
+
+  window.filterWithdrawals = function(f) { wdFilter = f; renderWithdrawalsTable(); };
+  window.filterTx = function(type) { txFilter = type; renderTransactions(); };
+  window.filterUsers = function(val) { searchFilter = val; renderUsersTable(); };
+
+  window.openEditModal = async function(userId) {
+    const user = allUsers[userId];
+    if (!user) return;
+    document.getElementById('edit-user-id').value = userId;
+    document.getElementById('edit-email').value = user.email || '';
+    document.getElementById('edit-phone-modal').value = user.phone || '';
+    document.getElementById('edit-stake').value = user.stake || 0;
+    document.getElementById('edit-balance').value = user.balance || 0;
+    document.getElementById('edit-modal').style.display = 'flex';
+  };
+
+  window.closeEditModal = function() { document.getElementById('edit-modal').style.display = 'none'; };
+
+  window.saveEditUser = async function() {
+    const userId = document.getElementById('edit-user-id').value;
+    const newEmail = document.getElementById('edit-email').value;
+    const newPhone = document.getElementById('edit-phone-modal').value;
+    const newStake = parseInt(document.getElementById('edit-stake').value) || 0;
+    const newBalance = parseInt(document.getElementById('edit-balance').value) || 0;
+    
+    try {
+      const userRef = doc(db, 'users', userId);
+      const updates = { email: newEmail, phone: newPhone, stake: newStake, balance: newBalance, activated: newStake > 0 };
+      await updateDoc(userRef, updates);
+      closeEditModal();
+      toast('✅ User updated');
+    } catch (error) { console.error('Error updating user:', error); toast('Error updating user', '#f87171'); }
+  };
+
+  window.toggleLock = async function(userId, lock) {
+    try { await updateDoc(doc(db, 'users', userId), { locked: lock }); toast(lock ? '🔒 User locked' : '🔓 User unlocked'); }
+    catch (error) { toast('Error toggling lock', '#f87171'); }
+  };
+
+  window.deleteUser = async function(userId) {
+    const confirmed = await confirmAction('Delete User?', 'Delete this user? This cannot be undone.');
+    if (confirmed) {
+      try {
+        await deleteDoc(doc(db, 'users', userId));
+        toast('🗑️ User deleted');
+      } catch (error) { toast('Error deleting user', '#f87171'); }
+    }
+  };
+
+  // Debit functions
+  window.searchDebitUser = function() {
+    const q = document.getElementById('debit-search').value.trim().toLowerCase();
+    const infoBox = document.getElementById('debit-user-info');
+    const notFound = document.getElementById('debit-not-found');
+    debitTargetUserId = null;
+    infoBox.style.display = 'none';
+    notFound.style.display = 'none';
+    document.getElementById('debit-preview').style.display = 'none';
+    if (!q) return;
+    const found = Object.values(allUsers).find(u => (u.username || '').toLowerCase() === q);
+    if (found) {
+      debitTargetUserId = found.id;
+      document.getElementById('debit-user-name').textContent = found.username;
+      document.getElementById('debit-user-phone').textContent = found.phone || '—';
+      const bal = found.balance || 0;
+      document.getElementById('debit-user-balance').textContent = fmt(bal);
+      document.getElementById('debit-user-stake').textContent = fmt(found.stake || 0);
+      infoBox.style.display = 'block';
+    } else { notFound.style.display = 'block'; }
+  };
+
+  window.updateDebitPreview = function() {
+    const amt = parseInt(document.getElementById('debit-amount').value) || 0;
+    const prev = document.getElementById('debit-preview');
+    if (!debitTargetUserId || amt <= 0) { prev.style.display = 'none'; return; }
+    const user = Object.values(allUsers).find(u => u.id === debitTargetUserId);
+    if (user) {
+      const newBal = (user.balance || 0) - amt;
+      prev.style.display = 'block';
+      prev.innerHTML = '<strong>⚠️ DEBIT WARNING</strong><br>BALANCE: ' + fmt(user.balance || 0) + ' → After debit: <strong>' + fmt(newBal) + '</strong><br>STAKE remains: ' + fmt(user.stake || 0);
+      prev.style.color = newBal < 0 ? 'var(--warn)' : 'var(--muted)';
+    }
+  };
+
+  window.processDebit = async function() {
+    if (!debitTargetUserId) { toast('Search and select a user first', '#f87171'); return; }
+    const amt = parseInt(document.getElementById('debit-amount').value) || 0;
+    if (amt <= 0) { toast('Enter a valid amount', '#f87171'); return; }
+    const user = Object.values(allUsers).find(u => u.id === debitTargetUserId);
+    if (!user) { toast('User not found', '#f87171'); return; }
+    const currentBalance = user.balance || 0;
+    if (currentBalance < amt) { toast('Insufficient BALANCE! User only has ' + fmt(currentBalance), '#f87171'); return; }
+    
+    const confirmed = await confirmAction('Debit Balance?', 'Debit ' + fmt(amt) + ' from ' + user.username + '\'s BALANCE?');
+    if (confirmed) {
+      try {
+        const newBal = currentBalance - amt;
+        const txKey = 'tx_debit_' + Date.now();
+        const updates = {
+          balance: newBal,
+          [`transactions.${txKey}`]: {
+            type: 'Withdrawal',
+            amount: -amt,
+            note: 'Admin Debit from BALANCE',
+            date: dateStr(),
+            status: 'completed',
+            timestamp: serverTimestamp()
+          }
+        };
+        await updateDoc(doc(db, 'users', debitTargetUserId), updates);
+        debitHistory.unshift({ username: user.username, amount: amt, balAfter: newBal, date: dateStr() });
+        renderDebitHistory();
+        document.getElementById('debit-search').value = '';
+        document.getElementById('debit-amount').value = '';
+        document.getElementById('debit-user-info').style.display = 'none';
+        document.getElementById('debit-preview').style.display = 'none';
+        debitTargetUserId = null;
+        toast('✅ Debit of ' + fmt(amt) + ' processed from BALANCE');
+      } catch (error) { toast('Error processing debit', '#f87171'); }
+    }
+  };
+
+  function renderDebitHistory() {
+    const tbody = document.getElementById('debit-history-body');
+    if (!debitHistory.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No debits yet<\/tr>'; return; }
+    tbody.innerHTML = debitHistory.slice(0, 20).map(d => `<tr><td><strong>${d.username}</strong></td><td class="mono" style="color:var(--warn);">-${fmt(d.amount)}</td><td class="mono">${fmt(d.balAfter)}</td><td class="mono" style="font-size:11px;">${d.date}</td></tr>`).join('');
+  }
+
+  // SOG functions
+  let sogTargetUserId = null;
+  window.searchSOGUser = function() {
+    const q = document.getElementById('sog-username-search').value.trim().toLowerCase();
+    const found = document.getElementById('sog-user-found');
+    const notFound = document.getElementById('sog-not-found');
+    sogTargetUserId = null;
+    found.style.display = 'none';
+    notFound.style.display = 'none';
+    if (!q) return;
+    const user = Object.values(allUsers).find(u => (u.username || '').toLowerCase() === q);
+    if (user) {
+      sogTargetUserId = user.id;
+      const userDisplay = 'Username: <strong>' + user.username + '</strong><br>Email: ' + (user.email || '—') + '<br>Phone: ' + (user.phone || '—') + '<br>STAKE: ' + fmt(user.stake || 0) + ' | BALANCE: ' + fmt(user.balance || 0) + ' | Withdrawn: ' + fmt(user.withdrawn || 0);
+      document.getElementById('sog-user-display').innerHTML = userDisplay;
+      found.style.display = 'block';
+    } else { notFound.style.display = 'block'; }
+  };
+  window.clearSOGSearch = function() { sogTargetUserId = null; document.getElementById('sog-username-search').value = ''; document.getElementById('sog-user-found').style.display = 'none'; document.getElementById('sog-not-found').style.display = 'none'; };
+  window.obliterateUserData = async function() {
+    if (!sogTargetUserId) { toast('No user selected', '#f87171'); return; }
+    const user = allUsers[sogTargetUserId];
+    const confirmed = await confirmAction('🗑️ OBLITERATE ALL FINANCIAL DATA?', 'Delete ALL financial data for ' + user.username + '? STAKE, BALANCE, WITHDRAWN, transactions, and active investment will be reset to zero. Account will become brand new. THIS CANNOT BE UNDONE.');
+    if (confirmed) {
+      try {
+        const updates = {
+          stake: 0, balance: 0, withdrawn: 0, activated: false,
+          activeInvestment: null,
+          lastProfitDate: new Date().toISOString().slice(0, 10),
+          transactions: {}
+        };
+        await updateDoc(doc(db, 'users', sogTargetUserId), updates);
+        toast('🗑️ All financial data obliterated for ' + user.username, '#f87171');
+        clearSOGSearch();
+      } catch (error) { toast('Error obliterating data', '#f87171'); }
+    }
+  };
+
+  // Settings functions
+  function loadSettingsUI() {
+    const s = allSettings;
+    document.getElementById('wa-group-input').value = s.waGroup || '';
+    document.getElementById('wa-support-input').value = s.waSupport || '';
+    document.getElementById('wa-number-input').value = s.waNumber || '700000000';
+    document.getElementById('with-charge-input').value = s.withdrawCharge || 10;
+    document.getElementById('ref-l1-input').value = s.refL1 || 10;
+    document.getElementById('ref-l2-input').value = s.refL2 || 4;
+    document.getElementById('ref-l3-input').value = s.refL3 || 2;
+    document.getElementById('min-deposit-input').value = s.minDeposit || 10000;
+    document.getElementById('min-withdraw-input').value = s.minWithdraw || 10000;
+    const ls = document.getElementById('lock-status');
+    if (ls) { ls.textContent = 'Status: Withdrawals are ' + (s.withdrawLocked ? '🔒 LOCKED' : '🔓 OPEN'); ls.style.color = s.withdrawLocked ? 'var(--warn)' : 'var(--success)'; }
+  }
+
+  window.saveWaNumber = async function() {
+    const val = document.getElementById('wa-number-input').value.trim().replace(/\D/g, '');
+    if (val && val.length >= 9) { await updateDoc(doc(db, 'settings', 'platform'), { waNumber: val }); toast('✅ WhatsApp number saved'); }
+    else { toast('Enter a valid phone number (9 digits)', '#f87171'); }
+  };
+  window.saveMinDeposit = async function() {
+    const v = parseInt(document.getElementById('min-deposit-input').value) || 10000;
+    if (v < 500) { toast('Min deposit must be at least UGX 500', '#f87171'); return; }
+    await updateDoc(doc(db, 'settings', 'platform'), { minDeposit: v });
+    toast('✅ Minimum deposit set to ' + fmt(v));
+  };
+  window.saveMinWithdraw = async function() {
+    const v = parseInt(document.getElementById('min-withdraw-input').value) || 5000;
+    if (v < 500) { toast('Min withdrawal must be at least UGX 500', '#f87171'); return; }
+    await updateDoc(doc(db, 'settings', 'platform'), { minWithdraw: v });
+    toast('✅ Minimum withdrawal set to ' + fmt(v));
+  };
+  window.saveWaGroup = async function() {
+    await updateDoc(doc(db, 'settings', 'platform'), { waGroup: document.getElementById('wa-group-input').value.trim() });
+    toast('✅ WhatsApp Group link saved');
+  };
+  window.saveWaSupport = async function() {
+    await updateDoc(doc(db, 'settings', 'platform'), { waSupport: document.getElementById('wa-support-input').value.trim() });
+    toast('✅ WhatsApp Support link saved');
+  };
+  window.saveWithCharge = async function() {
+    const v = parseFloat(document.getElementById('with-charge-input').value) || 10;
+    await updateDoc(doc(db, 'settings', 'platform'), { withdrawCharge: v });
+    toast('✅ Withdrawal charge updated to ' + v + '%');
+  };
+  window.saveRefPct = async function() {
+    const l1 = parseFloat(document.getElementById('ref-l1-input').value) || 10;
+    const l2 = parseFloat(document.getElementById('ref-l2-input').value) || 4;
+    const l3 = parseFloat(document.getElementById('ref-l3-input').value) || 2;
+    await updateDoc(doc(db, 'settings', 'platform'), { refL1: l1, refL2: l2, refL3: l3 });
+    toast('✅ Referral percentages updated');
+  };
+  window.lockWithdrawals = async function(lock) {
+    await updateDoc(doc(db, 'settings', 'platform'), { withdrawLocked: lock });
+    toast(lock ? '🔒 Withdrawals LOCKED' : '🔓 Withdrawals UNLOCKED');
+  };
+
+  // Admin Auth Functions
+  window.adminLogin = async function() {
+    clearErrors('login-email-err', 'login-pw-err');
+    setErr('login-general-err', false);
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email) { setErr('login-email-err', true); return; }
+    if (!password) { setErr('login-pw-err', true); return; }
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const adminId = userCredential.user.uid;
+      const adminDoc = await getDoc(doc(db, 'admins', adminId));
+      if (!adminDoc.exists()) {
+        await signOut(auth);
+        setErr('login-general-err', true, 'Not authorized as admin');
+        return;
+      }
+      currentAdmin = { id: adminId, ...adminDoc.data() };
+      document.getElementById('auth-wrap').style.display = 'none';
+      document.getElementById('admin-wrap').classList.add('active');
+      loadSettings();
+      loadUsers();
+      loadWithdrawals();
+      toast('✅ Welcome, ' + currentAdmin.username);
+    } catch (error) {
+      setErr('login-general-err', true, '❌ Invalid email or password');
+    }
+  };
+
+  window.adminRegister = async function() {
+    clearErrors('reg-email-err', 'reg-phone-err', 'reg-position-err', 'reg-username-err', 'reg-pw-err', 'reg-confirm-err', 'reg-second-pw-err', 'reg-second-confirm-err', 'reg-general-err');
+    const email = document.getElementById('reg-email').value.trim();
+    const phoneDigits = document.getElementById('reg-phone').value.trim();
+    const position = document.getElementById('reg-position').value;
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const secondPw = document.getElementById('reg-second-pw').value;
+    const secondConfirm = document.getElementById('reg-second-confirm').value;
+    let ok = true;
+    if (!email || !email.includes('@')) { setErr('reg-email-err', true, 'Valid email required'); ok = false; }
+    if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) { setErr('reg-phone-err', true, 'Enter 9 digits starting with 7'); ok = false; }
+    if (!position) { setErr('reg-position-err', true, 'Please select position'); ok = false; }
+    if (!username) { setErr('reg-username-err', true, 'Username required'); ok = false; }
+    if (!password || password.length < 9) { setErr('reg-pw-err', true, 'Password must be at least 9 characters'); ok = false; }
+    if (password !== confirm) { setErr('reg-confirm-err', true, 'Passwords do not match'); ok = false; }
+    if (!secondPw || secondPw.length < 9) { setErr('reg-second-pw-err', true, 'Second password must be at least 9 characters'); ok = false; }
+    if (secondPw !== secondConfirm) { setErr('reg-second-confirm-err', true, 'Second passwords do not match'); ok = false; }
+    if (!ok) return;
+    
+    const fullPhone = '+256' + phoneDigits;
+    try {
+      const adminCountQuery = await getDocs(collection(db, 'admins'));
+      if (adminCountQuery.size >= 3) {
+        setErr('reg-general-err', true, '❌ Maximum 3 admin accounts allowed');
+        return;
+      }
+      const existingQuery = query(collection(db, 'admins'), where('username', '==', username));
+      const existing = await getDocs(existingQuery);
+      if (!existing.empty) { setErr('reg-general-err', true, '❌ Username already taken'); return; }
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const adminId = userCredential.user.uid;
+      await setDoc(doc(db, 'admins', adminId), {
+        username, email, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr()
+      });
+      toast('✅ Admin registered successfully!');
+      showLoginForm();
+    } catch (error) { setErr('reg-general-err', true, '❌ Registration failed: ' + error.message); }
+  };
+
+  window.adminLogout = async function() {
+    if (usersUnsubscribe) usersUnsubscribe();
+    if (settingsUnsubscribe) settingsUnsubscribe();
+    if (withdrawalsUnsubscribe) withdrawalsUnsubscribe();
+    await signOut(auth);
+    currentAdmin = null;
+    document.getElementById('admin-wrap').classList.remove('active');
+    document.getElementById('auth-wrap').style.display = 'flex';
+    showLoginForm();
+    toast('Signed out');
+  };
+
+  window.showLoginForm = function() { document.getElementById('login-form').style.display = 'block'; document.getElementById('register-form').style.display = 'none'; };
+  window.showRegisterForm = function() { document.getElementById('login-form').style.display = 'none'; document.getElementById('register-form').style.display = 'block'; };
+  window.toggleLoginPw = function() { const inp = document.getElementById('login-password'); const btn = document.getElementById('login-eye'); if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; } else { inp.type = 'password'; btn.textContent = '👁️'; } };
+  window.toggleRegPw = function() { const inp = document.getElementById('reg-password'); const btn = document.getElementById('reg-eye'); if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; } else { inp.type = 'password'; btn.textContent = '👁️'; } };
+  window.toggleRegConfirm = function() { const inp = document.getElementById('reg-confirm'); const btn = document.getElementById('reg-confirm-eye'); if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; } else { inp.type = 'password'; btn.textContent = '👁️'; } };
+  window.toggleRegSecond = function() { const inp = document.getElementById('reg-second-pw'); const btn = document.getElementById('reg-second-eye'); if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; } else { inp.type = 'password'; btn.textContent = '👁️'; } };
+  window.toggleRegSecondConfirm = function() { const inp = document.getElementById('reg-second-confirm'); const btn = document.getElementById('reg-second-confirm-eye'); if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; } else { inp.type = 'password'; btn.textContent = '👁️'; } };
+
+  window.showPage = function(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const map = { 'pg-dashboard': 0, 'pg-users': 1, 'pg-tube': 2, 'pg-transactions': 3, 'pg-withdrawals': 4, 'pg-debit': 5, 'pg-sog': 6, 'pg-settings': 7 };
+    if (map[id] !== undefined) document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
+    if (id === 'pg-transactions') renderTransactions();
+    if (id === 'pg-withdrawals') renderWithdrawalsTable();
+    if (id === 'pg-debit') renderDebitHistory();
+  };
+
+  window.deleteAllUsers = async function() {
+    const confirmed = await confirmAction('⚠️ DELETE ALL USERS?', 'Are you absolutely sure? This cannot be undone.');
+    if (confirmed) {
+      const users = Object.values(allUsers);
+      for (const user of users) { await deleteDoc(doc(db, 'users', user.id)); }
+      toast('🗑️ All users deleted');
+    }
+  };
+  window.deleteAllData = async function() {
+    const confirmed = await confirmAction('💥 DELETE ALL DATA?', 'This will wipe everything! This cannot be undone. Are you 100% sure?');
+    if (confirmed) {
+      const users = Object.values(allUsers);
+      for (const user of users) { await deleteDoc(doc(db, 'users', user.id)); }
+      const withdrawals = Object.values(allWithdrawals);
+      for (const wd of withdrawals) { await deleteDoc(doc(db, 'withdrawals', wd.id)); }
+      const admins = await getDocs(collection(db, 'admins'));
+      for (const admin of admins.docs) { if (admin.id !== currentAdmin?.id) await deleteDoc(doc(db, 'admins', admin.id)); }
+      toast('💥 All data deleted');
+    }
+  };
+
+  // Notifications (simplified)
+  let adminNotifications = {};
+  function updateNotifBadge() { const unread = Object.values(adminNotifications).filter(n => !n.read).length; const badge = document.getElementById('notif-badge'); if (unread > 0) { badge.textContent = unread; badge.classList.add('show'); } else { badge.classList.remove('show'); } }
+  function renderNotifList() { const list = document.getElementById('notif-list'); const keys = Object.keys(adminNotifications).sort().reverse(); if (!keys.length) { list.innerHTML = '<div class="notif-empty">No notifications yet</div>'; return; } list.innerHTML = keys.map(k => { const n = adminNotifications[k]; const isUnread = !n.read; return '<div class="notif-item ' + (isUnread ? 'unread' : '') + '"><button class="notif-item-dismiss" onclick="dismissNotification(\'' + k + '\')">✕</button><div class="notif-item-msg">' + (n.message || 'Notification') + '</div><div class="notif-item-date">' + (n.date || '') + '</div></div>'; }).join(''); }
+  window.dismissNotification = function(key) { delete adminNotifications[key]; updateNotifBadge(); renderNotifList(); };
+  window.clearAllNotifications = function() { adminNotifications = {}; updateNotifBadge(); renderNotifList(); toast('🗑️ All notifications cleared'); };
+  window.openNotifDrawer = function() { document.getElementById('notif-drawer').classList.add('open'); document.getElementById('notif-overlay').classList.add('open'); let updated = false; for (const key in adminNotifications) { if (!adminNotifications[key].read) { adminNotifications[key].read = true; updated = true; } } if (updated) { updateNotifBadge(); renderNotifList(); } };
+  window.closeNotifDrawer = function() { document.getElementById('notif-drawer').classList.remove('open'); document.getElementById('notif-overlay').classList.remove('open'); };
+
+  window.showTerms = function() { Swal.fire({ title: 'Terms of Service', html: '<div style="text-align:left;font-size:12px;">Admin terms apply. Contact support for details.</div>', icon: 'info', confirmButtonText: 'OK' }); };
+  window.showPrivacy = function() { Swal.fire({ title: 'Privacy Policy', html: '<div style="text-align:left;font-size:12px;">User data is protected. Admin access is logged.</div>', icon: 'info', confirmButtonText: 'OK' }); };
+
+  // Check auth state
+  onAuthStateChanged(auth, async (user) => {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (user) {
+      const adminDoc = await getDoc(doc(db, 'admins', user.uid));
+      if (adminDoc.exists()) {
+        currentAdmin = { id: user.uid, ...adminDoc.data() };
+        document.getElementById('auth-wrap').style.display = 'none';
+        document.getElementById('admin-wrap').classList.add('active');
+        loadSettings();
+        loadUsers();
+        loadWithdrawals();
+      } else {
+        await signOut(auth);
+        document.getElementById('auth-wrap').style.display = 'flex';
+        document.getElementById('admin-wrap').classList.remove('active');
+        showLoginForm();
+      }
+    } else {
+      document.getElementById('auth-wrap').style.display = 'flex';
+      document.getElementById('admin-wrap').classList.remove('active');
+      showLoginForm();
+    }
+    if (loadingScreen) loadingScreen.style.display = 'none';
   });
-}
-
-function openNotifDrawer(){
-  document.getElementById('notif-drawer').classList.add('open');
-  document.getElementById('notif-overlay').classList.add('open');
-  let updated = false;
-  for(const key in adminNotifications){
-    if(!adminNotifications[key].read){
-      adminNotifications[key].read = true;
-      updated = true;
-    }
-  }
-  if(updated){
-    saveToLocalStorage(STORAGE_ADMIN_NOTIFICATIONS, adminNotifications);
-    updateNotifBadge();
-    renderNotifList();
-  }
-}
-
-function closeNotifDrawer(){
-  document.getElementById('notif-drawer').classList.remove('open');
-  document.getElementById('notif-overlay').classList.remove('open');
-}
-
-function setErr(id,show,msg){ 
-  const el=document.getElementById(id); 
-  if(!el)return; 
-  if(show){el.classList.add('show');if(msg)el.textContent=msg;} 
-  else{el.classList.remove('show');} 
-}
-
-function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
-
-function showTerms(){
-  Swal.fire({title:'Terms of Service',html:`<div style="text-align:left;font-size:12px;line-height:1.6;max-height:400px;overflow-y:auto;"><strong>ProfitPulse Admin Terms</strong><br><br>
-  1. ADMIN RESPONSIBILITIES<br>
-  • Manage user accounts with integrity<br>
-  • Process withdrawals accurately<br>
-  • Monitor platform security<br>
-  • Respond to user support tickets<br><br>
-  
-  2. AUTHORIZED ACCESS ONLY<br>
-  • Admin panel is for authorized personnel only<br>
-  • Unauthorized access is strictly prohibited<br>
-  • All actions are logged<br><br>
-  
-  3. DATA HANDLING<br>
-  • Never share user data externally<br>
-  • Use data only for platform operations<br><br>
-  
-  For questions: admin@profitpulse.ug</div>`,icon:'info',confirmButtonText:'OK',width:'500px'});
-}
-
-function showPrivacy(){
-  Swal.fire({title:'Privacy & Security Policy',html:`<div style="text-align:left;font-size:12px;line-height:1.6;max-height:400px;overflow-y:auto;"><strong>ProfitPulse Admin Privacy Policy</strong><br><br>
-  PROTECTING USER DATA<br>
-  ✓ All user information is encrypted<br>
-  ✓ Data is stored securely in local storage<br>
-  ✓ No unauthorized access allowed<br><br>
-  
-  ADMIN ACTIONS MONITORING<br>
-  • All admin actions are logged<br>
-  • Login attempts are tracked<br>
-  • Data modifications are recorded<br><br>
-  
-  Contact: security@profitpulse.ug</div>`,icon:'info',confirmButtonText:'OK',width:'500px'});
-}
-
-document.getElementById('loading-screen').style.display='none';
-checkAdminSession();
 </script>
 </body>
 </html>
