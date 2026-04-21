@@ -720,10 +720,9 @@ input[type="password"]{padding-right:46px;}
 <script>
 // ============================================================
 // PROFIT PULSE - FIREBASE REALTIME DATABASE WITH MARZPAY
-// Username + Password Login | URA Tax | Auto Withdrawals
+// FIXED: Loading screen freeze + Daily profit pays once per day
 // ============================================================
 
-// Firebase Config - UPDATED with correct Realtime Database URL
 const firebaseConfig = {
   apiKey: "AIzaSyCeoGpFkD07sdvJcnrPxvIUgdr0jxQ3uXI",
   authDomain: "profitpulse-51bfb.firebaseapp.com",
@@ -737,43 +736,135 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ============================================================
-// MARZPAY CONFIGURATION
-// ============================================================
 const MARZ_API = 'https://polished-truth-f9c5.vallazvallax.workers.dev';
 
-// Helper Functions
 function fmt(n) { return 'UGX ' + Number(n || 0).toLocaleString(); }
 function dateStr() { 
   const d = new Date(); 
   return d.toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }); 
 }
 function getDateKey(d) { return d.toISOString().slice(0, 10); }
-function addDays(d, n) { const r = new Date(d); r.setUTCDate(r.getUTCDate() + n); return r; }
 function safeKey(u) { return (u || '').replace(/[.#$\[\]]/g, '_'); }
 function genUUID() { return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16)); }
 
-// State
 let currentUser = null;
 let currentUsername = null;
 let settingsData = {
-  uraTax: 4,
-  withdrawCharge: 10,
-  refL1: 10, refL2: 4, refL3: 2,
-  waGroup: '', waSupport: '',
-  withdrawLocked: false,
-  withdrawApproval: false,
-  minDeposit: 10000,
-  maxDeposit: 2350000,
-  minWithdraw: 10000,
-  waNumber: '700000000',
-  marzApiKey: ''
+  uraTax: 4, withdrawCharge: 10, refL1: 10, refL2: 4, refL3: 2,
+  waGroup: '', waSupport: '', withdrawLocked: false, withdrawApproval: false,
+  minDeposit: 10000, maxDeposit: 2350000, minWithdraw: 10000, waNumber: '700000000', marzApiKey: ''
 };
 let profitInterval = null;
 let userListener = null;
 
 // ============================================================
-// UI Helpers
+// FIX 1: Daily profit calculation (once per calendar day)
+// ============================================================
+async function calculateAndPayDailyProfits() {
+  if (!currentUser || !currentUsername) return;
+  const stake = currentUser.stake || 0;
+  if (stake <= 0) return;
+  
+  const todayKey = getDateKey(new Date());
+  const lastProfitDate = currentUser.lastProfitDate || getDateKey(new Date(Date.now() - 86400000));
+  
+  // Already paid today
+  if (lastProfitDate >= todayKey) return;
+  
+  // Calculate how many days missed
+  let currentDate = new Date(lastProfitDate);
+  let daysToPay = 0;
+  let tempDate = new Date(currentDate);
+  
+  while (getDateKey(tempDate) < todayKey) {
+    tempDate = new Date(tempDate);
+    tempDate.setUTCDate(tempDate.getUTCDate() + 1);
+    daysToPay++;
+  }
+  
+  if (daysToPay === 0) return;
+  
+  const dailyProfit = Math.floor(stake * 0.10);
+  const totalProfit = dailyProfit * daysToPay;
+  const newBalance = (currentUser.balance || 0) + totalProfit;
+  let newDaysRun = (currentUser.activeInvestment?.daysRun || 0) + daysToPay;
+  
+  if (newDaysRun > 56) newDaysRun = 56;
+  
+  const updates = {
+    balance: newBalance,
+    lastProfitDate: todayKey,
+    [`activeInvestment.daysRun`]: newDaysRun,
+    [`transactions.profit_${Date.now()}`]: {
+      type: 'Profit',
+      amount: totalProfit,
+      note: `${daysToPay} day(s) of 10% daily profit on UGX ${stake.toLocaleString()} STAKE (Day ${newDaysRun}/56)`,
+      date: dateStr(),
+      status: 'completed'
+    }
+  };
+  
+  await db.ref('users/' + safeKey(currentUsername)).update(updates);
+  showToast(`📈 +${fmt(totalProfit)} daily profit${daysToPay > 1 ? 's' : ''} added!`, 'var(--success)');
+}
+
+// ============================================================
+// FIX 2: Loading screen hides immediately after login check
+// ============================================================
+async function initApp() {
+  initTheme();
+  startSettingsListener();
+  
+  const savedUser = sessionStorage.getItem('pp_current_user');
+  if (savedUser) {
+    try {
+      const userSnap = await db.ref('users/' + safeKey(savedUser)).get();
+      if (userSnap.exists() && !userSnap.val().locked) {
+        currentUser = userSnap.val();
+        currentUsername = savedUser;
+        startUserListener(savedUser);
+        updateBalanceUI();
+        renderHistory();
+        renderTeam();
+        updateReferralLink();
+        updateProfileUI();
+        updateWhatsAppButton();
+        showDashboard();
+        switchTab('home');
+        startDailyProfitLoop();
+        startInactivityWatcher();
+        
+        // FIX: Run profit calculation in background WITHOUT await
+        calculateAndPayDailyProfits().catch(err => console.warn('Profit calc error:', err));
+      } else {
+        sessionStorage.removeItem('pp_current_user');
+        showAuth('login-page');
+      }
+    } catch (err) {
+      console.warn('Login check error:', err);
+      sessionStorage.removeItem('pp_current_user');
+      showAuth('login-page');
+    }
+  } else {
+    showAuth('login-page');
+  }
+  
+  // HIDE LOADING SCREEN IMMEDIATELY
+  document.getElementById('loading-screen').style.display = 'none';
+}
+
+// Background profit loop (every 30 min)
+function startDailyProfitLoop() {
+  if (profitInterval) clearInterval(profitInterval);
+  profitInterval = setInterval(() => {
+    if (currentUser && currentUsername) {
+      calculateAndPayDailyProfits().catch(err => console.warn('Profit interval error:', err));
+    }
+  }, 1800000);
+}
+
+// ============================================================
+// REST OF FUNCTIONS (same as before, with minor fixes)
 // ============================================================
 function showToast(msg, color) {
   const t = document.getElementById('toast');
@@ -904,17 +995,9 @@ function initTheme() {
   applyTheme(savedTheme);
 }
 
-function showTerms() {
-  showModal('📋', 'Terms of Service', 'ProfitPulse Terms of Service apply. Contact support for details.');
-}
+function showTerms() { showModal('📋', 'Terms of Service', 'ProfitPulse Terms of Service apply. Contact support for details.'); }
+function showPrivacy() { showModal('🔒', 'Privacy Policy', 'User data is protected. Read our privacy policy for details.'); }
 
-function showPrivacy() {
-  showModal('🔒', 'Privacy Policy', 'User data is protected. Read our privacy policy for details.');
-}
-
-// ============================================================
-// Navigation
-// ============================================================
 const tabMap = { home: 'sec-home', history: 'sec-history', team: 'sec-team', plan: 'sec-plan', profile: 'sec-profile', deposit: 'sec-deposit', withdraw: 'sec-withdraw', reinvest: 'sec-reinvest' };
 const navOrder = ['home', 'history', 'team', 'plan', 'profile'];
 
@@ -934,19 +1017,11 @@ function switchTab(tab) {
 
 function menuNav(tab) { switchTab(tab); }
 
-// ============================================================
-// Settings Listener
-// ============================================================
 function startSettingsListener() {
   db.ref('settings').on('value', (snap) => {
-    if (snap.exists()) {
-      settingsData = { ...settingsData, ...snap.val() };
-    }
+    if (snap.exists()) settingsData = { ...settingsData, ...snap.val() };
     updateUIWithSettings();
-    if (currentUser) {
-      renderTeam();
-      applyWithdrawLock();
-    }
+    if (currentUser) { renderTeam(); applyWithdrawLock(); }
   });
 }
 
@@ -954,34 +1029,24 @@ function updateUIWithSettings() {
   const minDep = settingsData.minDeposit || 10000;
   const minWith = settingsData.minWithdraw || 10000;
   const maxDep = settingsData.maxDeposit || 2350000;
-  
   const depNote = document.getElementById('dep-min-note');
   if (depNote) depNote.innerHTML = `✅ Minimum deposit <strong>${fmt(minDep)}</strong> — Maximum <strong>${fmt(maxDep)}</strong>. Includes 4% URA tax added to amount you pay.`;
-  
   const withMinDisplay = document.getElementById('with-min-display');
   if (withMinDisplay) withMinDisplay.textContent = fmt(minWith);
-  
   const withdrawLockedMsg = document.getElementById('withdraw-locked-msg');
   if (withdrawLockedMsg) withdrawLockedMsg.style.display = settingsData.withdrawLocked ? 'block' : 'none';
-  
   const feePercent = document.getElementById('with-fee-percent');
   if (feePercent) feePercent.textContent = settingsData.withdrawCharge || 10;
   const receivePercent = document.getElementById('with-receive-percent');
   if (receivePercent) receivePercent.textContent = 100 - (settingsData.withdrawCharge || 10);
-  
-  // Update referral percentages
   const pctL1 = document.getElementById('ref-pct-l1-new');
   const pctL2 = document.getElementById('ref-pct-l2-new');
   const pctL3 = document.getElementById('ref-pct-l3-new');
   if (pctL1) pctL1.textContent = (settingsData.refL1 || 10) + '%';
   if (pctL2) pctL2.textContent = (settingsData.refL2 || 4) + '%';
   if (pctL3) pctL3.textContent = (settingsData.refL3 || 2) + '%';
-  
-  // Update withdraw input min
   const withInp = document.getElementById('with-amount');
   if (withInp) withInp.min = minWith;
-  
-  // Update tax preview on deposit amount change
   const depAmount = document.getElementById('dep-amount');
   if (depAmount) updateTaxPreview();
 }
@@ -989,41 +1054,17 @@ function updateUIWithSettings() {
 function applyWithdrawLock() {
   const locked = settingsData.withdrawLocked;
   const wBtn = document.querySelector('.btn-withdraw');
-  if (wBtn) {
-    wBtn.style.opacity = locked ? '0.35' : '1';
-    wBtn.style.pointerEvents = locked ? 'none' : 'auto';
-  }
-  const menuItem = document.querySelector('.menu-item[onclick*="withdraw"]');
-  if (menuItem) {
-    if (locked) menuItem.classList.add('withdraw-locked');
-    else menuItem.classList.remove('withdraw-locked');
-  }
+  if (wBtn) { wBtn.style.opacity = locked ? '0.35' : '1'; wBtn.style.pointerEvents = locked ? 'none' : 'auto'; }
 }
 
-// ============================================================
-// Tax Preview on Deposit
-// ============================================================
 function updateTaxPreview() {
   const amount = parseInt(document.getElementById('dep-amount').value) || 0;
   const uraTax = (settingsData.uraTax || 4) / 100;
   const totalAmount = Math.ceil(amount * (1 + uraTax));
-  const taxNote = document.getElementById('tax-note');
   const taxAmountSpan = document.getElementById('tax-amount');
   if (taxAmountSpan) taxAmountSpan.textContent = fmt(totalAmount);
-  if (taxNote) taxNote.style.display = amount > 0 ? 'block' : 'none';
 }
 
-// Add event listener for deposit amount
-document.addEventListener('DOMContentLoaded', function() {
-  const depAmount = document.getElementById('dep-amount');
-  if (depAmount) {
-    depAmount.addEventListener('input', updateTaxPreview);
-  }
-});
-
-// ============================================================
-// Withdraw Preview
-// ============================================================
 function updateWithdrawPreview() {
   const amount = parseInt(document.getElementById('with-amount').value) || 0;
   const feePercent = (settingsData.withdrawCharge || 10) / 100;
@@ -1041,20 +1082,15 @@ function updateWithdrawPreview() {
   }
 }
 
-// ============================================================
-// Balance UI
-// ============================================================
 function updateBalanceUI() {
   if (!currentUser) return;
   const stake = currentUser.stake || 0;
   const balance = currentUser.balance || 0;
   const withdrawn = currentUser.withdrawn || 0;
-  
   document.getElementById('stat-stake').textContent = fmt(stake);
   document.getElementById('stat-balance').textContent = fmt(balance);
   document.getElementById('stat-withdrawn').textContent = fmt(withdrawn);
   document.getElementById('reinvest-balance-display').textContent = fmt(balance);
-  
   updateActiveInvestmentDisplay();
 }
 
@@ -1064,94 +1100,25 @@ function updateActiveInvestmentDisplay() {
     if (section) section.style.display = 'none';
     return;
   }
-  
   const inv = currentUser.activeInvestment;
   const stakeAmount = currentUser.stake || 0;
   const daysRun = inv.daysRun || 0;
   const totalDays = 56;
   const progress = (daysRun / totalDays) * 100;
-  
   document.getElementById('active-stake-amount').textContent = fmt(stakeAmount);
   document.getElementById('investment-progress-fill').style.width = progress + '%';
   document.getElementById('days-completed').textContent = daysRun;
-  
   if (daysRun >= totalDays) {
     document.getElementById('investment-status').textContent = '✅ Investment completed! Re-invest to continue earning.';
   } else {
     const remaining = totalDays - daysRun;
     document.getElementById('investment-status').textContent = `📈 Generating 10% daily profit — ${remaining} days remaining`;
   }
-  
   if (section) section.style.display = 'block';
 }
 
-// ============================================================
-// Daily Profit Calculator
-// ============================================================
-async function runDailyProfits() {
-  if (!currentUser || !currentUsername) return;
-  
-  const stake = currentUser.stake || 0;
-  if (stake <= 0) return;
-  
-  if (!currentUser.activeInvestment || currentUser.activeInvestment.daysRun >= 56) {
-    return;
-  }
-  
-  const todayKey = getDateKey(new Date());
-  const lastProfitDate = currentUser.lastProfitDate || getDateKey(new Date(Date.now() - 86400000));
-  
-  if (lastProfitDate >= todayKey) return;
-  
-  let currentDate = new Date(lastProfitDate);
-  let daysProcessed = 0;
-  let totalProfit = 0;
-  let newDaysRun = currentUser.activeInvestment.daysRun || 0;
-  
-  while (getDateKey(currentDate) < todayKey && newDaysRun < 56) {
-    currentDate = addDays(currentDate, 1);
-    const profit = Math.floor(stake * 0.10);
-    totalProfit += profit;
-    newDaysRun++;
-    daysProcessed++;
-  }
-  
-  if (totalProfit > 0) {
-    const newBalance = (currentUser.balance || 0) + totalProfit;
-    const updates = {
-      balance: newBalance,
-      lastProfitDate: todayKey,
-      [`activeInvestment.daysRun`]: newDaysRun,
-      [`transactions.profit_${Date.now()}`]: {
-        type: 'Profit',
-        amount: totalProfit,
-        note: `Daily 10% profit on UGX ${stake.toLocaleString()} STAKE (Day ${newDaysRun}/56)`,
-        date: dateStr(),
-        status: 'completed'
-      }
-    };
-    
-    await db.ref('users/' + safeKey(currentUsername)).update(updates);
-    showToast(`📈 +${fmt(totalProfit)} daily profit added to BALANCE!`, 'var(--success)');
-  }
-}
-
-function startDailyProfitLoop() {
-  if (profitInterval) clearInterval(profitInterval);
-  profitInterval = setInterval(() => {
-    if (currentUser && currentUsername) {
-      runDailyProfits();
-    }
-  }, 300000);
-}
-
-// ============================================================
-// User Real-time Listener
-// ============================================================
 function startUserListener(username) {
-  if (userListener) {
-    db.ref('users/' + safeKey(username)).off('value', userListener);
-  }
+  if (userListener) db.ref('users/' + safeKey(username)).off('value', userListener);
   userListener = db.ref('users/' + safeKey(username)).on('value', (snap) => {
     if (snap.exists()) {
       currentUser = snap.val();
@@ -1192,11 +1159,7 @@ function updateWhatsAppButton() {
   }
 }
 
-// ============================================================
-// History & Team Rendering
-// ============================================================
 let currentHistoryFilter = 'Deposit';
-
 function filterHistory(type, tabEl) {
   currentHistoryFilter = type;
   document.querySelectorAll('.tx-tab').forEach(t => t.classList.remove('active'));
@@ -1229,25 +1192,20 @@ function renderHistory() {
 
 function renderTeam() {
   if (!currentUser) return;
-  
   let totalRefBonus = 0;
   if (currentUser.transactions) {
-    Object.values(currentUser.transactions).forEach(tx => {
-      if (tx.type === 'Referral') totalRefBonus += tx.amount;
-    });
+    Object.values(currentUser.transactions).forEach(tx => { if (tx.type === 'Referral') totalRefBonus += tx.amount; });
   }
   document.getElementById('total-ref-earned-new').textContent = fmt(totalRefBonus);
-  
   const refs = currentUser.referrals ? Object.values(currentUser.referrals) : [];
   document.getElementById('ref-team-count').textContent = refs.length;
-  
   const membersWrap = document.getElementById('ref-members-new');
   if (!refs.length) {
     if (membersWrap) membersWrap.innerHTML = '<div class="ref-empty-state"><div class="ref-empty-emoji">🤝</div><div class="ref-empty-msg">No team members yet</div><div class="ref-empty-hint">Invite friends to start earning</div></div>';
     return;
   }
   if (membersWrap) {
-    membersWrap.innerHTML = '<div class="ref-members-list">' + refs.map((r, i) => {
+    membersWrap.innerHTML = '<div class="ref-members-list">' + refs.map((r) => {
       const isActive = (r.invested || 0) > 0;
       const statusIcon = isActive ? '🟢' : '⏳';
       return `<div class="ref-member-item"><div class="ref-member-name">${r.username}</div><div class="ref-member-info"><span class="ref-member-level">L${r.level}</span><span class="ref-member-status">${statusIcon} ${isActive ? 'Active' : 'Inactive'}</span></div></div>`;
@@ -1255,9 +1213,6 @@ function renderTeam() {
   }
 }
 
-// ============================================================
-// MarzPay Functions
-// ============================================================
 function getMarzAuth() {
   let key = (settingsData.marzApiKey || '').trim();
   if (key.toLowerCase().startsWith('basic ')) key = key.slice(6).trim();
@@ -1272,11 +1227,7 @@ async function marzCollect(phone, amount, reference, description) {
   formData.append('country', 'UG');
   formData.append('reference', reference);
   formData.append('description', description);
-  const response = await fetch(MARZ_API + '/collect-money', {
-    method: 'POST',
-    headers: { 'Authorization': getMarzAuth() },
-    body: formData
-  });
+  const response = await fetch(MARZ_API + '/collect-money', { method: 'POST', headers: { 'Authorization': getMarzAuth() }, body: formData });
   if (!response.ok) throw new Error('Payment gateway error: ' + response.status);
   return await response.json();
 }
@@ -1289,19 +1240,13 @@ async function marzSend(phone, amount, reference, description) {
   formData.append('country', 'UG');
   formData.append('reference', reference);
   formData.append('description', description);
-  const response = await fetch(MARZ_API + '/send-money', {
-    method: 'POST',
-    headers: { 'Authorization': getMarzAuth() },
-    body: formData
-  });
+  const response = await fetch(MARZ_API + '/send-money', { method: 'POST', headers: { 'Authorization': getMarzAuth() }, body: formData });
   if (!response.ok) throw new Error('Payment gateway error: ' + response.status);
   return await response.json();
 }
 
 async function marzCheckStatus(uuid) {
-  const response = await fetch(MARZ_API + '/transactions/' + uuid, {
-    headers: { 'Authorization': getMarzAuth() }
-  });
+  const response = await fetch(MARZ_API + '/transactions/' + uuid, { headers: { 'Authorization': getMarzAuth() } });
   if (!response.ok) return null;
   return await response.json();
 }
@@ -1322,130 +1267,59 @@ async function pollPaymentStatus(uuid, maxAttempts = 36, intervalMs = 5000) {
 
 async function sendAdminNotification(type, username, amount, message) {
   try {
-    const notifKey = 'notif_' + Date.now();
-    await db.ref('adminNotifications/' + notifKey).set({
-      type, username, amount, message,
-      date: dateStr(),
-      read: false
-    });
+    await db.ref('adminNotifications/notif_' + Date.now()).set({ type, username, amount, message, date: dateStr(), read: false });
   } catch (e) { console.warn(e); }
 }
 
-// ============================================================
-// Deposit Function (with URA Tax)
-// ============================================================
 async function doDeposit() {
   clearErrors('dep-phone-err', 'dep-amount-err');
-  
   const phoneDigits = document.getElementById('dep-phone').value.trim();
-  if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) {
-    setErr('dep-phone-err', true, 'Enter 9 digits starting with 7');
-    return;
-  }
-  
+  if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) { setErr('dep-phone-err', true, 'Enter 9 digits starting with 7'); return; }
   const minDep = settingsData.minDeposit || 10000;
   const maxDep = settingsData.maxDeposit || 2350000;
   const amount = parseInt(document.getElementById('dep-amount').value) || 0;
-  
-  if (amount < minDep) {
-    setErr('dep-amount-err', true, 'Minimum deposit is ' + fmt(minDep));
-    return;
-  }
-  if (amount > maxDep) {
-    setErr('dep-amount-err', true, 'Maximum deposit is ' + fmt(maxDep));
-    return;
-  }
-  
-  if (!settingsData.marzApiKey) {
-    showModal('⚠️', 'Payment Not Available', 'Payment system is not configured yet. Please contact support.');
-    return;
-  }
-  
+  if (amount < minDep) { setErr('dep-amount-err', true, 'Minimum deposit is ' + fmt(minDep)); return; }
+  if (amount > maxDep) { setErr('dep-amount-err', true, 'Maximum deposit is ' + fmt(maxDep)); return; }
+  if (!settingsData.marzApiKey) { showModal('⚠️', 'Payment Not Available', 'Payment system is not configured yet. Please contact support.'); return; }
   const btn = document.getElementById('dep-submit-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Processing...';
-  
+  btn.disabled = true; btn.textContent = '⏳ Processing...';
   const fullPhone = '+256' + phoneDigits;
   const reference = genUUID();
   const uraTax = (settingsData.uraTax || 4) / 100;
   const totalAmount = Math.ceil(amount * (1 + uraTax));
   const profit = Math.floor(amount * 0.10);
-  
   const oldStake = currentUser.stake || 0;
-  
-  // Clear form
   document.getElementById('dep-phone').value = '';
   document.getElementById('dep-amount').value = '';
   document.getElementById('tax-note').style.display = 'none';
-  
   try {
     const result = await marzCollect(fullPhone, totalAmount, reference, 'ProfitPulse Deposit');
-    
     if (result.status !== 'success') {
       await sendAdminNotification('deposit_failed', currentUsername, amount, 'Deposit failed: ' + (result.message || 'Unknown error'));
-      btn.disabled = false;
-      btn.textContent = '💳 INVEST NOW';
+      btn.disabled = false; btn.textContent = '💳 INVEST NOW';
       showModal('❌', 'Payment Failed', 'Your payment could not be processed. Please try again.');
       return;
     }
-    
     const txUuid = result?.data?.transaction?.uuid;
     const pollResult = await pollPaymentStatus(txUuid);
-    
     if (pollResult === 'success') {
       const newStake = oldStake + amount;
       const newBalance = (currentUser.balance || 0) + profit;
       const todayKey = getDateKey(new Date());
-      const depKey = 'dep_' + Date.now();
-      const tx1Key = 'tx_dep_' + Date.now();
-      const tx2Key = 'tx_profit_' + Date.now();
-      
       let newActiveInvestment = currentUser.activeInvestment || null;
       if (!newActiveInvestment || newActiveInvestment.daysRun >= 56) {
-        newActiveInvestment = {
-          amount: newStake,
-          startDate: new Date().toISOString(),
-          daysRun: 0,
-          lastPaidDate: todayKey
-        };
+        newActiveInvestment = { amount: newStake, startDate: new Date().toISOString(), daysRun: 0, lastPaidDate: todayKey };
       } else {
         newActiveInvestment.amount = newStake;
       }
-      
       const updates = {
-        stake: newStake,
-        balance: newBalance,
-        activated: true,
-        activeInvestment: newActiveInvestment,
-        lastProfitDate: todayKey,
-        ['deposits/' + depKey]: {
-          amount: amount,
-          taxPaid: totalAmount - amount,
-          startDate: Date.now(),
-          daysRun: 0,
-          lastPaidDate: todayKey
-        },
-        ['transactions/' + tx1Key]: {
-          type: 'Deposit',
-          amount: amount,
-          note: 'Deposit confirmed ✅ (URA Tax: ' + fmt(totalAmount - amount) + ')',
-          date: dateStr(),
-          status: 'completed'
-        },
-        ['transactions/' + tx2Key]: {
-          type: 'Profit',
-          amount: profit,
-          note: '10% instant profit on deposit',
-          date: dateStr(),
-          status: 'completed'
-        }
+        stake: newStake, balance: newBalance, activated: true, activeInvestment: newActiveInvestment, lastProfitDate: todayKey,
+        [`deposits/dep_${Date.now()}`]: { amount: amount, taxPaid: totalAmount - amount, startDate: Date.now(), daysRun: 0, lastPaidDate: todayKey },
+        [`transactions/tx_dep_${Date.now()}`]: { type: 'Deposit', amount: amount, note: 'Deposit confirmed ✅ (URA Tax: ' + fmt(totalAmount - amount) + ')', date: dateStr(), status: 'completed' },
+        [`transactions/tx_profit_${Date.now()}`]: { type: 'Profit', amount: profit, note: '10% instant profit on deposit', date: dateStr(), status: 'completed' }
       };
-      
       await db.ref('users/' + safeKey(currentUsername)).update(updates);
-      
-      // Credit referral bonuses
       await creditReferralBonuses(currentUsername, amount);
-      
       showToast(`✓ ${fmt(amount)} added to STAKE! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
     } else if (pollResult === 'failed') {
       await sendAdminNotification('deposit_failed', currentUsername, amount, 'Deposit declined by user');
@@ -1454,30 +1328,22 @@ async function doDeposit() {
       await sendAdminNotification('deposit_timeout', currentUsername, amount, 'Deposit pending - no confirmation');
       showModal('⏳', 'Payment Pending', 'Your payment is still processing. It will be credited automatically once confirmed.');
     }
-    
   } catch (error) {
     console.error('Deposit error:', error);
     await sendAdminNotification('deposit_error', currentUsername, amount, error.message);
     showModal('❌', 'Error', 'Something went wrong. Please try again.');
   }
-  
-  btn.disabled = false;
-  btn.textContent = '💳 INVEST NOW';
+  btn.disabled = false; btn.textContent = '💳 INVEST NOW';
 }
 
-// ============================================================
-// Referral Bonus Function
-// ============================================================
 async function creditReferralBonuses(depositorUsername, amount) {
   const depositorSnap = await db.ref('users/' + safeKey(depositorUsername)).get();
   if (!depositorSnap.exists()) return;
   const depositor = depositorSnap.val();
   if (!depositor.referredBy) return;
-  
   const pctL1 = (settingsData.refL1 || 10) / 100;
   const pctL2 = (settingsData.refL2 || 4) / 100;
   const pctL3 = (settingsData.refL3 || 2) / 100;
-  
   let uplineUsername = depositor.referredBy;
   for (let i = 0; i < 3; i++) {
     if (!uplineUsername) break;
@@ -1487,263 +1353,119 @@ async function creditReferralBonuses(depositorUsername, amount) {
     const bonus = Math.floor(amount * (i === 0 ? pctL1 : i === 1 ? pctL2 : pctL3));
     if (bonus > 0) {
       const newBalance = (upline.balance || 0) + bonus;
-      const txKey = 'tx_ref_' + Date.now() + '_l' + (i + 1);
-      const updates = {
-        balance: newBalance,
-        refEarned: (upline.refEarned || 0) + bonus,
-        ['transactions/' + txKey]: {
-          type: 'Referral',
-          amount: bonus,
-          note: `Level ${i + 1} bonus from ${depositorUsername}`,
-          date: dateStr(),
-          status: 'completed'
-        }
-      };
+      const updates = { balance: newBalance, refEarned: (upline.refEarned || 0) + bonus };
+      updates[`transactions/tx_ref_${Date.now()}_l${i+1}`] = { type: 'Referral', amount: bonus, note: `Level ${i + 1} bonus from ${depositorUsername}`, date: dateStr(), status: 'completed' };
       const refSnap = await db.ref('users/' + safeKey(uplineUsername) + '/referrals/' + safeKey(depositorUsername)).get();
-      if (refSnap.exists()) {
-        updates['referrals/' + safeKey(depositorUsername) + '/invested'] = (refSnap.val().invested || 0) + amount;
-      }
+      if (refSnap.exists()) updates[`referrals/${safeKey(depositorUsername)}/invested`] = (refSnap.val().invested || 0) + amount;
       await db.ref('users/' + safeKey(uplineUsername)).update(updates);
     }
     uplineUsername = upline.referredBy || null;
   }
 }
 
-// ============================================================
-// Withdraw Function
-// ============================================================
 async function doWithdraw() {
   clearErrors('with-amount-err');
-  
-  if (settingsData.withdrawLocked) {
-    showModal('🔒', 'Locked', 'Withdrawals are currently disabled.');
-    return;
-  }
-  if (!currentUser.activated) {
-    showModal('🔒', 'Account Not Activated', 'Make a deposit first to activate your account.');
-    return;
-  }
-  
+  if (settingsData.withdrawLocked) { showModal('🔒', 'Locked', 'Withdrawals are currently disabled.'); return; }
+  if (!currentUser.activated) { showModal('🔒', 'Account Not Activated', 'Make a deposit first to activate your account.'); return; }
   const minWith = settingsData.minWithdraw || 10000;
   const amount = parseInt(document.getElementById('with-amount').value) || 0;
-  if (amount < minWith) {
-    setErr('with-amount-err', true, 'Minimum withdrawal is ' + fmt(minWith));
-    return;
-  }
-  
+  if (amount < minWith) { setErr('with-amount-err', true, 'Minimum withdrawal is ' + fmt(minWith)); return; }
   const balance = currentUser.balance || 0;
-  if (balance < amount) {
-    setErr('with-amount-err', true, 'Insufficient BALANCE.');
-    return;
-  }
-  
+  if (balance < amount) { setErr('with-amount-err', true, 'Insufficient BALANCE.'); return; }
   const feePercent = (settingsData.withdrawCharge || 10) / 100;
   const fee = Math.floor(amount * feePercent);
   const sendAmount = amount - fee;
   const userPhone = currentUser.phone;
-  
   const btn = document.getElementById('with-submit-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Processing...';
-  
+  btn.disabled = true; btn.textContent = '⏳ Processing...';
   const newBalance = balance - amount;
   const newWithdrawn = (currentUser.withdrawn || 0) + amount;
   const txKey = 'tx_wd_' + Date.now();
   const reqKey = 'wreq_' + Date.now();
-  
   try {
-    // First, deduct from balance and record pending transaction
-    await db.ref('users/' + safeKey(currentUsername)).update({
-      balance: newBalance,
-      withdrawn: newWithdrawn,
-      ['transactions/' + txKey]: {
-        type: 'Withdrawal',
-        amount: -amount,
-        note: 'Withdrawal Pending',
-        date: dateStr(),
-        status: 'pending'
-      }
-    });
-    
-    // Create withdrawal request
-    await db.ref('pendingWithdrawals/' + reqKey).set({
-      username: currentUsername,
-      userId: safeKey(currentUsername),
-      phone: userPhone,
-      amount: amount,
-      fee: fee,
-      sendAmount: sendAmount,
-      txKey: txKey,
-      date: dateStr(),
-      status: 'pending'
-    });
-    
-    // If auto approval is OFF, just notify admin and don't send automatically
+    await db.ref('users/' + safeKey(currentUsername)).update({ balance: newBalance, withdrawn: newWithdrawn, [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Pending', date: dateStr(), status: 'pending' } });
+    await db.ref('pendingWithdrawals/' + reqKey).set({ username: currentUsername, userId: safeKey(currentUsername), phone: userPhone, amount, fee, sendAmount, txKey, date: dateStr(), status: 'pending' });
     if (settingsData.withdrawApproval === true) {
       await sendAdminNotification('withdrawal_pending', currentUsername, amount, 'Withdrawal request pending approval');
       showToast(`💸 Withdrawal request submitted! Amount: ${fmt(amount)}. Awaiting admin approval.`, 'var(--gold)');
     } else {
-      // Auto approval is ON - send via MarzPay automatically
       try {
         const reference = genUUID();
         const sendResult = await marzSend(userPhone, sendAmount, reference, 'ProfitPulse Withdrawal');
-        
         if (sendResult && sendResult.status === 'success') {
-          await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).update({
-            status: 'completed',
-            note: `Withdrawal sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})`
-          });
+          await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).update({ status: 'completed', note: `Withdrawal sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})` });
           await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved' });
           showToast(`💸 ${fmt(amount)} withdrawn! You received: ${fmt(sendAmount)}`, 'var(--success)');
-        } else {
-          throw new Error('MarzPay send failed');
-        }
+        } else throw new Error('MarzPay send failed');
       } catch (sendError) {
-        // If auto send fails, keep as pending for manual approval
         await sendAdminNotification('withdrawal_auto_failed', currentUsername, amount, 'Auto withdrawal failed: ' + sendError.message);
         await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'pending', autoFailed: true });
         showToast(`⚠️ Withdrawal request submitted but processing delayed. Admin will review.`, 'var(--gold)');
       }
     }
-    
     document.getElementById('with-amount').value = '';
     document.getElementById('withdraw-preview').style.display = 'none';
-    
   } catch (error) {
     console.error('Withdrawal error:', error);
-    // Refund the balance if transaction failed completely
-    await db.ref('users/' + safeKey(currentUsername)).update({
-      balance: balance,
-      withdrawn: currentUser.withdrawn || 0
-    });
+    await db.ref('users/' + safeKey(currentUsername)).update({ balance: balance, withdrawn: currentUser.withdrawn || 0 });
     await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).remove();
     showModal('❌', 'Error', 'Withdrawal failed. Please try again.');
   }
-  
-  btn.disabled = false;
-  btn.textContent = '💸 WITHDRAW';
+  btn.disabled = false; btn.textContent = '💸 WITHDRAW';
 }
 
-// ============================================================
-// Re-Invest Function
-// ============================================================
 async function doReinvest() {
   clearErrors('reinvest-amount-err');
   const amount = parseInt(document.getElementById('reinvest-amount').value) || 0;
-  if (amount < 10000) {
-    setErr('reinvest-amount-err', true, 'Minimum re-invest is UGX 10,000');
-    return;
-  }
-  
+  if (amount < 10000) { setErr('reinvest-amount-err', true, 'Minimum re-invest is UGX 10,000'); return; }
   const balance = currentUser.balance || 0;
-  if (balance < amount) {
-    setErr('reinvest-amount-err', true, 'Insufficient BALANCE.');
-    return;
-  }
-  
+  if (balance < amount) { setErr('reinvest-amount-err', true, 'Insufficient BALANCE.'); return; }
   const profit = Math.floor(amount * 0.10);
   const now = dateStr();
   const todayKey = getDateKey(new Date());
-  
   const btn = document.querySelector('#sec-reinvest .green-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Processing...';
-  
+  btn.disabled = true; btn.textContent = '⏳ Processing...';
   try {
     const newBalance = balance - amount + profit;
     const newStake = (currentUser.stake || 0) + amount;
-    const tx1Key = 'tx_reinvest_a_' + Date.now();
-    const tx2Key = 'tx_reinvest_b_' + Date.now();
-    const depKey = 'dep_reinvest_' + Date.now();
-    
     let newActiveInvestment = currentUser.activeInvestment || null;
     if (!newActiveInvestment || newActiveInvestment.daysRun >= 56) {
-      newActiveInvestment = {
-        amount: newStake,
-        startDate: new Date().toISOString(),
-        daysRun: 0,
-        lastPaidDate: todayKey
-      };
+      newActiveInvestment = { amount: newStake, startDate: new Date().toISOString(), daysRun: 0, lastPaidDate: todayKey };
     } else {
       newActiveInvestment.amount = newStake;
     }
-    
     const updates = {
-      stake: newStake,
-      balance: newBalance,
-      activated: true,
-      activeInvestment: newActiveInvestment,
-      ['deposits/' + depKey]: {
-        amount: amount,
-        startDate: Date.now(),
-        daysRun: 0,
-        lastPaidDate: todayKey
-      },
-      ['transactions/' + tx1Key]: {
-        type: 'Re-Invest',
-        amount: -amount,
-        note: 'Moved from BALANCE to STAKE',
-        date: now,
-        status: 'completed'
-      },
-      ['transactions/' + tx2Key]: {
-        type: 'Profit',
-        amount: profit,
-        note: '10% instant profit on re-invest',
-        date: now,
-        status: 'completed'
-      }
+      stake: newStake, balance: newBalance, activated: true, activeInvestment: newActiveInvestment,
+      [`deposits/dep_reinvest_${Date.now()}`]: { amount, startDate: Date.now(), daysRun: 0, lastPaidDate: todayKey },
+      [`transactions/tx_reinvest_a_${Date.now()}`]: { type: 'Re-Invest', amount: -amount, note: 'Moved from BALANCE to STAKE', date: now, status: 'completed' },
+      [`transactions/tx_reinvest_b_${Date.now()}`]: { type: 'Profit', amount: profit, note: '10% instant profit on re-invest', date: now, status: 'completed' }
     };
-    
     await db.ref('users/' + safeKey(currentUsername)).update(updates);
-    
     document.getElementById('reinvest-amount').value = '';
     showToast(`✓ Re-invested ${fmt(amount)}! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
-    
   } catch (error) {
     console.error('Reinvest error:', error);
     showToast('Error processing re-investment. Please try again.', '#f87171');
   }
-  
-  btn.disabled = false;
-  btn.textContent = '🔄 RE-INVEST NOW';
+  btn.disabled = false; btn.textContent = '🔄 RE-INVEST NOW';
 }
 
-// ============================================================
-// Login Function
-// ============================================================
 async function doLogin() {
   clearErrors('login-user-err', 'login-pw-err');
   setErr('login-general-err', false);
-  
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
-  
   if (!username) { setErr('login-user-err', true); return; }
   if (!password) { setErr('login-pw-err', true); return; }
-  
   try {
     const userSnap = await db.ref('users/' + safeKey(username)).get();
-    if (!userSnap.exists()) {
-      setErr('login-general-err', true, '❌ Invalid username or password');
-      return;
-    }
-    
+    if (!userSnap.exists()) { setErr('login-general-err', true, '❌ Invalid username or password'); return; }
     const userData = userSnap.val();
-    if (userData.password !== password) {
-      setErr('login-general-err', true, '❌ Invalid username or password');
-      return;
-    }
-    
-    if (userData.locked) {
-      setErr('login-general-err', true, '🔒 Your account has been locked. Contact support.');
-      return;
-    }
-    
+    if (userData.password !== password) { setErr('login-general-err', true, '❌ Invalid username or password'); return; }
+    if (userData.locked) { setErr('login-general-err', true, '🔒 Your account has been locked. Contact support.'); return; }
     currentUser = userData;
     currentUsername = username;
     sessionStorage.setItem('pp_current_user', username);
-    
     startUserListener(username);
     updateBalanceUI();
     renderHistory();
@@ -1754,22 +1476,17 @@ async function doLogin() {
     showDashboard();
     switchTab('home');
     startDailyProfitLoop();
-    await runDailyProfits();
-    
+    startInactivityWatcher();
+    calculateAndPayDailyProfits().catch(err => console.warn('Login profit error:', err));
     showToast('Welcome back, ' + username);
-    
   } catch (error) {
     console.error('Login error:', error);
     setErr('login-general-err', true, '❌ Login failed. Please try again.');
   }
 }
 
-// ============================================================
-// Register Function
-// ============================================================
 async function doRegister() {
   clearErrors('reg-user-err', 'reg-country-err', 'reg-phone-err', 'reg-pw-err', 'reg-confirm-err', 'reg-general-err');
-  
   const username = document.getElementById('reg-username').value.trim();
   const country = document.getElementById('reg-country').value;
   const phoneDigits = document.getElementById('reg-phone').value.trim();
@@ -1777,102 +1494,47 @@ async function doRegister() {
   const confirm = document.getElementById('reg-confirm').value;
   const urlParams = new URLSearchParams(window.location.search);
   const refCode = urlParams.get('ref') || null;
-  
   let ok = true;
   if (!username) { setErr('reg-user-err', true, 'Username is required'); ok = false; }
   if (!country) { setErr('reg-country-err', true, 'Please select your country'); ok = false; }
-  if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) {
-    setErr('reg-phone-err', true, 'Enter 9 digits starting with 7'); ok = false;
-  }
+  if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) { setErr('reg-phone-err', true, 'Enter 9 digits starting with 7'); ok = false; }
   if (!password || password.length < 6) { setErr('reg-pw-err', true, 'Password must be at least 6 characters'); ok = false; }
   if (!confirm || confirm !== password) { setErr('reg-confirm-err', true, 'Passwords do not match'); ok = false; }
   if (!ok) return;
-  
-  // Check if username exists
   const existing = await db.ref('users/' + safeKey(username)).get();
-  if (existing.exists()) {
-    setErr('reg-user-err', true, 'Username already taken');
-    return;
-  }
-  
+  if (existing.exists()) { setErr('reg-user-err', true, 'Username already taken'); return; }
   const prefix = country === 'KE' ? '+254' : '+256';
   const fullPhone = prefix + phoneDigits;
   const now = dateStr();
   const todayKey = getDateKey(new Date());
-  
   const newUser = {
-    username: username,
-    password: password,
-    country: country,
-    phone: fullPhone,
-    stake: 0,
-    balance: 5000,
-    withdrawn: 0,
-    refEarned: 0,
-    activated: false,
-    locked: false,
-    referredBy: refCode,
-    joinedDate: new Date().getFullYear().toString(),
+    username, password, country, phone: fullPhone, stake: 0, balance: 5000, withdrawn: 0, refEarned: 0,
+    activated: false, locked: false, referredBy: refCode, joinedDate: new Date().getFullYear().toString(),
     lastProfitDate: todayKey,
-    transactions: {
-      t0: {
-        type: 'Bonus',
-        amount: 5000,
-        note: 'Registration Bonus 🎁',
-        date: now,
-        status: 'completed'
-      }
-    },
-    referrals: {},
-    deposits: {},
-    activeInvestment: null
+    transactions: { t0: { type: 'Bonus', amount: 5000, note: 'Registration Bonus 🎁', date: now, status: 'completed' } },
+    referrals: {}, deposits: {}, activeInvestment: null
   };
-  
   await db.ref('users/' + safeKey(username)).set(newUser);
-  
-  // Handle referral
   if (refCode) {
     const referrerSnap = await db.ref('users/' + safeKey(refCode)).get();
     if (referrerSnap.exists()) {
       const referrer = referrerSnap.val();
-      await db.ref('users/' + safeKey(refCode) + '/referrals/' + safeKey(username)).set({
-        username: username,
-        invested: 0,
-        level: 1
-      });
-      
-      // Level 2
+      await db.ref('users/' + safeKey(refCode) + '/referrals/' + safeKey(username)).set({ username, invested: 0, level: 1 });
       if (referrer.referredBy) {
         const level2Snap = await db.ref('users/' + safeKey(referrer.referredBy)).get();
         if (level2Snap.exists()) {
-          await db.ref('users/' + safeKey(referrer.referredBy) + '/referrals/' + safeKey(username)).set({
-            username: username,
-            invested: 0,
-            level: 2
-          });
-          
-          // Level 3
+          await db.ref('users/' + safeKey(referrer.referredBy) + '/referrals/' + safeKey(username)).set({ username, invested: 0, level: 2 });
           const level2Data = level2Snap.val();
           if (level2Data.referredBy) {
-            const level3Snap = await db.ref('users/' + safeKey(level2Data.referredBy)).get();
-            if (level3Snap.exists()) {
-              await db.ref('users/' + safeKey(level2Data.referredBy) + '/referrals/' + safeKey(username)).set({
-                username: username,
-                invested: 0,
-                level: 3
-              });
-            }
+            await db.ref('users/' + safeKey(level2Data.referredBy) + '/referrals/' + safeKey(username)).set({ username, invested: 0, level: 3 });
           }
         }
       }
     }
   }
-  
-  // Auto login
   currentUser = newUser;
   currentUsername = username;
   sessionStorage.setItem('pp_current_user', username);
-  
   startUserListener(username);
   updateBalanceUI();
   renderHistory();
@@ -1883,10 +1545,7 @@ async function doRegister() {
   showDashboard();
   switchTab('home');
   startDailyProfitLoop();
-  
   showToast('✓ Account created! UGX 5,000 bonus added! 🎉');
-  
-  // Clear form
   document.getElementById('reg-username').value = '';
   document.getElementById('reg-phone').value = '';
   document.getElementById('reg-password').value = '';
@@ -1894,14 +1553,9 @@ async function doRegister() {
   document.getElementById('reg-country').value = '';
 }
 
-// ============================================================
-// Logout Function
-// ============================================================
 async function doLogout() {
   if (profitInterval) clearInterval(profitInterval);
-  if (userListener && currentUsername) {
-    db.ref('users/' + safeKey(currentUsername)).off('value', userListener);
-  }
+  if (userListener && currentUsername) db.ref('users/' + safeKey(currentUsername)).off('value', userListener);
   sessionStorage.removeItem('pp_current_user');
   currentUser = null;
   currentUsername = null;
@@ -1916,82 +1570,29 @@ async function doLogout() {
   }, 800);
 }
 
-// ============================================================
-// Inactivity Watcher
-// ============================================================
 let inactivityTimer = null;
 const INACTIVITY_LIMIT = 2 * 60 * 60 * 1000;
-
 function resetInactivityTimer() {
   if (!currentUser) return;
   if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(() => {
-    if (currentUser) doLogout();
-  }, INACTIVITY_LIMIT);
+  inactivityTimer = setTimeout(() => { if (currentUser) doLogout(); }, INACTIVITY_LIMIT);
 }
-
 function startInactivityWatcher() {
-  ['click', 'touchstart', 'scroll', 'keydown'].forEach(evt => {
-    document.addEventListener(evt, resetInactivityTimer, { passive: true });
-  });
+  ['click', 'touchstart', 'scroll', 'keydown'].forEach(evt => document.addEventListener(evt, resetInactivityTimer, { passive: true }));
   resetInactivityTimer();
 }
 
-// ============================================================
-// Auto-ref code from URL
-// ============================================================
 (function() {
   const params = new URLSearchParams(window.location.search);
   const ref = params.get('ref');
-  if (ref) {
-    sessionStorage.setItem('pp_pending_ref', ref);
-    sessionStorage.setItem('pp_open_register', 'true');
-  }
+  if (ref) { sessionStorage.setItem('pp_pending_ref', ref); sessionStorage.setItem('pp_open_register', 'true'); }
   const openReg = sessionStorage.getItem('pp_open_register');
   if (openReg) {
     sessionStorage.removeItem('pp_open_register');
     const refCode = sessionStorage.getItem('pp_pending_ref');
-    if (refCode && document.getElementById('reg-referrer-display')) {
-      document.getElementById('reg-referrer-display').textContent = refCode;
-    }
+    if (refCode && document.getElementById('reg-referrer-display')) document.getElementById('reg-referrer-display').textContent = refCode;
   }
 })();
-
-// ============================================================
-// Initialize App
-// ============================================================
-async function initApp() {
-  initTheme();
-  startSettingsListener();
-  
-  const savedUser = sessionStorage.getItem('pp_current_user');
-  if (savedUser) {
-    const userSnap = await db.ref('users/' + safeKey(savedUser)).get();
-    if (userSnap.exists() && !userSnap.val().locked) {
-      currentUser = userSnap.val();
-      currentUsername = savedUser;
-      startUserListener(savedUser);
-      updateBalanceUI();
-      renderHistory();
-      renderTeam();
-      updateReferralLink();
-      updateProfileUI();
-      updateWhatsAppButton();
-      showDashboard();
-      switchTab('home');
-      startDailyProfitLoop();
-      startInactivityWatcher();
-      await runDailyProfits();
-    } else {
-      sessionStorage.removeItem('pp_current_user');
-      showAuth('login-page');
-    }
-  } else {
-    showAuth('login-page');
-  }
-  
-  document.getElementById('loading-screen').style.display = 'none';
-}
 
 initApp();
 </script>
