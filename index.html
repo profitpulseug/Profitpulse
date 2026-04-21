@@ -6,12 +6,17 @@
 <title>ProfitPulse — Grow Your Wealth</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="ProfitPulse — Grow Your Wealth">
-<meta property="og:description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors growing their money today!">
+<meta property="og:description" content="Earn 10% daily returns on your investments. Join thousands of investors in Uganda & Kenya.">
 <meta property="og:site_name" content="ProfitPulse">
+<meta property="og:url" content="https://profitpulseug.github.io/Profitpulse/">
+<meta property="og:image" content="https://profitpulseug.github.io/Profitpulse/logo.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ProfitPulse — Grow Your Wealth">
-<meta name="twitter:description" content="Premium Investment Wallet. Earn 10% daily returns for 56 days!">
-<meta name="description" content="Premium Investment Wallet. Earn 10% daily returns. Join thousands of investors today!">
+<meta name="twitter:description" content="Earn 10% daily returns for 56 days!">
+<meta name="twitter:image" content="https://profitpulseug.github.io/Profitpulse/logo.png">
+<meta name="description" content="Earn 10% daily returns. Join thousands of investors today!">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -255,14 +260,21 @@ input[type="password"]{padding-right:46px;}
 
 /* Forms */
 .action-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 18px;}
-.green-btn{width:100%;background:#16a34a;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.green-btn{width:100%;background:#10b981;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .green-btn:active{transform:scale(.98);}
 .green-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.red-btn{width:100%;background:#dc2626;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.red-btn{width:100%;background:#ff6b5b;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .red-btn:active{transform:scale(.98);}
 .red-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.amber-btn{width:100%;background:var(--gold);border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.amber-btn{width:100%;background:#06b6d4;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .amber-btn:active{transform:scale(.98);}
+.amber-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* Section-specific backgrounds */
+#sec-deposit .action-card{background:linear-gradient(135deg, rgba(16,185,129,.1) 0%, rgba(16,185,129,.05) 100%);border:1px solid rgba(16,185,129,.3);}
+#sec-withdraw .action-card{background:linear-gradient(135deg, rgba(255,107,91,.1) 0%, rgba(255,107,91,.05) 100%);border:1px solid rgba(255,107,91,.3);}
+#sec-reinvest .action-card{background:linear-gradient(135deg, rgba(6,182,212,.1) 0%, rgba(6,182,212,.05) 100%);border:1px solid rgba(6,182,212,.3);}
+
 .popup-banner{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-10px);background:#1e293b;color:#fff;font-size:13px;font-weight:600;padding:14px 22px;border-radius:16px;opacity:0;transition:.35s;z-index:9998;pointer-events:none;text-align:center;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.25);line-height:1.5;}
 .popup-banner.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .readonly-field{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px 13px 42px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
