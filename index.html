@@ -103,6 +103,8 @@ input[type="password"]{padding-right:46px;}
 .brand-icon{width:34px;height:34px;background:var(--accent);border-radius:10px;display:grid;place-items:center;font-size:16px;color:#fff;}
 .brand-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;color:var(--accent);}
 .topbar-right{display:flex;align-items:center;gap:10px;}
+.theme-toggle{background:none;border:none;font-size:18px;cursor:pointer;padding:6px;color:var(--accent);transition:.3s;}
+.theme-toggle:active{transform:scale(.95);}
 .username-top{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--accent3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;opacity:0;pointer-events:none;transition:opacity .3s;}
 .menu-overlay.open{opacity:1;pointer-events:all;}
@@ -445,7 +447,7 @@ input[type="password"]{padding-right:46px;}
       <div class="brand"><div class="brand-icon">📈</div><div class="brand-name">ProfitPulse</div></div>
     </div>
     <div class="topbar-right">
-      <div id="topbar-avatar" class="avatar avatar-sm"></div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">🌙</button>
       <div class="username-top" id="dash-username">—</div>
     </div>
   </div>
@@ -559,9 +561,9 @@ input[type="password"]{padding-right:46px;}
     </div>
   </div>
 
-  <!-- TABLE (Plan) -->
+  <!-- RETURNS (Plan) -->
   <div class="dash-section" id="sec-plan">
-    <div class="inner-header"><span style="font-size:22px">📈</span><div><div class="inner-title">TABLE</div><div class="inner-sub">10% daily for 56 days (560% total)</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">🎯</span><div><div class="inner-title">RETURNS</div><div class="inner-sub">10% daily for 56 days (560% total)</div></div></div>
     <div class="section">
       <div class="plan-wrap">
         <div class="plan-header"><div class="plan-header-title">📈 ProfitPulse Growth Plan — 10% Daily × 56 Days = 560% Total Return</div></div>
@@ -591,9 +593,9 @@ input[type="password"]{padding-right:46px;}
     </div>
   </div>
 
-  <!-- MYSELF (Profile) -->
+  <!-- INFOR (Profile) -->
   <div class="dash-section" id="sec-profile">
-    <div class="inner-header"><span style="font-size:22px">👤</span><div><div class="inner-title">MYSELF</div><div class="inner-sub">Your account details</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">👤</span><div><div class="inner-title">INFOR</div><div class="inner-sub">Your account details</div></div></div>
     <div class="section">
       <div class="profile-simple-info">
         <div class="profile-simple-item">
@@ -688,8 +690,8 @@ input[type="password"]{padding-right:46px;}
   <nav class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('home')"><span class="nav-icon">🏠</span><span class="nav-label">DASHBOARD</span></div>
     <div class="nav-item" onclick="switchTab('team')"><span class="nav-icon">👥</span><span class="nav-label">REFER</span></div>
-    <div class="nav-item" onclick="switchTab('plan')"><span class="nav-icon">📊</span><span class="nav-label">TABLE</span></div>
-    <div class="nav-item" onclick="switchTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">MYSELF</span></div>
+    <div class="nav-item" onclick="switchTab('plan')"><span class="nav-icon">🎯</span><span class="nav-label">RETURNS</span></div>
+    <div class="nav-item" onclick="switchTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">INFOR</span></div>
   </nav>
 </div>
 
@@ -1151,7 +1153,49 @@ function loadDashboard(){
   updateWhatsAppButton();
 }
 
+function toggleTheme(){
+  const root = document.documentElement;
+  const isDark = localStorage.getItem('pp_theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  
+  localStorage.setItem('pp_theme', newTheme);
+  applyTheme(newTheme);
+}
+
+function applyTheme(theme){
+  const root = document.documentElement;
+  const toggle = document.getElementById('theme-toggle');
+  
+  if(theme === 'light'){
+    root.style.setProperty('--bg', '#f5f1ed');
+    root.style.setProperty('--surface', '#ffffff');
+    root.style.setProperty('--surface2', '#ede8e3');
+    root.style.setProperty('--surface3', '#e0dbd4');
+    root.style.setProperty('--border', '#d0c9c0');
+    root.style.setProperty('--text', '#1a1410');
+    root.style.setProperty('--muted', '#8b7d73');
+    root.style.setProperty('--accent3', '#8b5a3c');
+    if(toggle) toggle.textContent = '☀️';
+  } else {
+    root.style.setProperty('--bg', '#1a1410');
+    root.style.setProperty('--surface', '#2a211a');
+    root.style.setProperty('--surface2', '#3a2f26');
+    root.style.setProperty('--surface3', '#4a3f34');
+    root.style.setProperty('--border', '#5a4f44');
+    root.style.setProperty('--text', '#f5f1ed');
+    root.style.setProperty('--muted', '#a89968');
+    root.style.setProperty('--accent3', '#e8b55f');
+    if(toggle) toggle.textContent = '🌙';
+  }
+}
+
+function initTheme(){
+  const savedTheme = localStorage.getItem('pp_theme') || 'dark';
+  applyTheme(savedTheme);
+}
+
 function initApp(){
+  initTheme();
   initSettings();
   
   const savedUser = localStorage.getItem(STORAGE_CURRENT_USER);
