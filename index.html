@@ -254,6 +254,11 @@ input[type="password"]{padding-right:46px;}
 .footer-link:active{transform:scale(.95);}
 .footer-divider{color:var(--border);font-size:8px;}
 
+/* WhatsApp Floating Button */
+.whatsapp-float{position:fixed;bottom:75px;left:50%;transform:translateX(-50%);width:60px;height:60px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:250;box-shadow:0 4px 12px rgba(37,211,102,0.4);transition:all 0.3s ease;}
+.whatsapp-float:active{transform:translateX(-50%) scale(0.95);}
+.whatsapp-float svg{width:32px;height:32px;}
+
 /* Toast */
 .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--accent3);color:#fff;font-size:13px;font-weight:700;padding:10px 22px;border-radius:100px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -725,6 +730,13 @@ input[type="password"]{padding-right:46px;}
       </div>
     </div>
   </footer>
+
+  <!-- WhatsApp Floating Button -->
+  <div class="whatsapp-float" onclick="openWhatsApp()" title="Contact us on WhatsApp">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+      <path d="M3 21l1.65-5.96A9 9 0 1 1 19.95 7.35L21 3M17 11c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2z"/>
+    </svg>
+  </div>
 </div>
 
 <!-- MENU -->
@@ -1363,6 +1375,24 @@ Your trust matters to us. Invest with confidence! 💪`;
   showModal('🔒', 'Privacy Policy', privacyText);
 }
 
+function openWhatsApp(){
+  const waLink = settingsData.whatsappLink || '';
+  if(!waLink){
+    showToast('WhatsApp link not configured. Please try again later.');
+    return;
+  }
+  const message = encodeURIComponent("Hi ProfitPulse! 👋\n\nI need help with my account. Please assist me. Thank you! 😊");
+  let url = waLink;
+  if(waLink.includes('wa.me') || waLink.includes('api.whatsapp.com')){
+    url = waLink + (waLink.includes('?') ? '&' : '?') + 'text=' + message;
+  } else if(waLink.startsWith('+')){
+    url = 'https://wa.me/' + waLink.replace(/\D/g, '') + '?text=' + message;
+  } else if(/^\d+/.test(waLink)){
+    url = 'https://wa.me/' + waLink.replace(/\D/g, '') + '?text=' + message;
+  }
+  window.open(url, '_blank');
+}
+
 function initTheme(){
   const savedTheme = localStorage.getItem('pp_theme') || 'dark';
   applyTheme(savedTheme);
@@ -1581,7 +1611,7 @@ function doDeposit(){
     document.getElementById('dep-amount').value='';
     updateBalanceUI();
     renderHistory();
-    showToast('✓ Deposit of '+fmt(amount)+' confirmed! +'+fmt(profit)+' profit added. 📈');
+    showToast('✓ Deposit of '+fmt(amount)+' confirmed! +'+fmt(profit)+' instant profit added. 📈');
   }, 1500);
 }
 
@@ -1671,7 +1701,7 @@ function doWithdraw(){
   clearErrors('with-amount-err');
   if(settingsData.withdrawLocked){ showModal('🔒','Locked','Withdrawals are currently disabled.'); return; }
   if(!currentUser.activated){ showModal('🔒','Account Not Activated','Make a deposit first to activate your account.'); return; }
-  const minWith = settingsData.minWithdraw||5000;
+  const minWith = settingsData.minWithdraw||10000;
   const amount = parseInt(document.getElementById('with-amount').value)||0;
   if(amount<minWith){ setErr('with-amount-err',true,'Minimum withdrawal is '+fmt(minWith)); return; }
   
@@ -1710,30 +1740,26 @@ function doReinvest(){
   const balance = currentUser.balance || 0;
   if(balance < amount){setErr('reinvest-amount-err',true,'Insufficient balance.');return;}
   
-  const profit=Math.floor(amount*0.10);
-  const newInvested=(currentUser.invested||0)+amount;
   const depKey='dep_'+Date.now();
   const now=dateStr();
-  const tx1Key='tx_'+Date.now()+'a';
-  const tx2Key='tx_'+Date.now()+'b';
+  const txKey='tx_'+Date.now();
   const todayKey=getDateKey(new Date());
   
   const updates = { ...currentUser };
-  updates.balance = (currentUser.balance||0) - amount + profit;
-  updates.invested = newInvested;
+  updates.balance = (currentUser.balance||0) - amount;
+  updates.invested = (currentUser.invested||0) + amount;
   updates.activated = true;
   if(!updates.deposits) updates.deposits = {};
-  updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:todayKey, bonusPaid: true};
+  updates.deposits[depKey] = {amount, startDate:new Date().toISOString(), daysRun:0, lastPaidDate:todayKey, bonusPaid: false};
   if(!updates.transactions) updates.transactions = {};
-  updates.transactions[tx1Key] = {type:'Re-Invest', amount:-amount, note:'Moved from Available Balance to Invested', date:now};
-  updates.transactions[tx2Key] = {type:'Profit', amount:profit, note:'10% instant profit on re-invest (56 days)', date:now};
+  updates.transactions[txKey] = {type:'Re-Invest', amount:-amount, note:'Moved from Available Balance to Invested Stake', date:now};
   
   saveUser(currentUsername, updates);
   currentUser = updates;
   document.getElementById('reinvest-amount').value='';
   updateBalanceUI();
   renderHistory();
-  showToast('✓ Re-invested! +'+fmt(profit)+' profit added. 📈');
+  showToast('✓ Re-invested! '+fmt(amount)+' moved to Stake. 📈 Earning 10% daily for 56 days.');
 }
 
 function resetInactivityTimer(){
