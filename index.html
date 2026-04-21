@@ -15,22 +15,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0f172a;
-  --surface:#1a2847;
-  --surface2:#253557;
-  --surface3:#2f4570;
-  --border:#3d5a8c;
-  --accent:#00d9ff;
-  --accent2:#00a8cc;
-  --accent3:#ff6b6b;
-  --warn:#ff4757;
-  --gold:#26de81;
-  --text:#f1f5f9;
-  --muted:#94a3b8;
-  --table-header:#0d3b66;
-  --table-border:#1a5490;
-  --avatar-bg:#00a8cc;
-  --ref-bg:#26de81;
+  --bg:#1a1410;
+  --surface:#2a211a;
+  --surface2:#3a2f26;
+  --surface3:#4a3f34;
+  --border:#5a4f44;
+  --accent:#d4af37;
+  --accent2:#c9a227;
+  --accent3:#e8b55f;
+  --warn:#ff6b6b;
+  --gold:#d4af37;
+  --text:#f5f1ed;
+  --muted:#a89968;
+  --table-header:#2a211a;
+  --table-border:#3a2f26;
+  --avatar-bg:#d4af37;
+  --ref-bg:#d4af37;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:500px;margin:0 auto;position:relative;overflow-x:hidden;}
@@ -861,7 +861,7 @@ function switchTab(tab){
   Object.values(tabMap).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   const t=document.getElementById(tabMap[tab]); if(t)t.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const idx=navOrder.indexOf(tab); if(idx>=0)document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  const idx=navOrder.indexOf(tab); if(idx>=0){const navEl=document.querySelectorAll('.nav-item')[idx];if(navEl)navEl.classList.add('active');}
   closeMenu();
 }
 
