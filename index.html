@@ -224,6 +224,12 @@ input[type="password"]{padding-right:46px;}
 .profile-stat-value{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent);}
 .logout-dash-new{width:100%;background:var(--warn);border:none;border-radius:14px;color:#fff;padding:15px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
 .logout-dash-new:active{transform:scale(.98);}
+.profile-simple-info{display:flex;flex-direction:column;gap:16px;margin-bottom:24px;}
+.profile-simple-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:space-between;}
+.profile-simple-label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0.5px;}
+.profile-simple-value{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent);}
+.logout-btn-new{width:100%;background:#26a65b;border:none;border-radius:14px;color:#fff;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+.logout-btn-new:active{transform:scale(.98);}
 
 /* Bottom Nav */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--surface);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 0 10px;z-index:200;}
@@ -283,6 +289,36 @@ input[type="password"]{padding-right:46px;}
 .tx-tab.active{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
 
 /* Referral Page */
+.ref-new-container{display:flex;flex-direction:column;gap:16px;}
+.ref-stat-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px;display:flex;flex-direction:column;gap:8px;}
+.ref-bonus-box{border-left:4px solid var(--accent);}
+.ref-team-box{border-left:4px solid var(--gold);}
+.ref-stat-top{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+.ref-stat-amount{font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent);}
+.ref-link-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;}
+.ref-link-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.ref-link-box{display:flex;gap:8px;align-items:center;}
+.ref-link-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);outline:none;}
+.ref-copy-btn{background:var(--accent);border:none;border-radius:10px;padding:12px 16px;font-weight:700;color:#fff;cursor:pointer;font-size:12px;white-space:nowrap;}
+.ref-copy-btn:active{transform:scale(.95);}
+.ref-link-hint{font-size:10px;color:var(--muted);margin-top:8px;}
+.ref-commission-info{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;}
+.ref-commission-title{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;display:block;}
+.ref-commission-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:10px;margin-bottom:8px;}
+.ref-commission-item:last-child{margin-bottom:0;}
+.ref-level{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;}
+.ref-pct{font-weight:800;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gold);min-width:35px;}
+.ref-desc{font-size:12px;color:var(--muted);flex:1;}
+.ref-empty-state{text-align:center;padding:40px 20px;}
+.ref-empty-emoji{font-size:48px;margin-bottom:12px;}
+.ref-empty-msg{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.ref-empty-hint{font-size:12px;color:var(--muted);}
+.ref-members-list{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:16px;}
+.ref-member-item{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--surface2);border-radius:10px;}
+.ref-member-name{font-weight:700;color:var(--text);font-size:13px;}
+.ref-member-info{display:flex;gap:12px;align-items:center;font-size:11px;}
+.ref-member-level{background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;}
+.ref-member-status{color:var(--muted);}
 .ref-main-card{background:var(--ref-bg);border:1px solid var(--table-border);border-radius:20px;padding:20px;margin-bottom:14px;}
 .ref-total-card{background:#065f46;border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;}
 .ref-total-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#a7f3d0;margin-bottom:8px;}
@@ -471,35 +507,55 @@ input[type="password"]{padding-right:46px;}
 
   <!-- REFER (Team) -->
   <div class="dash-section" id="sec-team">
-    <div class="inner-header"><span style="font-size:22px">👥</span><div><div class="inner-title">REFER</div><div class="inner-sub">Your referral network</div></div></div>
+    <div class="inner-header"><span style="font-size:22px">👥</span><div><div class="inner-title">REFER</div><div class="inner-sub">Grow your network & earn</div></div></div>
     <div class="section">
-      <div class="ref-main-card">
-        <div class="ref-total-card">
-          <div class="ref-total-label">TOTAL REFERRAL BONUSES</div>
-          <div class="ref-total-value" id="total-ref-earned">UGX 0</div>
+      <div class="ref-new-container">
+        <div class="ref-stat-box ref-bonus-box">
+          <div class="ref-stat-top">💰 Bonuses Earned</div>
+          <div class="ref-stat-amount" id="total-ref-earned-new">UGX 0</div>
         </div>
         
-        <table class="ref-program-table">
-          <thead>
-            <tr><th>Level</th><th>Commission</th><th>Condition</th></tr>
-          </thead>
-          <tbody>
-            <tr><th>Level 1</th><td id="ref-pct-l1-display">10%</td><td>Direct referrals</td></tr>
-            <tr><th>Level 2</th><td id="ref-pct-l2-display">4%</td><td>Their referrals</td></tr>
-            <tr><th>Level 3</th><td id="ref-pct-l3-display">2%</td><td>3rd level network</td></tr>
-          </tbody>
-         </table>
+        <div class="ref-stat-box ref-team-box">
+          <div class="ref-stat-top">👥 Team Size</div>
+          <div class="ref-stat-amount" id="ref-team-count">0</div>
+        </div>
+
+        <div class="ref-link-section">
+          <div class="ref-link-label">📱 Your Referral Code</div>
+          <div class="ref-link-box">
+            <input type="text" class="ref-link-input" id="ref-url-new" readonly>
+            <button class="ref-copy-btn" onclick="copyRef()">Copy</button>
+          </div>
+          <div class="ref-link-hint">Share this link to invite friends</div>
+        </div>
+
+        <div class="ref-commission-info">
+          <div class="ref-commission-title">💳 Earn on 3 Levels</div>
+          <div class="ref-commission-item">
+            <span class="ref-level">L1</span>
+            <span class="ref-pct" id="ref-pct-l1-new">10%</span>
+            <span class="ref-desc">Direct referrals</span>
+          </div>
+          <div class="ref-commission-item">
+            <span class="ref-level">L2</span>
+            <span class="ref-pct" id="ref-pct-l2-new">4%</span>
+            <span class="ref-desc">Their referrals</span>
+          </div>
+          <div class="ref-commission-item">
+            <span class="ref-level">L3</span>
+            <span class="ref-pct" id="ref-pct-l3-new">2%</span>
+            <span class="ref-desc">3rd level</span>
+          </div>
+        </div>
+
+        <div id="ref-members-new">
+          <div class="ref-empty-state">
+            <div class="ref-empty-emoji">🤝</div>
+            <div class="ref-empty-msg">No team members yet</div>
+            <div class="ref-empty-hint">Invite friends to start earning</div>
+          </div>
+        </div>
       </div>
-      
-      <div class="section-title">Your Referral Link</div>
-      <div class="ref-box" style="margin-bottom:14px">
-        <span style="font-size:16px;">🔗</span>
-        <div class="ref-url" id="ref-url2">—</div>
-        <button class="copy-btn" onclick="copyRef()">Copy</button>
-      </div>
-      
-      <div class="section-title">Team Members</div>
-      <div id="ref-list-wrap"><div class="empty-state" style="padding:30px 20px"><div class="empty-icon">🤝</div><div class="empty-title">No Referrals Yet</div><div class="empty-text">Share your referral link to grow your team.</div></div></div>
     </div>
   </div>
 
@@ -539,57 +595,26 @@ input[type="password"]{padding-right:46px;}
   <div class="dash-section" id="sec-profile">
     <div class="inner-header"><span style="font-size:22px">👤</span><div><div class="inner-title">MYSELF</div><div class="inner-sub">Your account details</div></div></div>
     <div class="section">
-      <div class="profile-header-section">
-        <div class="profile-avatar-lg" id="profile-avatar-lg-main">—</div>
-        <div class="profile-name-header" id="profile-name-header">—</div>
-        <div class="profile-country-header" id="profile-country-header-main">🌍 —</div>
-        <div class="profile-status-badge" id="profile-status-badge">🟢 Active Investor</div>
-      </div>
-
-      <div class="profile-info-section">
-        <div class="profile-section-title">📝 Personal Information</div>
-        <div class="profile-info-item">
-          <span class="profile-info-label">Username</span>
-          <span class="profile-info-value" id="profile-user-new">—</span>
+      <div class="profile-simple-info">
+        <div class="profile-simple-item">
+          <span class="profile-simple-label">Username</span>
+          <span class="profile-simple-value" id="profile-user-simple">—</span>
         </div>
-        <div class="profile-info-item">
-          <span class="profile-info-label">Country</span>
-          <span class="profile-info-value" id="profile-ctry-new">—</span>
+        <div class="profile-simple-item">
+          <span class="profile-simple-label">Phone Number</span>
+          <span class="profile-simple-value" id="profile-phone-simple">—</span>
         </div>
-      </div>
-
-      <div class="profile-info-section">
-        <div class="profile-section-title">🔐 Account Information</div>
-        <div class="profile-info-item">
-          <span class="profile-info-label">Phone Number</span>
-          <span class="profile-info-value" id="profile-phone-new">—</span>
+        <div class="profile-simple-item">
+          <span class="profile-simple-label">Registered Date</span>
+          <span class="profile-simple-value" id="profile-date-simple">—</span>
         </div>
-        <div class="profile-info-item">
-          <span class="profile-info-label">Member Since</span>
-          <span class="profile-info-value" id="profile-since-new">2025</span>
+        <div class="profile-simple-item">
+          <span class="profile-simple-label">Status</span>
+          <span class="profile-simple-value" id="profile-status-simple">—</span>
         </div>
       </div>
 
-      <div class="profile-stats-grid">
-        <div class="profile-stat-card">
-          <div class="profile-stat-label">Total Invested</div>
-          <div class="profile-stat-value" id="profile-stat-invested">0</div>
-        </div>
-        <div class="profile-stat-card">
-          <div class="profile-stat-label">Total Earned</div>
-          <div class="profile-stat-value" id="profile-stat-earned">0</div>
-        </div>
-        <div class="profile-stat-card">
-          <div class="profile-stat-label">Days Active</div>
-          <div class="profile-stat-value" id="profile-stat-days">0</div>
-        </div>
-        <div class="profile-stat-card">
-          <div class="profile-stat-label">Active Deposits</div>
-          <div class="profile-stat-value" id="profile-stat-deposits">0</div>
-        </div>
-      </div>
-
-      <button class="logout-dash-new" onclick="doLogout()">🚪 Sign Out</button>
+      <button class="logout-btn-new" onclick="doLogout()">🚪 Sign Out</button>
     </div>
   </div>
 
@@ -949,9 +974,9 @@ function regPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9
 function depPhoneInput(inp){ inp.value=inp.value.replace(/[^0-9]/g,'').slice(0,9); }
 
 function copyRef(){
-  const url=document.getElementById('ref-url');
-  if(url&&url.textContent&&url.textContent!=='Loading referral link...'){
-    navigator.clipboard.writeText(url.textContent).then(()=>showToast('✓ Referral link copied!')).catch(()=>showToast('✓ Link ready to share!'));
+  const url=document.getElementById('ref-url-new');
+  if(url&&url.value){
+    navigator.clipboard.writeText(url.value).then(()=>showToast('✓ Referral link copied!')).catch(()=>showToast('✓ Link ready to share!'));
   }
 }
 
@@ -1003,9 +1028,9 @@ function renderHistory(){
 
 function renderTeam(){
   if(!currentUser) return;
-  document.getElementById('ref-pct-l1-display').textContent=settingsData.refL1+'%';
-  document.getElementById('ref-pct-l2-display').textContent=settingsData.refL2+'%';
-  document.getElementById('ref-pct-l3-display').textContent=settingsData.refL3+'%';
+  document.getElementById('ref-pct-l1-new').textContent=settingsData.refL1+'%';
+  document.getElementById('ref-pct-l2-new').textContent=settingsData.refL2+'%';
+  document.getElementById('ref-pct-l3-new').textContent=settingsData.refL3+'%';
   
   let totalRefBonus = 0;
   if(currentUser.transactions){
@@ -1013,16 +1038,18 @@ function renderTeam(){
       if(tx.type === 'Referral') totalRefBonus += tx.amount;
     });
   }
-  document.getElementById('total-ref-earned').textContent=fmt(totalRefBonus);
+  document.getElementById('total-ref-earned-new').textContent=fmt(totalRefBonus);
   
   const refs=currentUser.referrals?Object.values(currentUser.referrals):[];
-  const wrap=document.getElementById('ref-list-wrap');
-  if(!refs.length){ wrap.innerHTML='<div class="empty-state" style="padding:30px 20px"><div class="empty-icon">🤝</div><div class="empty-title">No Referrals Yet</div><div class="empty-text">Share your referral link to grow your team.</div></div>'; return; }
-  wrap.innerHTML='<table class="ref-list-table"><thead><tr><th>#</th><th>Username</th><th>Status</th><th>Level</th></tr></thead><tbody>'+refs.map((r,i)=>{
+  document.getElementById('ref-team-count').textContent=refs.length;
+  
+  const membersWrap=document.getElementById('ref-members-new');
+  if(!refs.length){ membersWrap.innerHTML='<div class="ref-empty-state"><div class="ref-empty-msg">No team members yet</div><div class="ref-empty-hint">Invite friends to start earning</div></div>'; return; }
+  membersWrap.innerHTML='<div class="ref-members-list">'+refs.map((r,i)=>{
     const isActive=(r.invested||0)>0;
-    const statusBadge=isActive?'<span style="background:rgba(74,222,128,.2);color:#4ade80;padding:2px 8px;border-radius:20px;font-size:10px;">ACTIVE</span>':'<span style="background:rgba(248,113,113,.2);color:#f87171;padding:2px 8px;border-radius:20px;font-size:10px;">INACTIVE</span>';
-    return `<tr><td>${i+1}</td><td>${r.username}</td><td>${statusBadge}</td><td>L${r.level}</td></tr>`;
-  }).join('')+'</tbody> </table>';
+    const statusIcon=isActive?'🟢':'⏳';
+    return `<div class="ref-member-item"><div class="ref-member-name">${r.username}</div><div class="ref-member-info"><span class="ref-member-level">L${r.level}</span><span class="ref-member-status">${statusIcon} ${isActive?'Active':'Inactive'}</span></div></div>`;
+  }).join('')+'</div>';
 }
 
 function getDateKey(d){ return d.toISOString().slice(0,10); }
@@ -1086,8 +1113,8 @@ function loadDashboard(){
   const refLink=siteBase+'?ref='+encodeURIComponent(u.username);
   const refUrl = document.getElementById('ref-url');
   if(refUrl) refUrl.textContent=refLink;
-  const refUrl2 = document.getElementById('ref-url2');
-  if(refUrl2) refUrl2.textContent=refLink;
+  const refUrlNew = document.getElementById('ref-url-new');
+  if(refUrlNew) refUrlNew.value=refLink;
   
   const avatarInitials=u.username.substring(0,2).toUpperCase();
   const profileAvatar = document.getElementById('profile-avatar-lg-main');
@@ -1096,31 +1123,22 @@ function loadDashboard(){
   if(profileName) profileName.textContent=u.username;
   const profileCountry = document.getElementById('profile-country-header-main');
   if(profileCountry) profileCountry.innerHTML=`${ctry==='-'?'🌍':ctry} ${ctry==='-'?'Unknown':ctry}`;
-  const profileUser = document.getElementById('profile-user-new');
-  if(profileUser) profileUser.textContent=u.username;
-  const profilePhone = document.getElementById('profile-phone-new');
-  if(profilePhone) profilePhone.textContent=u.phone;
-  const profileCtry = document.getElementById('profile-ctry-new');
-  if(profileCtry) profileCtry.textContent=ctry;
-  const profileSince = document.getElementById('profile-since-new');
-  if(profileSince) profileSince.textContent=u.joinedDate||'2025';
-  const profileStatus = document.getElementById('profile-status-badge');
-  if(profileStatus) profileStatus.textContent=u.activated?'🟢 Active Investor':'⏳ Pending Deposit';
+  
+  // New simplified profile elements
+  const profileUserSimple = document.getElementById('profile-user-simple');
+  if(profileUserSimple) profileUserSimple.textContent=u.username;
+  const profilePhoneSimple = document.getElementById('profile-phone-simple');
+  if(profilePhoneSimple) profilePhoneSimple.textContent=u.phone||'—';
+  const profileDateSimple = document.getElementById('profile-date-simple');
+  if(profileDateSimple) profileDateSimple.textContent=u.joinedDate||'2025';
+  const profileStatusSimple = document.getElementById('profile-status-simple');
+  if(profileStatusSimple) profileStatusSimple.textContent=u.activated?'🟢 Active':'⏳ Inactive';
   
   const deposits=u.deposits?Object.values(u.deposits):[];
   const totalInvested=deposits.reduce((sum,d)=>sum+(d.amount||0),0);
   const totalEarned=u.profitEarned||0;
   const daysActive=u.daysActive||0;
   const activeDeposits=deposits.filter(d=>d.status!=='completed').length;
-  
-  const profileStatInvested = document.getElementById('profile-stat-invested');
-  if(profileStatInvested) profileStatInvested.textContent=fmt(totalInvested);
-  const profileStatEarned = document.getElementById('profile-stat-earned');
-  if(profileStatEarned) profileStatEarned.textContent=fmt(totalEarned);
-  const profileStatDays = document.getElementById('profile-stat-days');
-  if(profileStatDays) profileStatDays.textContent=daysActive;
-  const profileStatDeposits = document.getElementById('profile-stat-deposits');
-  if(profileStatDeposits) profileStatDeposits.textContent=activeDeposits;
   
   const withPhoneDisplay = document.getElementById('with-phone-display');
   if(withPhoneDisplay) withPhoneDisplay.textContent=u.phone;
