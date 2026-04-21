@@ -487,6 +487,17 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
 <div class="notif-bell" onclick="openNotifDrawer()">🔔<div class="notif-badge" id="notif-badge">0</div></div>
 <div class="notif-drawer" id="notif-drawer"><div class="notif-drawer-header"><div class="notif-drawer-title">🔔 Notifications</div><button class="notif-close" onclick="closeNotifDrawer()">✕ Close</button></div><div class="notif-list" id="notif-list"><div class="notif-empty">No notifications yet</div></div><button class="notif-clear-btn" onclick="clearAllNotifications()">🗑️ Clear All</button></div>
 
+<footer class="admin-footer">
+  <div class="admin-footer-content">
+    <div class="admin-footer-copyright">Copyright © 2026-2031 ProfitPulse</div>
+    <div class="admin-footer-links">
+      <button class="admin-footer-link" onclick="showTerms()">Terms</button>
+      <span class="admin-footer-divider">•</span>
+      <button class="admin-footer-link" onclick="showPrivacy()">Privacy</button>
+    </div>
+  </div>
+</footer>
+
 <script>
 // ============================================================
 // PROFIT PULSE COMMAND CENTER - LOCAL STORAGE VERSION
@@ -1339,6 +1350,78 @@ function setErr(id,show,msg){
 }
 
 function clearErrors(...ids){ ids.forEach(id=>setErr(id,false)); }
+
+function showTerms(){
+  Swal.fire({title:'Terms of Service',html:`<div style="text-align:left;font-size:12px;line-height:1.6;max-height:400px;overflow-y:auto;"><strong>ProfitPulse Admin Terms</strong><br><br>
+  1. ADMIN RESPONSIBILITIES<br>
+  • Manage user accounts with integrity<br>
+  • Process deposits and withdrawals accurately<br>
+  • Monitor platform security<br>
+  • Respond to user support tickets<br>
+  • Maintain confidentiality<br><br>
+  
+  2. AUTHORIZED ACCESS ONLY<br>
+  • Admin panel is for authorized personnel only<br>
+  • Unauthorized access is strictly prohibited<br>
+  • All actions are logged and monitored<br>
+  • Misuse will result in account termination<br><br>
+  
+  3. DATA HANDLING<br>
+  • Never share user data externally<br>
+  • Use data only for platform operations<br>
+  • Delete sensitive data as instructed<br>
+  • Report data breaches immediately<br><br>
+  
+  4. COMPLIANCE<br>
+  • Follow all regulatory guidelines<br>
+  • Maintain accurate records<br>
+  • Audit transactions regularly<br>
+  • Report discrepancies promptly<br><br>
+  
+  5. CONFIDENTIALITY<br>
+  • Sign NDA agreements<br>
+  • Protect user privacy<br>
+  • No unauthorized disclosure<br>
+  • Breach = Immediate termination<br><br>
+  
+  For questions: admin@profitpulse.ug</div>`,icon:'info',confirmButtonText:'OK',width:'500px'});
+}
+
+function showPrivacy(){
+  Swal.fire({title:'Privacy & Security Policy',html:`<div style="text-align:left;font-size:12px;line-height:1.6;max-height:400px;overflow-y:auto;"><strong>ProfitPulse Admin Privacy Policy</strong><br><br>
+  PROTECTING USER DATA<br>
+  ✓ All user information is encrypted<br>
+  ✓ Data is stored securely in local storage<br>
+  ✓ No unauthorized access allowed<br>
+  ✓ Regular security audits conducted<br><br>
+  
+  ADMIN ACTIONS MONITORING<br>
+  • All admin actions are logged<br>
+  • Login attempts are tracked<br>
+  • Data modifications are recorded<br>
+  • Suspicious activity alerts enabled<br><br>
+  
+  DATA CONFIDENTIALITY<br>
+  ✓ Never share user passwords<br>
+  ✓ Never export user data<br>
+  ✓ Never disclose private information<br>
+  ✓ Always use secure connections<br><br>
+  
+  SECURITY BEST PRACTICES<br>
+  • Change password regularly<br>
+  • Use strong, unique passwords<br>
+  • Log out after each session<br>
+  • Report suspicious activities<br>
+  • Enable two-factor authentication<br><br>
+  
+  COMPLIANCE & AUDITING<br>
+  ✓ Comply with data protection laws<br>
+  ✓ Maintain audit trails<br>
+  ✓ Respond to data requests<br>
+  ✓ Report breaches within 24hrs<br><br>
+  
+  Contact: security@profitpulse.ug</div>`,icon:'info',confirmButtonText:'OK',width:'500px'});
+}
 
 document.getElementById('loading-screen').style.display='none';
 checkAdminSession();

@@ -240,6 +240,15 @@ input[type="password"]{padding-right:46px;}
 .nav-label{font-size:7px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);}
 .nav-item.active .nav-label{color:var(--accent);}
 
+/* Footer */
+.app-footer{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--surface2);border-top:1px solid var(--border);padding:12px 16px;z-index:199;}
+.footer-content{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+.footer-copyright{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.5px;}
+.footer-links{display:flex;align-items:center;gap:8px;justify-content:center;}
+.footer-link{background:none;border:none;color:var(--accent);font-size:10px;font-weight:700;cursor:pointer;padding:0;text-decoration:none;}
+.footer-link:active{transform:scale(.95);}
+.footer-divider{color:var(--border);font-size:8px;}
+
 /* Toast */
 .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--accent3);color:#fff;font-size:13px;font-weight:700;padding:10px 22px;border-radius:100px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -264,11 +273,11 @@ input[type="password"]{padding-right:46px;}
 /* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;display:none;align-items:center;justify-content:center;padding:24px;}
 .modal-overlay.open{display:flex;}
-.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:30px 24px;text-align:center;max-width:340px;width:100%;}
-.modal-icon{font-size:48px;margin-bottom:14px;}
-.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;margin-bottom:10px;color:var(--accent);}
-.modal-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
-.modal-close{background:var(--accent);border:none;border-radius:12px;padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:30px 24px;text-align:center;max-width:340px;width:100%;max-height:80vh;display:flex;flex-direction:column;}
+.modal-icon{font-size:48px;margin-bottom:14px;flex-shrink:0;}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;margin-bottom:10px;color:var(--accent);flex-shrink:0;}
+.modal-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:22px;overflow-y:auto;max-height:50vh;text-align:left;flex:1;}
+.modal-close{background:var(--accent);border:none;border-radius:12px;padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;}
 .modal-close:active{transform:scale(.97);}
 
 /* Transaction List */
@@ -693,6 +702,17 @@ input[type="password"]{padding-right:46px;}
     <div class="nav-item" onclick="switchTab('plan')"><span class="nav-icon">🎯</span><span class="nav-label">RETURNS</span></div>
     <div class="nav-item" onclick="switchTab('profile')"><span class="nav-icon">👤</span><span class="nav-label">INFOR</span></div>
   </nav>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-copyright">Copyright © 2026-2031 ProfitPulse</div>
+      <div class="footer-links">
+        <button class="footer-link" onclick="showTerms()">Terms</button>
+        <span class="footer-divider">•</span>
+        <button class="footer-link" onclick="showPrivacy()">Privacy</button>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- MENU -->
@@ -1187,6 +1207,148 @@ function applyTheme(theme){
     root.style.setProperty('--accent3', '#e8b55f');
     if(toggle) toggle.textContent = '🌙';
   }
+}
+
+function showTerms(){
+  const termsText = `📋 ProfitPulse Terms of Service
+
+Welcome to ProfitPulse – Your Gateway to Smart Investing
+
+1. INVESTMENT PROGRAM
+ProfitPulse offers a structured investment program with 10% daily returns over 56 days, providing a 560% total return on your investment. Our platform is designed for users in Uganda and Kenya.
+
+2. ELIGIBILITY
+• Must be 18 years or older
+• Valid mobile money account (MTN or Airtel)
+• Genuine personal information required
+• One active investment per user at a time
+
+3. RETURNS & EARNINGS
+• Daily Profit: 10% of your deposit amount
+• Investment Period: 56 days
+• Total Potential Return: 560% of initial deposit
+• Referral Bonuses: Earn 10% (Level 1), 4% (Level 2), 2% (Level 3)
+• Minimum Deposit: UGX 10,000
+
+4. WITHDRAWAL POLICY
+• Minimum Withdrawal: UGX 10,000
+• Processing Time: 24-48 hours
+• Withdrawal Charge: 10% of withdrawal amount
+• Available Balance: Earned profits + bonuses
+• Early Withdrawal: Allowed anytime, pending charges apply
+
+5. USER RESPONSIBILITIES
+• Keep your login credentials secure
+• Report suspicious activity immediately
+• Provide accurate personal information
+• Comply with all platform rules
+• Do not share your account with others
+
+6. PLATFORM RULES
+• One active deposit per user
+• Referral link sharing is encouraged
+• No withdrawal of principal during earning period
+• Automatic daily profit calculations
+• 30-day inactivity auto-logout for security
+
+7. REFUNDS & DISPUTES
+• Investment disputes must be reported within 7 days
+• Withdrawal delays should be reported to support
+• All decisions are final after 14 days
+• Contact: support@profitpulse.ug
+
+8. DISCLAIMER
+Investment returns are calculated based on the stated 10% daily rate. Past performance is not a guarantee of future results. Users invest at their own risk. ProfitPulse is not liable for external factors affecting mobile money networks.
+
+9. TERMINATION
+We reserve the right to suspend or terminate accounts that violate these terms, including suspicious activity or fraud attempts.
+
+10. CHANGES TO TERMS
+ProfitPulse may update these terms anytime. Continued use means acceptance of new terms.
+
+Thank you for choosing ProfitPulse. Start investing today! 🚀`;
+  showModal('📋', 'Terms of Service', termsText);
+}
+
+function showPrivacy(){
+  const privacyText = `🔒 ProfitPulse Privacy Policy
+
+Your Privacy is Our Priority ✓
+
+At ProfitPulse, we believe in transparency and protecting your personal information.
+
+1. WHAT INFORMATION WE COLLECT
+• Full Name & Username
+• Phone Number (for withdrawals & verification)
+• Country (Uganda or Kenya)
+• Investment History
+• Transaction Records
+• Device Information (for security)
+
+2. WHY WE COLLECT THIS DATA
+✓ Process your investments safely
+✓ Verify your identity (KYC compliance)
+✓ Enable mobile money withdrawals
+✓ Calculate and transfer your daily profits
+✓ Prevent fraud and unauthorized access
+✓ Improve our services
+
+3. HOW WE PROTECT YOUR DATA
+🔐 Bank-level encryption for all data
+🔐 Secure local storage (no cloud exposure)
+🔐 Password-protected accounts
+🔐 No third-party data sharing
+🔐 Regular security audits
+🔐 SSL encryption for all transactions
+
+4. DATA SHARING
+We NEVER share your data with:
+✗ Advertisers or marketers
+✗ Third-party companies
+✗ Social media platforms
+✗ Any unauthorized parties
+
+Your data is only used to serve YOU better.
+
+5. YOUR RIGHTS
+✓ Access your data anytime
+✓ Request data deletion
+✓ Update your information
+✓ Export your transaction history
+✓ Change privacy settings
+
+6. COOKIES & TRACKING
+We use minimal cookies for:
+• Keeping you logged in
+• Remembering preferences
+• Theme selection (dark/light)
+• Preventing fraud
+
+No tracking or advertising cookies.
+
+7. ACCOUNT SECURITY
+• Two-factor authentication available
+• 30-minute inactivity auto-logout
+• Suspicious login alerts
+• IP address monitoring
+• Session management
+
+8. MOBILE MONEY DATA
+Mobile money integrations are:
+✓ Encrypted end-to-end
+✓ PCI-DSS compliant
+✓ Partner-verified
+✓ Never stored unnecessarily
+
+9. CHILDREN'S PRIVACY
+ProfitPulse is only for users 18+. We don't knowingly collect data from minors.
+
+10. CONTACT US
+Email: privacy@profitpulse.ug
+Response Time: 24-48 hours
+
+Your trust matters to us. Invest with confidence! 💪`;
+  showModal('🔒', 'Privacy Policy', privacyText);
 }
 
 function initTheme(){
