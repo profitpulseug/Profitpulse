@@ -784,49 +784,76 @@ let profitInterval = null;
 let userListener = null;
 
 // ============================================================
-// FIXED: Daily profit calculation (once per calendar day) - SILENT, no toast
-// Uses LOCAL timezone dates for accurate day counting
+// FIXED: Daily profit calculation (ONCE per calendar day) - ATOMIC UPDATE
+// Reads fresh data from Firebase, calculates profit, updates atomically
 // ============================================================
 async function calculateAndPayDailyProfits() {
-  if (!currentUser || !currentUsername) return;
-  const stake = currentUser.stake || 0;
-  if (stake <= 0) return;
+  if (!currentUsername) return;
   
-  const todayKey = getDateKey(new Date());
-  const lastProfitDate = currentUser.lastProfitDate || null;
-  
-  // If no lastProfitDate, set it to today (first time)
-  if (!lastProfitDate) {
-    await db.ref('users/' + safeKey(currentUsername)).update({ lastProfitDate: todayKey });
-    return;
+  try {
+    // STEP 1: Read FRESH data from Firebase (not from currentUser cache)
+    const userRef = db.ref('users/' + safeKey(currentUsername));
+    const freshSnap = await userRef.get();
+    if (!freshSnap.exists()) return;
+    
+    const userData = freshSnap.val();
+    const stake = userData.stake || 0;
+    
+    // No stake = no profit
+    if (stake <= 0) return;
+    
+    // STEP 2: Get today's date key
+    const todayKey = getDateKey(new Date());
+    const lastProfitDate = userData.lastProfitDate || null;
+    
+    // STEP 3: Check if already paid today
+    // This is the KEY to paying only ONCE per day
+    if (lastProfitDate === todayKey) {
+      // Already paid today - exit silently
+      return;
+    }
+    
+    // STEP 4: Calculate days difference
+    let daysDiff = 1; // At least 1 day has passed
+    if (lastProfitDate) {
+      daysDiff = daysBetweenDateKeys(lastProfitDate, todayKey);
+      // If no days difference, don't pay
+      if (daysDiff <= 0) return;
+    }
+    
+    // STEP 5: Calculate profit
+    const dailyProfit = Math.floor(stake * 0.10);
+    const totalProfit = dailyProfit * daysDiff;
+    
+    // STEP 6: Update balance
+    const currentBalance = userData.balance || 0;
+    const newBalance = currentBalance + totalProfit;
+    
+    // STEP 7: Update daysRun in activeInvestment
+    let newDaysRun = (userData.activeInvestment?.daysRun || 0) + daysDiff;
+    if (newDaysRun > 56) newDaysRun = 56;
+    
+    // STEP 8: Prepare activeInvestment object (handle if null/missing)
+    let updatedActiveInvestment = userData.activeInvestment || { daysRun: 0 };
+    updatedActiveInvestment.daysRun = newDaysRun;
+    
+    // STEP 9: ATOMIC UPDATE - write everything together
+    const updates = {
+      balance: newBalance,
+      lastProfitDate: todayKey,
+      activeInvestment: updatedActiveInvestment
+    };
+    
+    await userRef.update(updates);
+    
+    // STEP 10: Update currentUser so UI reflects changes immediately
+    currentUser = await userRef.get().then(snap => snap.val());
+    updateBalanceUI();
+    
+    // Silent success - no toast notification
+  } catch (error) {
+    console.error('Profit calculation error:', error);
   }
-  
-  // Already paid today - check if dates are the same
-  if (lastProfitDate === todayKey) return;
-  
-  // Calculate days between last profit date and today using helper
-  const daysDiff = daysBetweenDateKeys(lastProfitDate, todayKey);
-  
-  // Only pay if at least 1 day has passed
-  if (daysDiff <= 0) return;
-  
-  const dailyProfit = Math.floor(stake * 0.10);
-  const totalProfit = dailyProfit * daysDiff;
-  const newBalance = (currentUser.balance || 0) + totalProfit;
-  let newDaysRun = (currentUser.activeInvestment?.daysRun || 0) + daysDiff;
-  
-  // Cap at 56 days
-  if (newDaysRun > 56) newDaysRun = 56;
-  
-  // Update: add profit, update lastProfitDate, update daysRun
-  const updates = {
-    balance: newBalance,
-    lastProfitDate: todayKey,
-    [`activeInvestment.daysRun`]: newDaysRun
-  };
-  
-  await db.ref('users/' + safeKey(currentUsername)).update(updates);
-  // NO TOAST - silent profit
 }
 
 // ============================================================
@@ -843,6 +870,18 @@ async function initApp() {
       if (userSnap.exists() && !userSnap.val().locked) {
         currentUser = userSnap.val();
         currentUsername = savedUser;
+        
+        // PROFIT CALCULATION FIRST - before UI updates
+        // This ensures balance is updated with today's profit before UI renders
+        await calculateAndPayDailyProfits().catch(err => console.warn('Profit calc error:', err));
+        
+        // Re-fetch user data after profit calculation to get updated balance
+        const updatedSnap = await db.ref('users/' + safeKey(savedUser)).get();
+        if (updatedSnap.exists()) {
+          currentUser = updatedSnap.val();
+        }
+        
+        // Now show UI with updated balance
         startUserListener(savedUser);
         updateBalanceUI();
         renderHistory();
@@ -854,9 +893,6 @@ async function initApp() {
         switchTab('home');
         startDailyProfitLoop();
         startInactivityWatcher();
-        
-        // Run profit calculation in background WITHOUT await - SILENT
-        calculateAndPayDailyProfits().catch(err => console.warn('Profit calc error:', err));
       } else {
         sessionStorage.removeItem('pp_current_user');
         showAuth('login-page');
@@ -1521,6 +1557,18 @@ async function doLogin() {
     currentUser = userData;
     currentUsername = username;
     sessionStorage.setItem('pp_current_user', username);
+    
+    // PROFIT CALCULATION FIRST - before UI updates
+    // This ensures balance is updated with today's profit before UI renders
+    await calculateAndPayDailyProfits().catch(err => console.warn('Login profit error:', err));
+    
+    // Re-fetch user data after profit calculation to get updated balance
+    const updatedSnap = await db.ref('users/' + safeKey(username)).get();
+    if (updatedSnap.exists()) {
+      currentUser = updatedSnap.val();
+    }
+    
+    // Now show UI with updated balance
     startUserListener(username);
     updateBalanceUI();
     renderHistory();
@@ -1532,7 +1580,6 @@ async function doLogin() {
     switchTab('home');
     startDailyProfitLoop();
     startInactivityWatcher();
-    calculateAndPayDailyProfits().catch(err => console.warn('Login profit error:', err));
     // Silent login - no toast
   } catch (error) {
     console.error('Login error:', error);
