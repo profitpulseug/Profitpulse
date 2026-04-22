@@ -1599,16 +1599,17 @@ async function doWithdraw() {
   };
   
   try {
-    // First, create the admin transaction with pending status
+    // Create admin transaction
     await db.ref('adminTransactions/' + adminTxKey).set(adminTxRecord);
     
-    // Deduct from balance and record transaction
+    // Deduct from balance immediately (in both modes)
     await db.ref('users/' + safeKey(currentUsername)).update({ 
       balance: newBalance, 
       withdrawn: newWithdrawn, 
       [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Pending', date: dateStr(), status: 'pending' } 
     });
     
+    // Create withdrawal request record
     await db.ref('pendingWithdrawals/' + reqKey).set({ 
       username: currentUsername, 
       userId: safeKey(currentUsername), 
@@ -1619,47 +1620,20 @@ async function doWithdraw() {
       txKey, 
       adminTxKey,
       date: dateStr(), 
-      status: 'pending' 
+      status: 'pending',
+      processed: false // Track if Marz was already attempted
     });
     
+    // Check if manual approval is enabled
     if (settingsData.withdrawApproval === true) {
-      // Manual approval mode - withdrawal waits for admin
+      // MANUAL APPROVAL MODE - Wait for admin to approve/reject
+      // Admin will either approve (then doWithdrawalApprove is called) or reject (then rejectWithdrawal is called)
       await sendAdminNotification('withdrawal_pending', currentUsername, amount, 'Withdrawal request pending approval');
     } else {
-      // Auto-process mode - try to send via Marz
-      try {
-        const sendResult = await marzSend(userPhone, sendAmount, reference, 'ProfitPulse Withdrawal');
-        if (sendResult && sendResult.status === 'success') {
-          // Success - update transaction and admin record
-          await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).update({ 
-            status: 'completed', 
-            note: `Withdrawal sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})` 
-          });
-          await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved' });
-          await db.ref('adminTransactions/' + adminTxKey).update({ status: 'successful' });
-        } else {
-          // Marz send failed - REFUND user instantly
-          const refundedBalance = newBalance + amount;
-          await db.ref('users/' + safeKey(currentUsername)).update({ 
-            balance: refundedBalance,
-            [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Failed - Refunded', date: dateStr(), status: 'failed' }
-          });
-          await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'failed' });
-          await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
-          await sendAdminNotification('withdrawal_auto_failed', currentUsername, amount, 'Marz send failed: ' + (sendResult?.message || 'Unknown error'));
-        }
-      } catch (sendError) {
-        // Exception during send - REFUND user instantly
-        const refundedBalance = newBalance + amount;
-        await db.ref('users/' + safeKey(currentUsername)).update({ 
-          balance: refundedBalance,
-          [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Failed - Refunded', date: dateStr(), status: 'failed' }
-        });
-        await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'failed' });
-        await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
-        await sendAdminNotification('withdrawal_auto_failed', currentUsername, amount, 'Withdrawal error: ' + sendError.message);
-      }
+      // AUTOMATIC MODE - Process withdrawal immediately
+      await processWithdrawalToMarz(reqKey, userPhone, sendAmount, reference, txKey, adminTxKey, amount, fee);
     }
+    
     document.getElementById('with-amount').value = '';
     document.getElementById('withdraw-preview').style.display = 'none';
   } catch (error) {
@@ -1676,6 +1650,51 @@ async function doWithdraw() {
   }
   btn.disabled = false; btn.textContent = '💸 WITHDRAW';
   switchTab('home');
+}
+
+// Helper function to process withdrawal to Marz
+async function processWithdrawalToMarz(reqKey, userPhone, sendAmount, reference, txKey, adminTxKey, amount, fee) {
+  const username = currentUsername;
+  const userId = safeKey(username);
+  
+  try {
+    const sendResult = await marzSend(userPhone, sendAmount, reference, 'ProfitPulse Withdrawal');
+    if (sendResult && sendResult.status === 'success') {
+      // Success - update transaction and admin record
+      await db.ref('users/' + userId + '/transactions/' + txKey).update({ 
+        status: 'completed', 
+        note: `Withdrawal sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})` 
+      });
+      await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved', processed: true });
+      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'successful' });
+    } else {
+      // Marz send failed - REFUND user instantly
+      const userSnap = await db.ref('users/' + userId).get();
+      const user = userSnap.val();
+      const refundedBalance = (user.balance || 0) + amount;
+      
+      await db.ref('users/' + userId).update({ 
+        balance: refundedBalance,
+        [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Failed - Refunded', date: dateStr(), status: 'failed' }
+      });
+      await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'failed', processed: true });
+      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
+      await sendAdminNotification('withdrawal_auto_failed', username, amount, 'Marz send failed: ' + (sendResult?.message || 'Unknown error'));
+    }
+  } catch (sendError) {
+    // Exception during send - REFUND user instantly
+    const userSnap = await db.ref('users/' + userId).get();
+    const user = userSnap.val();
+    const refundedBalance = (user.balance || 0) + amount;
+    
+    await db.ref('users/' + userId).update({ 
+      balance: refundedBalance,
+      [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Failed - Refunded', date: dateStr(), status: 'failed' }
+    });
+    await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'failed', processed: true });
+    await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
+    await sendAdminNotification('withdrawal_auto_failed', username, amount, 'Withdrawal error: ' + sendError.message);
+  }
 }
 
 async function doReinvest() {
