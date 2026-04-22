@@ -743,7 +743,33 @@ function dateStr() {
   const d = new Date(); 
   return d.toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }); 
 }
-function getDateKey(d) { return d.toISOString().slice(0, 10); }
+// ============================================================
+// FIXED: Use LOCAL timezone for date key (not UTC)
+// Format: YYYY-MM-DD based on user's local time
+// ============================================================
+function getDateKey(d) {
+  if (!d) d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Helper: Parse date string (YYYY-MM-DD) to local Date object at 00:00:00
+function parseDateKey(dateStr) {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day, 0, 0, 0, 0);
+}
+
+// Helper: Calculate days between two date strings
+function daysBetweenDateKeys(startDateStr, endDateStr) {
+  const startDate = parseDateKey(startDateStr);
+  const endDate = parseDateKey(endDateStr);
+  const diffTime = endDate - startDate;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
+
 function safeKey(u) { return (u || '').replace(/[.#$\[\]]/g, '_'); }
 function genUUID() { return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16)); }
 
@@ -759,6 +785,7 @@ let userListener = null;
 
 // ============================================================
 // FIXED: Daily profit calculation (once per calendar day) - SILENT, no toast
+// Uses LOCAL timezone dates for accurate day counting
 // ============================================================
 async function calculateAndPayDailyProfits() {
   if (!currentUser || !currentUsername) return;
@@ -766,33 +793,32 @@ async function calculateAndPayDailyProfits() {
   if (stake <= 0) return;
   
   const todayKey = getDateKey(new Date());
-  const lastProfitDate = currentUser.lastProfitDate || getDateKey(new Date(Date.now() - 86400000));
+  const lastProfitDate = currentUser.lastProfitDate || null;
   
-  // Already paid today
-  if (lastProfitDate >= todayKey) return;
-  
-  // Calculate how many days missed using proper Date objects
-  let lastDate = new Date(lastProfitDate);
-  let todayDate = new Date(todayKey);
-  let daysToPay = 0;
-  let checkDate = new Date(lastDate);
-  checkDate.setUTCDate(checkDate.getUTCDate() + 1);
-  
-  while (getDateKey(checkDate) <= todayKey) {
-    daysToPay++;
-    checkDate.setUTCDate(checkDate.getUTCDate() + 1);
+  // If no lastProfitDate, set it to today (first time)
+  if (!lastProfitDate) {
+    await db.ref('users/' + safeKey(currentUsername)).update({ lastProfitDate: todayKey });
+    return;
   }
   
-  if (daysToPay === 0) return;
+  // Already paid today - check if dates are the same
+  if (lastProfitDate === todayKey) return;
+  
+  // Calculate days between last profit date and today using helper
+  const daysDiff = daysBetweenDateKeys(lastProfitDate, todayKey);
+  
+  // Only pay if at least 1 day has passed
+  if (daysDiff <= 0) return;
   
   const dailyProfit = Math.floor(stake * 0.10);
-  const totalProfit = dailyProfit * daysToPay;
+  const totalProfit = dailyProfit * daysDiff;
   const newBalance = (currentUser.balance || 0) + totalProfit;
-  let newDaysRun = (currentUser.activeInvestment?.daysRun || 0) + daysToPay;
+  let newDaysRun = (currentUser.activeInvestment?.daysRun || 0) + daysDiff;
   
+  // Cap at 56 days
   if (newDaysRun > 56) newDaysRun = 56;
   
-  // SILENT: No transaction record for daily profits
+  // Update: add profit, update lastProfitDate, update daysRun
   const updates = {
     balance: newBalance,
     lastProfitDate: todayKey,
