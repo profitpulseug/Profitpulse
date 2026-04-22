@@ -247,7 +247,7 @@ input[type="password"]{padding-right:46px;}
 .footer-link:active{transform:scale(.95);}
 .footer-divider{color:var(--border);font-size:8px;}
 
-/* Toast */
+/* Toast - kept but never shown to users */
 .toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--accent3);color:#fff;font-size:13px;font-weight:700;padding:10px 22px;border-radius:100px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -275,7 +275,7 @@ input[type="password"]{padding-right:46px;}
 .deposit-note{background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--accent);margin-bottom:12px;line-height:1.6;}
 .locked-banner{background:var(--surface2);border:1px solid var(--warn);border-radius:12px;padding:12px 16px;font-size:12px;color:var(--warn);text-align:center;margin-bottom:12px;font-weight:700;}
 
-/* Modal */
+/* Modal - kept but never shown to users */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;display:none;align-items:center;justify-content:center;padding:24px;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:30px 24px;text-align:center;max-width:340px;width:100%;max-height:80vh;display:flex;flex-direction:column;}
@@ -570,7 +570,7 @@ input[type="password"]{padding-right:46px;}
               <tr><td>10,000,000</td><td>1,000,000</td><td>56,000,000</td></tr>
               <tr><td>20,000,000</td><td>2,000,000</td><td>112,000,000</td></tr>
             </tbody>
-          </table>
+           </table>
         </div>
         <div class="scroll-hint">← Swipe horizontally to see all columns →</div>
       </div>
@@ -720,7 +720,7 @@ input[type="password"]{padding-right:46px;}
 <script>
 // ============================================================
 // PROFIT PULSE - FIREBASE REALTIME DATABASE WITH MARZPAY
-// FIXED: Loading screen freeze + Daily profit pays once per day
+// FIXED: Daily profit pays on new day login + Silent mode + No user popups
 // ============================================================
 
 const firebaseConfig = {
@@ -758,7 +758,7 @@ let profitInterval = null;
 let userListener = null;
 
 // ============================================================
-// FIX 1: Daily profit calculation (once per calendar day)
+// FIXED: Daily profit calculation (once per calendar day) - SILENT, no toast
 // ============================================================
 async function calculateAndPayDailyProfits() {
   if (!currentUser || !currentUsername) return;
@@ -771,15 +771,16 @@ async function calculateAndPayDailyProfits() {
   // Already paid today
   if (lastProfitDate >= todayKey) return;
   
-  // Calculate how many days missed
-  let currentDate = new Date(lastProfitDate);
+  // Calculate how many days missed using proper Date objects
+  let lastDate = new Date(lastProfitDate);
+  let todayDate = new Date(todayKey);
   let daysToPay = 0;
-  let tempDate = new Date(currentDate);
+  let checkDate = new Date(lastDate);
+  checkDate.setUTCDate(checkDate.getUTCDate() + 1);
   
-  while (getDateKey(tempDate) < todayKey) {
-    tempDate = new Date(tempDate);
-    tempDate.setUTCDate(tempDate.getUTCDate() + 1);
+  while (getDateKey(checkDate) <= todayKey) {
     daysToPay++;
+    checkDate.setUTCDate(checkDate.getUTCDate() + 1);
   }
   
   if (daysToPay === 0) return;
@@ -791,25 +792,19 @@ async function calculateAndPayDailyProfits() {
   
   if (newDaysRun > 56) newDaysRun = 56;
   
+  // SILENT: No transaction record for daily profits
   const updates = {
     balance: newBalance,
     lastProfitDate: todayKey,
-    [`activeInvestment.daysRun`]: newDaysRun,
-    [`transactions.profit_${Date.now()}`]: {
-      type: 'Profit',
-      amount: totalProfit,
-      note: `${daysToPay} day(s) of 10% daily profit on UGX ${stake.toLocaleString()} STAKE (Day ${newDaysRun}/56)`,
-      date: dateStr(),
-      status: 'completed'
-    }
+    [`activeInvestment.daysRun`]: newDaysRun
   };
   
   await db.ref('users/' + safeKey(currentUsername)).update(updates);
-  showToast(`📈 +${fmt(totalProfit)} daily profit${daysToPay > 1 ? 's' : ''} added!`, 'var(--success)');
+  // NO TOAST - silent profit
 }
 
 // ============================================================
-// FIX 2: Loading screen hides immediately after login check
+// Loading screen hides immediately after login check
 // ============================================================
 async function initApp() {
   initTheme();
@@ -834,7 +829,7 @@ async function initApp() {
         startDailyProfitLoop();
         startInactivityWatcher();
         
-        // FIX: Run profit calculation in background WITHOUT await
+        // Run profit calculation in background WITHOUT await - SILENT
         calculateAndPayDailyProfits().catch(err => console.warn('Profit calc error:', err));
       } else {
         sessionStorage.removeItem('pp_current_user');
@@ -853,7 +848,7 @@ async function initApp() {
   document.getElementById('loading-screen').style.display = 'none';
 }
 
-// Background profit loop (every 30 min)
+// Background profit loop (every 30 min) - SILENT
 function startDailyProfitLoop() {
   if (profitInterval) clearInterval(profitInterval);
   profitInterval = setInterval(() => {
@@ -864,24 +859,21 @@ function startDailyProfitLoop() {
 }
 
 // ============================================================
-// REST OF FUNCTIONS (same as before, with minor fixes)
+// SILENT FUNCTIONS - No user-facing toasts or modals
 // ============================================================
 function showToast(msg, color) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = color || 'var(--accent3)';
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  // COMPLETELY DISABLED - users see no toasts
+  // Function kept empty to prevent errors
 }
 
 function showModal(icon, title, msg) {
-  document.getElementById('modal-icon').textContent = icon;
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-msg').textContent = msg;
-  document.getElementById('modal-overlay').classList.add('open');
+  // COMPLETELY DISABLED - users see no modals
+  // Function kept empty to prevent errors
 }
 
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModal() { 
+  // Disabled
+}
 
 function setErr(id, show, msg) {
   const el = document.getElementById(id);
@@ -919,13 +911,15 @@ function depPhoneInput(inp) { inp.value = inp.value.replace(/\D/g, '').slice(0, 
 function copyRef() {
   const url = document.getElementById('ref-url-new');
   if (url && url.value) {
-    navigator.clipboard.writeText(url.value).then(() => showToast('✓ Referral link copied!'));
+    navigator.clipboard.writeText(url.value).then(() => {
+      // Silent copy - no toast
+    });
   }
 }
 
 function openWaGroup() {
   if (settingsData.waGroup) window.open(settingsData.waGroup, '_blank');
-  else showModal('💬', 'Coming Soon', 'WhatsApp group link will be available soon.');
+  // No modal - just silent fail
 }
 
 function showAuth(id) {
@@ -995,15 +989,19 @@ function initTheme() {
   applyTheme(savedTheme);
 }
 
-function showTerms() { showModal('📋', 'Terms of Service', 'ProfitPulse Terms of Service apply. Contact support for details.'); }
-function showPrivacy() { showModal('🔒', 'Privacy Policy', 'User data is protected. Read our privacy policy for details.'); }
+function showTerms() { 
+  // Silent - no modal for users
+}
+function showPrivacy() { 
+  // Silent - no modal for users
+}
 
 const tabMap = { home: 'sec-home', history: 'sec-history', team: 'sec-team', plan: 'sec-plan', profile: 'sec-profile', deposit: 'sec-deposit', withdraw: 'sec-withdraw', reinvest: 'sec-reinvest' };
 const navOrder = ['home', 'history', 'team', 'plan', 'profile'];
 
 function switchTab(tab) {
   if (tab === 'withdraw' && settingsData.withdrawLocked) {
-    showModal('🔒', 'Withdrawals Locked', 'Withdrawals are currently disabled. Please contact support.');
+    // Silent - no modal
     return;
   }
   Object.values(tabMap).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('active'); });
@@ -1171,12 +1169,13 @@ function renderHistory() {
   const wrap = document.getElementById('history-list');
   if (!currentUser) { if (wrap) wrap.innerHTML = ''; return; }
   const allTxs = currentUser.transactions ? Object.values(currentUser.transactions).reverse() : [];
-  const txs = allTxs.filter(tx => tx.type === currentHistoryFilter);
+  // Filter out Profit and Referral types - users don't see them
+  const txs = allTxs.filter(tx => tx.type === currentHistoryFilter && tx.type !== 'Profit' && tx.type !== 'Referral');
   if (!txs.length) {
     if (wrap) wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No ' + currentHistoryFilter + ' Records</div><div class="empty-text">Your ' + currentHistoryFilter.toLowerCase() + ' history will appear here.</div></div>';
     return;
   }
-  const icons = { Deposit: '💳', Withdrawal: '💸', Bonus: '🎁', Referral: '🔗', Profit: '📈', 'Re-Invest': '🔄' };
+  const icons = { Deposit: '💳', Withdrawal: '💸', Bonus: '🎁', 'Re-Invest': '🔄' };
   if (wrap) {
     wrap.innerHTML = '<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody>' + 
       txs.map((tx, idx) => {
@@ -1271,6 +1270,9 @@ async function sendAdminNotification(type, username, amount, message) {
   } catch (e) { console.warn(e); }
 }
 
+// ============================================================
+// DEPOSIT - PIN popup only, auto-closes 1 sec, redirect to home
+// ============================================================
 async function doDeposit() {
   clearErrors('dep-phone-err', 'dep-amount-err');
   const phoneDigits = document.getElementById('dep-phone').value.trim();
@@ -1280,7 +1282,11 @@ async function doDeposit() {
   const amount = parseInt(document.getElementById('dep-amount').value) || 0;
   if (amount < minDep) { setErr('dep-amount-err', true, 'Minimum deposit is ' + fmt(minDep)); return; }
   if (amount > maxDep) { setErr('dep-amount-err', true, 'Maximum deposit is ' + fmt(maxDep)); return; }
-  if (!settingsData.marzApiKey) { showModal('⚠️', 'Payment Not Available', 'Payment system is not configured yet. Please contact support.'); return; }
+  if (!settingsData.marzApiKey) { 
+    // Silent fail - error goes to admin bell only
+    sendAdminNotification('deposit_error', currentUsername, amount, 'Payment API not configured');
+    return; 
+  }
   const btn = document.getElementById('dep-submit-btn');
   btn.disabled = true; btn.textContent = '⏳ Processing...';
   const fullPhone = '+256' + phoneDigits;
@@ -1292,12 +1298,18 @@ async function doDeposit() {
   document.getElementById('dep-phone').value = '';
   document.getElementById('dep-amount').value = '';
   document.getElementById('tax-note').style.display = 'none';
+  
+  // Show PIN confirmation popup (auto closes 1 second)
+  const popup = document.getElementById('popup-banner');
+  popup.textContent = '🔐 Confirm with mobile money PIN';
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 1000);
+  
   try {
     const result = await marzCollect(fullPhone, totalAmount, reference, 'ProfitPulse Deposit');
     if (result.status !== 'success') {
       await sendAdminNotification('deposit_failed', currentUsername, amount, 'Deposit failed: ' + (result.message || 'Unknown error'));
       btn.disabled = false; btn.textContent = '💳 INVEST NOW';
-      showModal('❌', 'Payment Failed', 'Your payment could not be processed. Please try again.');
       return;
     }
     const txUuid = result?.data?.transaction?.uuid;
@@ -1320,22 +1332,24 @@ async function doDeposit() {
       };
       await db.ref('users/' + safeKey(currentUsername)).update(updates);
       await creditReferralBonuses(currentUsername, amount);
-      showToast(`✓ ${fmt(amount)} added to STAKE! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
+      // Silent success - no toast
     } else if (pollResult === 'failed') {
       await sendAdminNotification('deposit_failed', currentUsername, amount, 'Deposit declined by user');
-      showModal('❌', 'Payment Declined', 'You declined the payment request. No funds were deducted.');
     } else {
       await sendAdminNotification('deposit_timeout', currentUsername, amount, 'Deposit pending - no confirmation');
-      showModal('⏳', 'Payment Pending', 'Your payment is still processing. It will be credited automatically once confirmed.');
     }
   } catch (error) {
     console.error('Deposit error:', error);
     await sendAdminNotification('deposit_error', currentUsername, amount, error.message);
-    showModal('❌', 'Error', 'Something went wrong. Please try again.');
   }
   btn.disabled = false; btn.textContent = '💳 INVEST NOW';
+  // Redirect to home dashboard
+  switchTab('home');
 }
 
+// ============================================================
+// REFERRAL BONUSES - SILENT, no transaction history
+// ============================================================
 async function creditReferralBonuses(depositorUsername, amount) {
   const depositorSnap = await db.ref('users/' + safeKey(depositorUsername)).get();
   if (!depositorSnap.exists()) return;
@@ -1354,7 +1368,7 @@ async function creditReferralBonuses(depositorUsername, amount) {
     if (bonus > 0) {
       const newBalance = (upline.balance || 0) + bonus;
       const updates = { balance: newBalance, refEarned: (upline.refEarned || 0) + bonus };
-      updates[`transactions/tx_ref_${Date.now()}_l${i+1}`] = { type: 'Referral', amount: bonus, note: `Level ${i + 1} bonus from ${depositorUsername}`, date: dateStr(), status: 'completed' };
+      // NO transaction record for referral bonuses
       const refSnap = await db.ref('users/' + safeKey(uplineUsername) + '/referrals/' + safeKey(depositorUsername)).get();
       if (refSnap.exists()) updates[`referrals/${safeKey(depositorUsername)}/invested`] = (refSnap.val().invested || 0) + amount;
       await db.ref('users/' + safeKey(uplineUsername)).update(updates);
@@ -1363,10 +1377,19 @@ async function creditReferralBonuses(depositorUsername, amount) {
   }
 }
 
+// ============================================================
+// WITHDRAWAL - confirmation popup only, auto-closes 1 sec, redirect to home
+// ============================================================
 async function doWithdraw() {
   clearErrors('with-amount-err');
-  if (settingsData.withdrawLocked) { showModal('🔒', 'Locked', 'Withdrawals are currently disabled.'); return; }
-  if (!currentUser.activated) { showModal('🔒', 'Account Not Activated', 'Make a deposit first to activate your account.'); return; }
+  if (settingsData.withdrawLocked) { 
+    sendAdminNotification('withdrawal_blocked', currentUsername, 0, 'Withdrawal attempted while locked');
+    return; 
+  }
+  if (!currentUser.activated) { 
+    sendAdminNotification('withdrawal_not_activated', currentUsername, 0, 'Inactive account tried to withdraw');
+    return; 
+  }
   const minWith = settingsData.minWithdraw || 10000;
   const amount = parseInt(document.getElementById('with-amount').value) || 0;
   if (amount < minWith) { setErr('with-amount-err', true, 'Minimum withdrawal is ' + fmt(minWith)); return; }
@@ -1382,12 +1405,18 @@ async function doWithdraw() {
   const newWithdrawn = (currentUser.withdrawn || 0) + amount;
   const txKey = 'tx_wd_' + Date.now();
   const reqKey = 'wreq_' + Date.now();
+  
+  // Show confirmation popup (auto closes 1 second)
+  const popup = document.getElementById('popup-banner');
+  popup.textContent = '💸 You will receive your funds shortly';
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 1000);
+  
   try {
     await db.ref('users/' + safeKey(currentUsername)).update({ balance: newBalance, withdrawn: newWithdrawn, [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Pending', date: dateStr(), status: 'pending' } });
     await db.ref('pendingWithdrawals/' + reqKey).set({ username: currentUsername, userId: safeKey(currentUsername), phone: userPhone, amount, fee, sendAmount, txKey, date: dateStr(), status: 'pending' });
     if (settingsData.withdrawApproval === true) {
       await sendAdminNotification('withdrawal_pending', currentUsername, amount, 'Withdrawal request pending approval');
-      showToast(`💸 Withdrawal request submitted! Amount: ${fmt(amount)}. Awaiting admin approval.`, 'var(--gold)');
     } else {
       try {
         const reference = genUUID();
@@ -1395,12 +1424,10 @@ async function doWithdraw() {
         if (sendResult && sendResult.status === 'success') {
           await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).update({ status: 'completed', note: `Withdrawal sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})` });
           await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved' });
-          showToast(`💸 ${fmt(amount)} withdrawn! You received: ${fmt(sendAmount)}`, 'var(--success)');
         } else throw new Error('MarzPay send failed');
       } catch (sendError) {
         await sendAdminNotification('withdrawal_auto_failed', currentUsername, amount, 'Auto withdrawal failed: ' + sendError.message);
         await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'pending', autoFailed: true });
-        showToast(`⚠️ Withdrawal request submitted but processing delayed. Admin will review.`, 'var(--gold)');
       }
     }
     document.getElementById('with-amount').value = '';
@@ -1409,9 +1436,11 @@ async function doWithdraw() {
     console.error('Withdrawal error:', error);
     await db.ref('users/' + safeKey(currentUsername)).update({ balance: balance, withdrawn: currentUser.withdrawn || 0 });
     await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).remove();
-    showModal('❌', 'Error', 'Withdrawal failed. Please try again.');
+    await sendAdminNotification('withdrawal_error', currentUsername, amount, error.message);
   }
   btn.disabled = false; btn.textContent = '💸 WITHDRAW';
+  // Redirect to home dashboard
+  switchTab('home');
 }
 
 async function doReinvest() {
@@ -1442,10 +1471,10 @@ async function doReinvest() {
     };
     await db.ref('users/' + safeKey(currentUsername)).update(updates);
     document.getElementById('reinvest-amount').value = '';
-    showToast(`✓ Re-invested ${fmt(amount)}! +${fmt(profit)} profit added to BALANCE. 📈`, 'var(--success)');
+    // Silent success - no toast
   } catch (error) {
     console.error('Reinvest error:', error);
-    showToast('Error processing re-investment. Please try again.', '#f87171');
+    await sendAdminNotification('reinvest_error', currentUsername, amount, error.message);
   }
   btn.disabled = false; btn.textContent = '🔄 RE-INVEST NOW';
 }
@@ -1478,7 +1507,7 @@ async function doLogin() {
     startDailyProfitLoop();
     startInactivityWatcher();
     calculateAndPayDailyProfits().catch(err => console.warn('Login profit error:', err));
-    showToast('Welcome back, ' + username);
+    // Silent login - no toast
   } catch (error) {
     console.error('Login error:', error);
     setErr('login-general-err', true, '❌ Login failed. Please try again.');
@@ -1545,7 +1574,7 @@ async function doRegister() {
   showDashboard();
   switchTab('home');
   startDailyProfitLoop();
-  showToast('✓ Account created! UGX 5,000 bonus added! 🎉');
+  // Silent registration - no toast
   document.getElementById('reg-username').value = '';
   document.getElementById('reg-phone').value = '';
   document.getElementById('reg-password').value = '';
@@ -1560,7 +1589,6 @@ async function doLogout() {
   currentUser = null;
   currentUsername = null;
   closeMenu();
-  showToast('Signed out', '#f87171');
   setTimeout(() => {
     document.getElementById('dashboard-page').style.display = 'none';
     document.getElementById('dashboard-page').classList.remove('active');
