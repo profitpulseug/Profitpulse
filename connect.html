@@ -328,25 +328,22 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
     <!-- TRANSACTIONS -->
     <div class="page" id="pg-transactions">
       <div class="page-title">Transactions</div>
-      <div class="page-sub">All deposits and withdrawals across all users</div>
+      <div class="page-sub">Real-time deposits and withdrawals</div>
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-        <button class="btn btn-save" onclick="filterTx('all')">All</button>
-        <button class="btn btn-edit" onclick="filterTx('deposit')">Deposits</button>
-        <button class="btn btn-edit" onclick="filterTx('withdrawal')">Withdrawals</button>
-        <button class="btn btn-edit" onclick="filterTx('profit')">Profits</button>
-        <button class="btn btn-edit" onclick="filterTx('referral')">Referrals</button>
-        <button class="btn btn-edit" onclick="filterTx('bonus')">Bonuses</button>
+        <button class="btn btn-save" onclick="filterAdmTx('all')">All</button>
+        <button class="btn btn-edit" onclick="filterAdmTx('Deposit')">💳 Deposits</button>
+        <button class="btn btn-edit" onclick="filterAdmTx('Withdrawal')">💸 Withdrawals</button>
       </div>
       <div class="table-wrap">
         <div class="table-header">
-          <div class="table-title">💰 All Transactions</div>
-          <span id="tx-count" style="font-size:12px;color:var(--muted);"></span>
+          <div class="table-title">💰 Deposits & Withdrawals</div>
+          <span id="adm-tx-count" style="font-size:12px;color:var(--muted);"></span>
         </div>
         <table>
           <thead>
-            <tr><th>Date</th><th>Username</th><th>Type</th><th>Amount</th><th>Note</th><th>Status</th><th>Actions</th></tr>
+            <tr><th>Date</th><th>Username</th><th>Phone</th><th>Type</th><th>Amount</th><th>Reference</th><th>Status</th><th>Actions</th></tr>
           </thead>
-          <tbody id="tx-table-body"><tr class="empty-row"><td colspan="7">Loading...</td></tr></tbody>
+          <tbody id="adm-tx-table-body"><tr class="empty-row"><td colspan="8">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -643,15 +640,18 @@ let allSettings = {
 let currentAdmin = null;
 let searchFilter = '';
 let txFilter = 'all';
+let admTxFilter = 'all';
 let wdFilter = 'pending';
 let debitTargetUser = null;
 let debitHistory = [];
 let allWithdrawals = {};
 let awHistory = [];
+let allAdminTransactions = {};
 
 let usersUnsubscribe = null;
 let settingsUnsubscribe = null;
 let withdrawalsUnsubscribe = null;
+let adminTxUnsubscribe = null;
 
 function fmt(n) { return 'UGX ' + Number(n || 0).toLocaleString(); }
 function dateStr() { const d = new Date(); return d.toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }); }
@@ -686,6 +686,13 @@ function startRealtimeListeners() {
     renderWithdrawalsStats();
     renderWithdrawalsTable();
     updateWithdrawalsBadge();
+  });
+  
+  // Real-time admin transactions listener
+  if (adminTxUnsubscribe) adminTxUnsubscribe();
+  adminTxUnsubscribe = db.ref('adminTransactions').on('value', (snap) => {
+    allAdminTransactions = snap.val() || {};
+    renderAdminTransactions();
   });
   
   startNotifListener();
@@ -919,6 +926,56 @@ function renderTransactions() {
       <td><button class="btn btn-delete" onclick="deleteTransaction('${tx.username}', '${tx.txKey}', '${tx.type}')">🗑️ Delete</button></td>
     </tr>`;
   }).join('');
+}
+
+// NEW: Admin Transactions (Deposits & Withdrawals)
+function filterAdmTx(type) { admTxFilter = type; renderAdminTransactions(); }
+
+function renderAdminTransactions() {
+  const tbody = document.getElementById('adm-tx-table-body');
+  const countEl = document.getElementById('adm-tx-count');
+  
+  let txs = Object.entries(allAdminTransactions).map(([key, tx]) => ({ ...tx, key }));
+  txs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  
+  // Filter by type
+  if (admTxFilter !== 'all') {
+    txs = txs.filter(t => t.type === admTxFilter);
+  }
+  
+  if (countEl) countEl.textContent = txs.length + ' transactions';
+  if (!txs.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No transactions found<\/tr>'; return; }
+  
+  tbody.innerHTML = txs.map(tx => {
+    let statusColor = 'var(--gold)', statusText = '⏳ Pending';
+    if (tx.status === 'successful') { statusColor = 'var(--success)'; statusText = '✅ Successful'; }
+    else if (tx.status === 'failed') { statusColor = 'var(--warn)'; statusText = '❌ Failed'; }
+    const typeIcon = tx.type === 'Deposit' ? '💳' : '💸';
+    const amountStr = fmt(tx.amount || 0);
+    
+    return `<tr>
+      <td class="mono" style="font-size:11px;">${tx.date || '—'}</td>
+      <td><strong>${tx.username || '—'}</strong></td>
+      <td class="mono" style="font-size:11px;">${tx.phone || '—'}</td>
+      <td><span class="badge ${tx.type === 'Deposit' ? 'badge-approved' : 'badge-pending'}">${typeIcon} ${tx.type}</span></td>
+      <td class="mono">${amountStr}</td>
+      <td class="mono" style="font-size:10px;max-width:120px;word-break:break-all;">${tx.reference || '—'}</td>
+      <td><span style="font-size:11px;font-weight:700;color:${statusColor};">${statusText}</span></td>
+      <td><button class="btn btn-delete" onclick="deleteAdmTx('${tx.key}')">🗑️ Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function deleteAdmTx(key) {
+  const confirmed = await confirmAction('Delete Transaction?', 'Delete this admin transaction? This cannot be undone.');
+  if (!confirmed) return;
+  
+  try {
+    await db.ref('adminTransactions/' + key).remove();
+    toast('✅ Transaction deleted');
+  } catch (error) {
+    toast('Error deleting transaction', '#f87171');
+  }
 }
 
 function updateWithdrawalsBadge() {
@@ -1458,6 +1515,7 @@ function adminLogout() {
   if (usersUnsubscribe) usersUnsubscribe();
   if (settingsUnsubscribe) settingsUnsubscribe();
   if (withdrawalsUnsubscribe) withdrawalsUnsubscribe();
+  if (adminTxUnsubscribe) adminTxUnsubscribe();
   document.getElementById('admin-wrap').classList.remove('active');
   document.getElementById('auth-wrap').style.display = 'flex';
   document.getElementById('login-username').value = '';
@@ -1574,7 +1632,7 @@ function showPage(id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const map = { 'pg-dashboard': 0, 'pg-users': 1, 'pg-tube': 2, 'pg-transactions': 3, 'pg-withdrawals': 4, 'pg-debit': 5, 'pg-sog': 6, 'pg-settings': 7, 'pg-admin-withdraw': 8 };
   if (map[id] !== undefined) document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
-  if (id === 'pg-transactions') renderTransactions();
+  if (id === 'pg-transactions') renderAdminTransactions();
   if (id === 'pg-withdrawals') renderWithdrawalsTable();
   if (id === 'pg-debit') renderDebitHistory();
 }

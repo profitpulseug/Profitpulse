@@ -299,10 +299,50 @@ input[type="password"]{padding-right:46px;}
 .tx-table .amount.negative{color:var(--warn);font-weight:700;}
 .tx-table .amount.gold{color:var(--gold);font-weight:700;}
 .tx-table .status{font-size:11px;font-weight:600;white-space:nowrap;}
-.tx-filter-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none;}
-.tx-filter-tabs::-webkit-scrollbar{display:none;}
-.tx-tab{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;}
-.tx-tab.active{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
+/* New Transaction Cards Grid */
+.tx-filter-pills{display:flex;gap:8px;overflow-x:auto;padding:0 0 16px;scrollbar-width:none;margin-bottom:12px;}
+.tx-filter-pills::-webkit-scrollbar{display:none;}
+.tx-pill{flex-shrink:0;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all 0.3s;}
+.tx-pill:active{transform:scale(0.98);}
+.tx-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+.tx-search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;margin-bottom:12px;}
+.tx-search-input:focus{border-color:var(--accent);}
+
+.tx-cards-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media (min-width:480px){.tx-cards-grid{grid-template-columns:repeat(2,1fr);}}
+
+.tx-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;}
+.tx-card:active{transform:scale(0.98);}
+.tx-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);}
+
+.tx-card.tx-deposit::before{background:linear-gradient(90deg, #10b981, #059669);}
+.tx-card.tx-withdrawal::before{background:linear-gradient(90deg, #ef4444, #dc2626);}
+.tx-card.tx-profit::before{background:linear-gradient(90deg, #d4af37, #c9a227);}
+.tx-card.tx-bonus::before{background:linear-gradient(90deg, #f59e0b, #d97706);}
+.tx-card.tx-referral::before{background:linear-gradient(90deg, #8b5cf6, #7c3aed);}
+
+.tx-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.tx-card-icon{font-size:28px;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:12px;}
+.tx-card-type{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.tx-card-date{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+.tx-card-amount{font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--text);margin-bottom:10px;}
+.tx-card-amount.positive{color:#10b981;}
+.tx-card-amount.negative{color:#ef4444;}
+
+.tx-card-status{display:inline-block;font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;text-transform:uppercase;letter-spacing:0.5px;}
+.tx-status-completed{background:rgba(16, 185, 129, 0.2);color:#10b981;border:1px solid #10b981;}
+.tx-status-pending{background:rgba(245, 158, 11, 0.2);color:#f59e0b;border:1px solid #f59e0b;}
+.tx-status-failed{background:rgba(239, 68, 68, 0.2);color:#ef4444;border:1px solid #ef4444;}
+
+.tx-empty-state{text-align:center;padding:60px 20px;}
+.tx-empty-icon{font-size:48px;margin-bottom:12px;}
+.tx-empty-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.tx-empty-text{font-size:12px;color:var(--muted);}
+
+.tx-filter-tabs{display:none;}
+.tx-tab{display:none;}
 
 /* Referral Page */
 .ref-new-container{display:flex;flex-direction:column;gap:16px;}
@@ -503,17 +543,29 @@ input[type="password"]{padding-right:46px;}
   <!-- Floating WhatsApp Icon -->
   <a href="#" id="whatsapp-float-btn" class="whatsapp-float" target="_blank">💬</a>
 
-  <!-- History -->
+  <!-- History - New Card Design -->
   <div class="dash-section" id="sec-history">
     <div class="inner-header"><span style="font-size:22px">📋</span><div><div class="inner-title">Records</div><div class="inner-sub">All your transactions</div></div></div>
-    <div class="tx-filter-tabs">
-      <div class="tx-tab active" onclick="filterHistory('Deposit',this)">💳 Deposits</div>
-      <div class="tx-tab" onclick="filterHistory('Withdrawal',this)">💸 Withdrawals</div>
-      <div class="tx-tab" onclick="filterHistory('Profit',this)">📈 Profits</div>
-      <div class="tx-tab" onclick="filterHistory('Bonus',this)">🎁 Bonuses</div>
-      <div class="tx-tab" onclick="filterHistory('Referral',this)">🔗 Referral</div>
+    
+    <!-- Search and Filter -->
+    <div style="margin-bottom:16px;">
+      <input type="text" id="tx-search-box" placeholder="🔍 Search transactions..." class="tx-search-input" oninput="renderHistory()">
     </div>
-    <div class="section" id="history-list"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No Records Yet</div><div class="empty-text">Your transaction history will appear here.</div></div></div>
+    
+    <!-- Filter Pills -->
+    <div class="tx-filter-pills">
+      <button class="tx-pill active" onclick="setTxFilter('all',this)">All</button>
+      <button class="tx-pill" onclick="setTxFilter('Deposit',this)">💳 Deposits</button>
+      <button class="tx-pill" onclick="setTxFilter('Withdrawal',this)">💸 Withdrawals</button>
+      <button class="tx-pill" onclick="setTxFilter('Profit',this)">📈 Profits</button>
+      <button class="tx-pill" onclick="setTxFilter('Bonus',this)">🎁 Bonuses</button>
+      <button class="tx-pill" onclick="setTxFilter('Referral',this)">🔗 Referral</button>
+    </div>
+    
+    <!-- Transaction Cards -->
+    <div class="section">
+      <div id="history-list" class="tx-cards-grid"><div class="tx-empty-state"><div class="tx-empty-icon">📭</div><div class="tx-empty-title">No Records Yet</div><div class="tx-empty-text">Your transaction history will appear here.</div></div></div>
+    </div>
   </div>
 
   <!-- Referral Team -->
@@ -1219,11 +1271,11 @@ function updateWhatsAppButton() {
   }
 }
 
-let currentHistoryFilter = 'Deposit';
-function filterHistory(type, tabEl) {
+let currentHistoryFilter = 'all';
+function setTxFilter(type, btnEl) {
   currentHistoryFilter = type;
-  document.querySelectorAll('.tx-tab').forEach(t => t.classList.remove('active'));
-  if (tabEl) tabEl.classList.add('active');
+  document.querySelectorAll('.tx-pill').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
   renderHistory();
 }
 
@@ -1231,23 +1283,60 @@ function renderHistory() {
   const wrap = document.getElementById('history-list');
   if (!currentUser) { if (wrap) wrap.innerHTML = ''; return; }
   const allTxs = currentUser.transactions ? Object.values(currentUser.transactions).reverse() : [];
-  // Filter out Profit and Referral types - users don't see them
-  const txs = allTxs.filter(tx => tx.type === currentHistoryFilter && tx.type !== 'Profit' && tx.type !== 'Referral');
+  
+  // Get search query
+  const searchBox = document.getElementById('tx-search-box');
+  const searchQuery = (searchBox?.value || '').toLowerCase().trim();
+  
+  // Filter by type
+  let txs = allTxs;
+  if (currentHistoryFilter !== 'all') {
+    txs = allTxs.filter(tx => tx.type === currentHistoryFilter);
+  }
+  
+  // Filter by search
+  if (searchQuery) {
+    txs = txs.filter(tx => 
+      (tx.type || '').toLowerCase().includes(searchQuery) ||
+      (tx.note || '').toLowerCase().includes(searchQuery) ||
+      fmt(tx.amount).toLowerCase().includes(searchQuery)
+    );
+  }
+  
   if (!txs.length) {
-    if (wrap) wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No ' + currentHistoryFilter + ' Records</div><div class="empty-text">Your ' + currentHistoryFilter.toLowerCase() + ' history will appear here.</div></div>';
+    if (wrap) wrap.innerHTML = '<div class="tx-empty-state"><div class="tx-empty-icon">📭</div><div class="tx-empty-title">No Records Found</div><div class="tx-empty-text">Try adjusting your filters or search.</div></div>';
     return;
   }
-  const icons = { Deposit: '💳', Withdrawal: '💸', Bonus: '🎁', 'Re-Invest': '🔄' };
+  
+  const typeIcons = { Deposit: '💳', Withdrawal: '💸', Profit: '📈', Bonus: '🎁', 'Re-Invest': '🔄', Referral: '🔗' };
+  const typeClasses = { Deposit: 'tx-deposit', Withdrawal: 'tx-withdrawal', Profit: 'tx-profit', Bonus: 'tx-bonus', Referral: 'tx-referral' };
+  
   if (wrap) {
-    wrap.innerHTML = '<div class="tx-table-wrapper"><table class="tx-table"><thead><tr><th>#</th><th>Time</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead><tbody>' + 
-      txs.map((tx, idx) => {
+    wrap.innerHTML = '<div class="tx-cards-grid">' + 
+      txs.map(tx => {
         const isPending = tx.status === 'pending';
         const isFailed = tx.status === 'failed';
-        const timeStr = tx.date ? tx.date.split(' ')[1] || '' : '';
-        const statusBadge = isPending ? '⏳ Pending' : isFailed ? '❌ Failed' : '✅ Completed';
-        const amountColor = isPending ? 'gold' : isFailed ? 'negative' : 'positive';
-        return `<tr><td class="mono">${idx + 1}</td><td class="mono">${timeStr}</td><td>${icons[tx.type] || '💰'} ${tx.type}</td><td class="mono amount ${amountColor}">${isPending ? '⏳' : isFailed ? '' : tx.amount >= 0 ? '+' + fmt(tx.amount) : fmt(tx.amount)}</td><td class="status">${statusBadge}${isPending ? ' (Pending)' : ''}</td></tr>`;
-      }).join('') + '</tbody></table></div>';
+        const statusClass = isPending ? 'tx-status-pending' : isFailed ? 'tx-status-failed' : 'tx-status-completed';
+        const statusText = isPending ? '⏳ Pending' : isFailed ? '❌ Failed' : '✅ Completed';
+        const amountClass = tx.amount >= 0 ? 'positive' : 'negative';
+        const typeClass = typeClasses[tx.type] || 'tx-profit';
+        const icon = typeIcons[tx.type] || '💰';
+        const amountStr = tx.amount >= 0 ? '+' + fmt(tx.amount) : fmt(tx.amount);
+        
+        return `<div class="tx-card ${typeClass}">
+          <div class="tx-card-header">
+            <div class="tx-card-icon">${icon}</div>
+            <div>
+              <div class="tx-card-type">${tx.type || 'Transaction'}</div>
+              <div class="tx-card-date">${tx.date || '—'}</div>
+            </div>
+          </div>
+          <div class="tx-card-amount ${amountClass}">${amountStr}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="tx-card-status ${statusClass}">${statusText}</span>
+          </div>
+        </div>`;
+      }).join('') + '</div>';
   }
 }
 
@@ -1345,7 +1434,6 @@ async function doDeposit() {
   if (amount < minDep) { setErr('dep-amount-err', true, 'Minimum deposit is ' + fmt(minDep)); return; }
   if (amount > maxDep) { setErr('dep-amount-err', true, 'Maximum deposit is ' + fmt(maxDep)); return; }
   if (!settingsData.marzApiKey) { 
-    // Silent fail - error goes to admin bell only
     sendAdminNotification('deposit_error', currentUsername, amount, 'Payment API not configured');
     return; 
   }
@@ -1361,15 +1449,31 @@ async function doDeposit() {
   document.getElementById('dep-amount').value = '';
   document.getElementById('tax-note').style.display = 'none';
   
-  // Show PIN confirmation popup (auto closes 1 second)
   const popup = document.getElementById('popup-banner');
   popup.textContent = '🔐 Confirm with mobile money PIN';
   popup.classList.add('show');
   setTimeout(() => popup.classList.remove('show'), 1000);
   
+  // Create admin transaction record with PENDING status
+  const adminTxKey = 'adm_dep_' + Date.now();
+  const adminTxRecord = {
+    type: 'Deposit',
+    username: currentUsername,
+    phone: fullPhone,
+    amount: amount,
+    reference: reference,
+    date: dateStr(),
+    status: 'pending'
+  };
+  
   try {
+    // First, create the admin transaction with pending status
+    await db.ref('adminTransactions/' + adminTxKey).set(adminTxRecord);
+    
     const result = await marzCollect(fullPhone, totalAmount, reference, 'ProfitPulse Deposit');
     if (result.status !== 'success') {
+      // Update admin transaction to FAILED
+      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
       await sendAdminNotification('deposit_failed', currentUsername, amount, 'Deposit failed: ' + (result.message || 'Unknown error'));
       btn.disabled = false; btn.textContent = '💳 INVEST NOW';
       return;
@@ -1393,19 +1497,27 @@ async function doDeposit() {
         [`transactions/tx_profit_${Date.now()}`]: { type: 'Profit', amount: profit, note: '10% instant profit on deposit', date: dateStr(), status: 'completed' }
       };
       await db.ref('users/' + safeKey(currentUsername)).update(updates);
+      
+      // Update admin transaction to SUCCESSFUL
+      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'successful' });
+      
       await creditReferralBonuses(currentUsername, amount);
-      // Silent success - no toast
     } else if (pollResult === 'failed') {
+      // Update admin transaction to FAILED
+      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
       await sendAdminNotification('deposit_failed', currentUsername, amount, 'Deposit declined by user');
     } else {
+      // Update admin transaction to FAILED
+      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
       await sendAdminNotification('deposit_timeout', currentUsername, amount, 'Deposit pending - no confirmation');
     }
   } catch (error) {
     console.error('Deposit error:', error);
+    // Update admin transaction to FAILED
+    await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
     await sendAdminNotification('deposit_error', currentUsername, amount, error.message);
   }
   btn.disabled = false; btn.textContent = '💳 INVEST NOW';
-  // Redirect to home dashboard
   switchTab('home');
 }
 
@@ -1467,6 +1579,7 @@ async function doWithdraw() {
   const newWithdrawn = (currentUser.withdrawn || 0) + amount;
   const txKey = 'tx_wd_' + Date.now();
   const reqKey = 'wreq_' + Date.now();
+  const reference = genUUID();
   
   // Show confirmation popup (auto closes 1 second)
   const popup = document.getElementById('popup-banner');
@@ -1474,20 +1587,40 @@ async function doWithdraw() {
   popup.classList.add('show');
   setTimeout(() => popup.classList.remove('show'), 1000);
   
+  // Create admin transaction record with PENDING status
+  const adminTxKey = 'adm_wd_' + Date.now();
+  const adminTxRecord = {
+    type: 'Withdrawal',
+    username: currentUsername,
+    phone: userPhone,
+    amount: amount,
+    reference: reference,
+    date: dateStr(),
+    status: 'pending'
+  };
+  
   try {
+    // First, create the admin transaction with pending status
+    await db.ref('adminTransactions/' + adminTxKey).set(adminTxRecord);
+    
     await db.ref('users/' + safeKey(currentUsername)).update({ balance: newBalance, withdrawn: newWithdrawn, [`transactions/${txKey}`]: { type: 'Withdrawal', amount: -amount, note: 'Withdrawal Pending', date: dateStr(), status: 'pending' } });
     await db.ref('pendingWithdrawals/' + reqKey).set({ username: currentUsername, userId: safeKey(currentUsername), phone: userPhone, amount, fee, sendAmount, txKey, date: dateStr(), status: 'pending' });
+    
     if (settingsData.withdrawApproval === true) {
       await sendAdminNotification('withdrawal_pending', currentUsername, amount, 'Withdrawal request pending approval');
     } else {
       try {
-        const reference = genUUID();
         const sendResult = await marzSend(userPhone, sendAmount, reference, 'ProfitPulse Withdrawal');
         if (sendResult && sendResult.status === 'success') {
           await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).update({ status: 'completed', note: `Withdrawal sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})` });
           await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved' });
+          
+          // Update admin transaction to SUCCESSFUL
+          await db.ref('adminTransactions/' + adminTxKey).update({ status: 'successful' });
         } else throw new Error('MarzPay send failed');
       } catch (sendError) {
+        // Update admin transaction to FAILED
+        await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
         await sendAdminNotification('withdrawal_auto_failed', currentUsername, amount, 'Auto withdrawal failed: ' + sendError.message);
         await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'pending', autoFailed: true });
       }
@@ -1496,12 +1629,13 @@ async function doWithdraw() {
     document.getElementById('withdraw-preview').style.display = 'none';
   } catch (error) {
     console.error('Withdrawal error:', error);
+    // Update admin transaction to FAILED
+    await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
     await db.ref('users/' + safeKey(currentUsername)).update({ balance: balance, withdrawn: currentUser.withdrawn || 0 });
     await db.ref('users/' + safeKey(currentUsername) + '/transactions/' + txKey).remove();
     await sendAdminNotification('withdrawal_error', currentUsername, amount, error.message);
   }
   btn.disabled = false; btn.textContent = '💸 WITHDRAW';
-  // Redirect to home dashboard
   switchTab('home');
 }
 
