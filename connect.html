@@ -1052,33 +1052,47 @@ async function approveWithdrawal(reqKey, userId, username, amount, sendAmount) {
     // First mark as processing in pendingWithdrawals
     await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'processing' });
     
-    // Now attempt to send via Marz
+    // Now attempt to send via Marz (same as automatic mode)
     try {
-      const sendResult = await db.collection('requests').add({
-        type: 'marzSend',
-        phone: userPhone,
-        amount: sendAmount,
-        reference: reference
-      }).then(() => ({ status: 'success' })).catch(err => ({ status: 'failed', message: err.message }));
+      const sendResult = await marzSend(userPhone, sendAmount, reference, 'ProfitPulse Withdrawal');
       
-      // Alternative: Use the marzSend function directly (if available in admin context)
-      // For now, we'll simulate or use Firebase function
-      // In production, you'd call your actual Marz API
-      
-      // Simulate success for demo - in production use actual Marz call
-      // const sendResult = await marzSend(userPhone, sendAmount, reference, 'ProfitPulse Withdrawal');
-      
-      // For this implementation, mark as approved and assume Marz will process
-      await db.ref('users/' + userId + '/transactions/' + txKey).update({
-        status: 'completed',
-        note: `Withdrawal approved and sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})`
-      });
-      await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved', processed: true });
-      await db.ref('adminTransactions/' + adminTxKey).update({ status: 'successful' });
-      
-      toast('✅ Withdrawal approved and processing for ' + username);
+      if (sendResult && sendResult.status === 'success') {
+        // Success - update transaction and admin record
+        await db.ref('users/' + userId + '/transactions/' + txKey).update({
+          status: 'completed',
+          note: `Withdrawal approved and sent to ${userPhone} (Fee: ${fmt(fee)}, Received: ${fmt(sendAmount)})`
+        });
+        await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'approved', processed: true });
+        await db.ref('adminTransactions/' + adminTxKey).update({ status: 'successful' });
+        
+        toast('✅ Withdrawal approved and sent for ' + username);
+      } else {
+        // Marz send failed - REFUND user instantly
+        const userSnap = await db.ref('users/' + userId).get();
+        const user = userSnap.val();
+        const refundedBalance = (user.balance || 0) + amount;
+        
+        await db.ref('users/' + userId).update({
+          balance: refundedBalance,
+          ['transactions/' + txKey + '/status']: 'failed',
+          ['transactions/' + txKey + '/note']: 'Withdrawal Failed at Marz - Refunded'
+        });
+        await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'failed', processed: true });
+        await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
+        
+        await db.ref('adminNotifications/notif_' + Date.now()).set({
+          type: 'withdrawal_marz_failed',
+          username: username,
+          amount: amount,
+          message: `Withdrawal Marz Failed: ${username} | Phone: ${userPhone} | Amount: ${fmt(amount)} | Error: ${sendResult?.message || 'Unknown error'} | Full refund issued`,
+          date: new Date().toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }),
+          read: false
+        });
+        
+        toast('❌ Marz processing failed - refund issued to ' + username, '#f87171');
+      }
     } catch (marzError) {
-      // Marz failed - REFUND user instantly
+      // Exception during Marz send - REFUND user instantly
       const userSnap = await db.ref('users/' + userId).get();
       const user = userSnap.val();
       const refundedBalance = (user.balance || 0) + amount;
@@ -1086,7 +1100,7 @@ async function approveWithdrawal(reqKey, userId, username, amount, sendAmount) {
       await db.ref('users/' + userId).update({
         balance: refundedBalance,
         ['transactions/' + txKey + '/status']: 'failed',
-        ['transactions/' + txKey + '/note']: 'Withdrawal Failed at Marz - Refunded'
+        ['transactions/' + txKey + '/note']: 'Withdrawal Error - Refunded'
       });
       await db.ref('pendingWithdrawals/' + reqKey).update({ status: 'failed', processed: true });
       await db.ref('adminTransactions/' + adminTxKey).update({ status: 'failed' });
@@ -1095,12 +1109,12 @@ async function approveWithdrawal(reqKey, userId, username, amount, sendAmount) {
         type: 'withdrawal_marz_failed',
         username: username,
         amount: amount,
-        message: `Withdrawal Marz Failed: ${username} | Phone: ${userPhone} | Amount: ${fmt(amount)} | Error: ${marzError.message} | Full refund issued`,
+        message: `Withdrawal Marz Error: ${username} | Phone: ${userPhone} | Amount: ${fmt(amount)} | Error: ${marzError.message} | Full refund issued`,
         date: new Date().toLocaleDateString('en-UG', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit' }),
         read: false
       });
       
-      toast('❌ Marz processing failed - refund issued to ' + username, '#f87171');
+      toast('❌ Marz error - refund issued to ' + username, '#f87171');
     }
   } catch (error) { 
     console.error('Error approving withdrawal:', error);
