@@ -1673,7 +1673,7 @@ function toggleApiKeyVisibility(inputId) {
   }
 }
 
-function adminLogin() {
+async function adminLogin() {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value.trim();
   const phone = document.getElementById('login-phone').value.trim();
