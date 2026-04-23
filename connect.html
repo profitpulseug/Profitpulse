@@ -1888,62 +1888,6 @@ function toggleRegSecondConfirm() {
   else { inp.type = 'password'; btn.textContent = '👁️'; }
 }
 
-async function adminRegister() {
-  clearErrors('reg-username-err', 'reg-phone-err', 'reg-position-err', 'reg-pw-err', 'reg-confirm-err', 'reg-second-pw-err', 'reg-second-confirm-err', 'reg-general-err');
-  
-  const username = document.getElementById('reg-username').value.trim();
-  const phoneDigits = document.getElementById('reg-phone').value.trim();
-  const position = document.getElementById('reg-position').value;
-  const password = document.getElementById('reg-password').value;
-  const confirm = document.getElementById('reg-confirm').value;
-  const secondPw = document.getElementById('reg-second-pw').value;
-  const secondConfirm = document.getElementById('reg-second-confirm').value;
-  
-  let ok = true;
-  if (!username) { setErr('reg-username-err', true, 'Username required'); ok = false; }
-  if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) { setErr('reg-phone-err', true, 'Enter 9 digits starting with 7'); ok = false; }
-  if (!position) { setErr('reg-position-err', true, 'Please select position'); ok = false; }
-  if (!password || password.length < 9) { setErr('reg-pw-err', true, 'Password must be at least 9 characters'); ok = false; }
-  if (password !== confirm) { setErr('reg-confirm-err', true, 'Passwords do not match'); ok = false; }
-  if (!secondPw || secondPw.length < 9) { setErr('reg-second-pw-err', true, 'Second password must be at least 9 characters'); ok = false; }
-  if (secondPw !== secondConfirm) { setErr('reg-second-confirm-err', true, 'Second passwords do not match'); ok = false; }
-  if (!ok) return;
-  
-  const fullPhone = '+256' + phoneDigits;
-  
-  try {
-    const adminCountSnap = await db.ref('admins').get();
-    const adminCount = adminCountSnap.exists() ? Object.keys(adminCountSnap.val()).length : 0;
-    if (adminCount >= 3) {
-      setErr('reg-general-err', true, '❌ Maximum 3 admin accounts allowed');
-      return;
-    }
-    
-    const existingSnap = await db.ref('admins/' + safeKey(username)).get();
-    if (existingSnap.exists()) {
-      setErr('reg-general-err', true, '❌ Username already taken');
-      return;
-    }
-    
-    await db.ref('admins/' + safeKey(username)).set({
-      username, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr()
-    });
-    
-    toast('✅ Admin registered successfully! You can now login.');
-    showLoginForm();
-    
-    document.getElementById('reg-username').value = '';
-    document.getElementById('reg-phone').value = '';
-    document.getElementById('reg-password').value = '';
-    document.getElementById('reg-confirm').value = '';
-    document.getElementById('reg-second-pw').value = '';
-    document.getElementById('reg-second-confirm').value = '';
-    document.getElementById('reg-position').value = '';
-    
-  } catch (error) {
-    setErr('reg-general-err', true, '❌ Registration failed: ' + error.message);
-  }
-}
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
