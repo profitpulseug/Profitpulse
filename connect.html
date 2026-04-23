@@ -1733,42 +1733,37 @@ async function adminRegister() {
   const confirmPassword = document.getElementById('reg-confirm-password').value;
   const position = document.getElementById('reg-position').value;
   const err = document.getElementById('reg-general-err');
-  err.classList.remove('show');
+  
+  if (err) err.classList.remove('show');
   
   // Validation
   if (!username || !phone || !pin || !password || !confirmPassword || !position) {
-    err.textContent = '❌ All fields are required';
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ All fields are required'; err.classList.add('show'); }
     return;
   }
   
   if (username.length < 3) {
-    err.textContent = '❌ Username must be at least 3 characters';
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ Username must be at least 3 characters'; err.classList.add('show'); }
     return;
   }
   
   if (phone.length !== 9 || !phone.startsWith('7')) {
-    err.textContent = '❌ Phone must be 9 digits starting with 7';
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ Phone must be 9 digits starting with 7'; err.classList.add('show'); }
     return;
   }
   
   if (pin.length !== 4 || isNaN(pin)) {
-    err.textContent = '❌ PIN must be exactly 4 digits';
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ PIN must be exactly 4 digits'; err.classList.add('show'); }
     return;
   }
   
   if (password.length < 8) {
-    err.textContent = '❌ Password must be at least 8 characters';
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ Password must be at least 8 characters'; err.classList.add('show'); }
     return;
   }
   
   if (password !== confirmPassword) {
-    err.textContent = '❌ Passwords do not match';
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ Passwords do not match'; err.classList.add('show'); }
     return;
   }
   
@@ -1779,15 +1774,13 @@ async function adminRegister() {
     const adminCount = Object.keys(admins).length;
     
     if (adminCount >= 4) {
-      err.textContent = '❌ Maximum 4 admin accounts allowed. Current: ' + adminCount;
-      err.classList.add('show');
+      if (err) { err.textContent = '❌ Maximum 4 admin accounts allowed. Current: ' + adminCount; err.classList.add('show'); }
       return;
     }
     
     // Check if username already exists
     if (admins[safeKey(username)]) {
-      err.textContent = '❌ Username already exists';
-      err.classList.add('show');
+      if (err) { err.textContent = '❌ Username already exists'; err.classList.add('show'); }
       return;
     }
     
@@ -1802,7 +1795,7 @@ async function adminRegister() {
       password: maskedPassword,
       position: position,
       createdAt: dateStr(),
-      createdBy: currentAdmin.username || 'System'
+      createdBy: currentAdmin ? currentAdmin.username : 'System'
     });
     
     toast('✅ Admin account created successfully');
@@ -1817,8 +1810,7 @@ async function adminRegister() {
     switchAuthTab('login');
   } catch (error) {
     console.error('Registration error:', error);
-    err.textContent = '❌ Registration error: ' + error.message;
-    err.classList.add('show');
+    if (err) { err.textContent = '❌ Registration error: ' + error.message; err.classList.add('show'); }
   }
 }
 
