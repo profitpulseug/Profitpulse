@@ -1744,8 +1744,55 @@ function showPage(id) {
   if (id === 'pg-debit') renderDebitHistory();
 }
 
-function showTerms() { Swal.fire({ title: 'Terms of Service', html: '<div style="text-align:left;font-size:12px;">Admin terms apply. Contact support for details.</div>', icon: 'info', confirmButtonText: 'OK' }); }
-function showPrivacy() { Swal.fire({ title: 'Privacy Policy', html: '<div style="text-align:left;font-size:12px;">User data is protected. Admin access is logged.</div>', icon: 'info', confirmButtonText: 'OK' }); }
+function showTerms() { 
+  Swal.fire({
+    title: 'Terms of Service',
+    html: `<div style="text-align:left;font-size:13px;line-height:1.6;max-height:400px;overflow-y:auto;">
+      <p><strong>1. Introduction</strong><br>Welcome to ProfitPulse. These Terms of Service govern your use of our investment platform.</p>
+      
+      <p><strong>2. User Responsibilities</strong><br>You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.</p>
+      
+      <p><strong>3. Investment Risks</strong><br>All investments carry risk. ProfitPulse does not guarantee returns. Past performance is not indicative of future results.</p>
+      
+      <p><strong>4. Prohibited Activities</strong><br>You may not use ProfitPulse for any illegal activities, fraud, or unauthorized access.</p>
+      
+      <p><strong>5. Limitation of Liability</strong><br>ProfitPulse is provided "as is" without warranties. We are not liable for any indirect or consequential damages.</p>
+      
+      <p><strong>6. Modifications</strong><br>We reserve the right to modify these terms at any time. Your continued use constitutes acceptance of changes.</p>
+      
+      <p><strong>7. Governing Law</strong><br>These terms are governed by the laws of Uganda and Kenya as applicable.</p>
+    </div>`,
+    icon: 'info',
+    confirmButtonText: 'Understood',
+    confirmButtonColor: '#d4af37',
+    width: '500px'
+  });
+}
+
+function showPrivacy() { 
+  Swal.fire({
+    title: 'Privacy Policy',
+    html: `<div style="text-align:left;font-size:13px;line-height:1.6;max-height:400px;overflow-y:auto;">
+      <p><strong>1. Information We Collect</strong><br>We collect personal information including name, phone number, email, and transaction history to provide our services.</p>
+      
+      <p><strong>2. How We Use Information</strong><br>Your information is used to process transactions, prevent fraud, improve our services, and comply with legal obligations.</p>
+      
+      <p><strong>3. Data Protection</strong><br>We implement industry-standard security measures to protect your data from unauthorized access.</p>
+      
+      <p><strong>4. Third-Party Sharing</strong><br>We do not sell your personal information. We may share data with payment processors and legal authorities when required.</p>
+      
+      <p><strong>5. Cookies & Tracking</strong><br>We use cookies and similar technologies to enhance user experience and analyze platform usage.</p>
+      
+      <p><strong>6. Your Rights</strong><br>You have the right to access, modify, or delete your personal information at any time.</p>
+      
+      <p><strong>7. Contact Us</strong><br>For privacy concerns, contact our support team via the support channels.</p>
+    </div>`,
+    icon: 'info',
+    confirmButtonText: 'Understood',
+    confirmButtonColor: '#d4af37',
+    width: '500px'
+  });
+}
 
 function initAdmin() {
   const session = localStorage.getItem(SESSION_KEY);

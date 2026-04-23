@@ -253,10 +253,10 @@ input[type="password"]{padding-right:46px;}
 
 /* Forms */
 .action-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px 18px;}
-.green-btn{width:100%;background:#10b981;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.green-btn{width:100%;background:#2d5016;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;font-style:italic;text-shadow:2px 2px 4px rgba(0,0,0,0.5);}
 .green-btn:active{transform:scale(.98);}
 .green-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.red-btn{width:100%;background:#ff6b5b;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.red-btn{width:100%;background:#b85c20;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;font-style:italic;text-shadow:2px 2px 4px rgba(0,0,0,0.5);}
 .red-btn:active{transform:scale(.98);}
 .red-btn:disabled{opacity:0.4;cursor:not-allowed;}
 .amber-btn{width:100%;background:#06b6d4;border:none;border-radius:14px;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
@@ -525,7 +525,7 @@ input[type="password"]{padding-right:46px;}
       <div class="action-grid" style="display:flex;flex-direction:column;gap:12px;margin:16px 0;align-items:flex-start;">
         <button class="action-btn" style="background:#22c55e;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('deposit')"><span class="btn-icon">💳</span> Invest</button>
         <button class="action-btn" style="background:#ef4444;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('withdraw')"><span class="btn-icon">💸</span> Withdraw</button>
-        <button class="action-btn" style="background:#a855f7;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;" onclick="switchTab('reinvest')"><span class="btn-icon">🔄</span> Re-Invest</button>
+        <button class="action-btn" style="background:#3d5a6c;border:none;color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;font-style:italic;text-shadow:2px 2px 4px rgba(0,0,0,0.5);" onclick="switchTab('reinvest')"><span class="btn-icon">🔄</span> Re-Invest</button>
       </div>
     </div>
     <div class="section">
@@ -759,6 +759,68 @@ input[type="password"]{padding-right:46px;}
     <div class="modal-title" id="modal-title">Notice</div>
     <div class="modal-msg" id="modal-msg">Please wait...</div>
     <button class="modal-close" onclick="closeModal()">OK, Got It</button>
+  </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal-overlay" id="terms-modal-overlay" onclick="closeTermsModal(event)">
+  <div class="modal-box" style="position:relative;">
+    <button style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--accent);padding:4px 8px;" onclick="closeTermsModal()">✕</button>
+    <div class="modal-icon">📋</div>
+    <div class="modal-title">Terms of Service</div>
+    <div class="modal-msg" style="text-align:left;">
+      <strong>1. Introduction</strong><br>
+      Welcome to ProfitPulse. These Terms of Service govern your use of our investment platform.<br><br>
+      
+      <strong>2. User Responsibilities</strong><br>
+      You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.<br><br>
+      
+      <strong>3. Investment Risks</strong><br>
+      All investments carry risk. ProfitPulse does not guarantee returns. Past performance is not indicative of future results.<br><br>
+      
+      <strong>4. Prohibited Activities</strong><br>
+      You may not use ProfitPulse for any illegal activities, fraud, or unauthorized access.<br><br>
+      
+      <strong>5. Limitation of Liability</strong><br>
+      ProfitPulse is provided "as is" without warranties. We are not liable for any indirect or consequential damages.<br><br>
+      
+      <strong>6. Modifications</strong><br>
+      We reserve the right to modify these terms at any time. Your continued use constitutes acceptance of changes.<br><br>
+      
+      <strong>7. Governing Law</strong><br>
+      These terms are governed by the laws of Uganda and Kenya as applicable.
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Modal -->
+<div class="modal-overlay" id="privacy-modal-overlay" onclick="closePrivacyModal(event)">
+  <div class="modal-box" style="position:relative;">
+    <button style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--accent);padding:4px 8px;" onclick="closePrivacyModal()">✕</button>
+    <div class="modal-icon">🔒</div>
+    <div class="modal-title">Privacy Policy</div>
+    <div class="modal-msg" style="text-align:left;">
+      <strong>1. Information We Collect</strong><br>
+      We collect personal information including name, phone number, email, and transaction history to provide our services.<br><br>
+      
+      <strong>2. How We Use Information</strong><br>
+      Your information is used to process transactions, prevent fraud, improve our services, and comply with legal obligations.<br><br>
+      
+      <strong>3. Data Protection</strong><br>
+      We implement industry-standard security measures to protect your data from unauthorized access.<br><br>
+      
+      <strong>4. Third-Party Sharing</strong><br>
+      We do not sell your personal information. We may share data with payment processors and legal authorities when required.<br><br>
+      
+      <strong>5. Cookies & Tracking</strong><br>
+      We use cookies and similar technologies to enhance user experience and analyze platform usage.<br><br>
+      
+      <strong>6. Your Rights</strong><br>
+      You have the right to access, modify, or delete your personal information at any time.<br><br>
+      
+      <strong>7. Contact Us</strong><br>
+      For privacy concerns, contact our support team via the WhatsApp links in the app.
+    </div>
   </div>
 </div>
 
@@ -1104,10 +1166,18 @@ function initTheme() {
 }
 
 function showTerms() { 
-  // Silent - no modal for users
+  document.getElementById('terms-modal-overlay').classList.add('open');
+}
+function closeTermsModal(event) {
+  if (event && event.target.id !== 'terms-modal-overlay') return;
+  document.getElementById('terms-modal-overlay').classList.remove('open');
 }
 function showPrivacy() { 
-  // Silent - no modal for users
+  document.getElementById('privacy-modal-overlay').classList.add('open');
+}
+function closePrivacyModal(event) {
+  if (event && event.target.id !== 'privacy-modal-overlay') return;
+  document.getElementById('privacy-modal-overlay').classList.remove('open');
 }
 
 const tabMap = { home: 'sec-home', history: 'sec-history', team: 'sec-team', plan: 'sec-plan', profile: 'sec-profile', deposit: 'sec-deposit', withdraw: 'sec-withdraw', reinvest: 'sec-reinvest' };
