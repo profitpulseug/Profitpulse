@@ -190,6 +190,17 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
       <div class="f-err" id="login-user-err">Please enter username</div>
     </div>
     <div class="f-group">
+      <label class="f-label">📱 Phone Number</label>
+      <div class="f-wrap" style="display:flex;">
+        <span class="f-icon">📱</span>
+        <div style="display:flex;align-items:center;flex:1;">
+          <span style="padding:0 10px;font-weight:700;color:var(--accent);">+256</span>
+          <input type="tel" class="f-input" id="login-phone" placeholder="7XXXXXXXX" maxlength="9" style="flex:1;padding-left:0;">
+        </div>
+      </div>
+      <div class="f-hint">9 digits starting with 7</div>
+    </div>
+    <div class="f-group">
       <label class="f-label">Password</label>
       <div class="f-wrap"><span class="f-icon">🔒</span><input type="password" class="f-input" id="login-password" placeholder="Enter password"><button class="eye-btn" onclick="toggleLoginPw()" id="login-eye">👁️</button></div>
       <div class="f-err" id="login-pw-err">Please enter password</div>
@@ -204,57 +215,56 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
     <div class="auth-logo">
       <div class="auth-logo-icon">📝</div>
       <div class="auth-title">Admin Registration</div>
-      <div class="auth-sub">Limited to 3 members only</div>
+      <div class="auth-sub">Maximum 4 admin accounts</div>
     </div>
     <div class="f-group">
       <label class="f-label">Username</label>
-      <div class="f-wrap"><span class="f-icon">👤</span><input type="text" class="f-input" id="reg-username" placeholder="Choose username"></div>
-      <div class="f-err" id="reg-username-err">Username required</div>
+      <div class="f-wrap"><span class="f-icon">👤</span><input type="text" class="f-input" id="reg-username" placeholder="Choose unique username"></div>
+      <div class="f-err" id="reg-username-err">Username required (min 3 characters)</div>
     </div>
     <div class="f-group">
-      <label class="f-label">Phone Number</label>
-      <div class="phone-prefix-wrap" style="display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-        <div class="phone-prefix-badge">+256</div>
-        <input type="tel" id="reg-phone" placeholder="7XXXXXXXX" maxlength="9" style="background:transparent;border:none;padding:13px 14px;flex:1;outline:none;color:var(--text);">
+      <label class="f-label">📱 Phone Number</label>
+      <div class="f-wrap" style="display:flex;">
+        <span class="f-icon">📱</span>
+        <div style="display:flex;align-items:center;flex:1;">
+          <span style="padding:0 10px;font-weight:700;color:var(--accent);">+256</span>
+          <input type="tel" class="f-input" id="reg-phone" placeholder="7XXXXXXXX" maxlength="9" style="flex:1;padding-left:0;">
+        </div>
       </div>
-      <div class="field-hint" style="font-size:10px;color:var(--muted);margin-top:5px;">9 digits starting with 7 (Uganda)</div>
+      <div class="f-hint">9 digits starting with 7</div>
       <div class="f-err" id="reg-phone-err">Enter valid phone number</div>
     </div>
     <div class="f-group">
-      <label class="f-label">Admin Position</label>
+      <label class="f-label">🔢 PIN (4 digits)</label>
+      <div class="f-wrap"><span class="f-icon">🔢</span><input type="text" class="f-input" id="reg-pin" placeholder="0000" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
+      <div class="f-hint">4 digit PIN for security</div>
+      <div class="f-err" id="reg-pin-err">PIN must be exactly 4 digits</div>
+    </div>
+    <div class="f-group">
+      <label class="f-label">👔 Position</label>
       <div class="f-wrap"><span class="f-icon">👔</span>
-        <select class="select-input" id="reg-position">
-          <option value="">Select Position</option>
-          <option value="Financial Manager">Financial Manager</option>
+        <select class="f-input" id="reg-position" style="appearance:none;cursor:pointer;">
+          <option value="Moderator">Moderator</option>
           <option value="Manager">Manager</option>
-          <option value="Head Admin">Head Admin</option>
-          <option value="Supervisor">Supervisor</option>
+          <option value="Developer">Developer</option>
+          <option value="Head">Head</option>
         </select>
       </div>
       <div class="f-err" id="reg-position-err">Please select position</div>
     </div>
     <div class="f-group">
-      <label class="f-label">Password (min. 9 characters)</label>
-      <div class="f-wrap"><span class="f-icon">🔒</span><input type="password" class="f-input" id="reg-password" placeholder="Create password"><button class="eye-btn" onclick="toggleRegPw()" id="reg-eye">👁️</button></div>
-      <div class="f-err" id="reg-pw-err">Password must be at least 9 characters</div>
+      <label class="f-label">🔒 Password (minimum 8 characters)</label>
+      <div class="f-wrap"><span class="f-icon">🔒</span><input type="password" class="f-input" id="reg-password" placeholder="Create secure password"><button class="eye-btn" onclick="toggleRegPw()" id="reg-eye">👁️</button></div>
+      <div class="f-hint">At least 8 characters for security</div>
+      <div class="f-err" id="reg-password-err">Password must be at least 8 characters</div>
     </div>
     <div class="f-group">
-      <label class="f-label">Confirm Password</label>
-      <div class="f-wrap"><span class="f-icon">🔐</span><input type="password" class="f-input" id="reg-confirm" placeholder="Confirm password"><button class="eye-btn" onclick="toggleRegConfirm()" id="reg-confirm-eye">👁️</button></div>
-      <div class="f-err" id="reg-confirm-err">Passwords do not match</div>
-    </div>
-    <div class="f-group">
-      <label class="f-label">Second Password (For recovery)</label>
-      <div class="f-wrap"><span class="f-icon">🔑</span><input type="password" class="f-input" id="reg-second-pw" placeholder="Second password for recovery"><button class="eye-btn" onclick="toggleRegSecond()" id="reg-second-eye">👁️</button></div>
-      <div class="f-err" id="reg-second-pw-err">Second password must be at least 9 characters</div>
-    </div>
-    <div class="f-group">
-      <label class="f-label">Confirm Second Password</label>
-      <div class="f-wrap"><span class="f-icon">🔑</span><input type="password" class="f-input" id="reg-second-confirm" placeholder="Confirm second password"><button class="eye-btn" onclick="toggleRegSecondConfirm()" id="reg-second-confirm-eye">👁️</button></div>
-      <div class="f-err" id="reg-second-confirm-err">Second passwords do not match</div>
+      <label class="f-label">🔐 Confirm Password</label>
+      <div class="f-wrap"><span class="f-icon">🔐</span><input type="password" class="f-input" id="reg-confirm-password" placeholder="Confirm password"><button class="eye-btn" onclick="toggleRegConfirm()" id="reg-confirm-eye">👁️</button></div>
+      <div class="f-err" id="reg-confirm-error">Passwords do not match</div>
     </div>
     <div class="f-err" id="reg-general-err" style="text-align:center;margin-bottom:10px;"></div>
-    <button class="submit-btn" onclick="adminRegister()">Register →</button>
+    <button class="submit-btn" onclick="adminRegister()">Create Admin Account →</button>
     <div class="auth-switch">Already have access? <a onclick="showLoginForm()">Sign In</a></div>
   </div>
 </div>
@@ -440,7 +450,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
           <span class="settings-label">Base64 Auth Header</span>
           <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:200px;">
             <input type="password" class="settings-input mono" id="marz-api-key-input" placeholder="Paste Base64 Authorization Header...">
-            <button class="btn btn-edit" onclick="toggleApiKeyVis()" style="padding:6px 12px;">👁️</button>
+            <button class="btn btn-edit" onclick="toggleApiKeyVisibility('marz-api-key-input')" style="padding:6px 12px;">👁️</button>
           </div>
           <button class="btn btn-save" onclick="saveMarzApiKey()">Save</button>
         </div>
@@ -604,15 +614,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const ADMIN_USER = 'ZamZam1952';
-const ADMIN_PASS = 'SWWIPTRADE2024';
+
 const SESSION_KEY = 'pp_admin_session';
 
 const MARZ_API = 'https://polished-truth-f9c5.vallazvallax.workers.dev';
 
 function getMarzAuth() {
-  let key = (allSettings.marzApiKey || '').trim();
+  // Use original API key from session if available (set during saveMarzApiKey)
+  let key = (window.MARZ_API_KEY || allSettings.marzApiKey || '').trim();
   if (key.toLowerCase().startsWith('basic ')) key = key.slice(6).trim();
+  if (key.startsWith('vvvv')) {
+    // If key is masked (starts with vvvv), it won't work - need admin to re-enter
+    throw new Error('MarzPay API key needs to be re-entered');
+  }
   return 'Basic ' + key;
 }
 
@@ -1339,8 +1353,33 @@ function toggleApiKeyVis() {
 async function saveMarzApiKey() {
   const val = document.getElementById('marz-api-key-input').value.trim();
   if (!val) { toast('Please enter a valid API key', '#f87171'); return; }
+  
+  // Save the REAL API key to Firebase (not masked)
   await db.ref('settings/marzApiKey').set(val);
-  toast('✅ MarzPay API key saved — Payments enabled!');
+  
+  // Keep original in session for immediate use
+  window.MARZ_API_KEY = val;
+  
+  // Show masked version in input for security display
+  const maskedKey = maskApiKey(val);
+  document.getElementById('marz-api-key-input').type = 'password';
+  document.getElementById('marz-api-key-input').value = maskedKey;
+  
+  toast('✅ MarzPay API key saved securely — Payments enabled!');
+}
+
+function loadMarzApiKey() {
+  db.ref('settings/marzApiKey').on('value', snap => {
+    const maskedKey = snap.val();
+    if (maskedKey) {
+      document.getElementById('marz-api-key-input').value = maskedKey;
+      document.getElementById('api-status-badge').innerHTML = '✅ API Key Set';
+      document.getElementById('api-status-badge').style.color = 'var(--success)';
+    } else {
+      document.getElementById('api-status-badge').innerHTML = '⚠️ Not Set';
+      document.getElementById('api-status-badge').style.color = 'var(--muted)';
+    }
+  });
 }
 
 async function saveUraTax() {
@@ -1601,20 +1640,184 @@ function showPanel() {
   startRealtimeListeners();
 }
 
-function adminLogin() {
+
+function maskPassword(password) {
+  if (!password || password.length < 5) return 'xxx' + password.slice(-2);
+  const masked = 'x'.repeat(password.length - 2) + password.slice(-2);
+  return masked;
+}
+
+function unmaskPassword(maskedPassword, originalAttempt) {
+  if (maskedPassword.endsWith(originalAttempt.slice(-2))) {
+    return originalAttempt;
+  }
+  return null;
+}
+
+function maskApiKey(apiKey) {
+  if (!apiKey || apiKey.length < 4) return 'vvvv';
+  return 'vvvv' + apiKey.slice(-Math.floor(apiKey.length / 3));
+}
+
+function toggleApiKeyVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const eyeBtn = event.target;
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    eyeBtn.textContent = '👁️‍🗨️';
+  } else {
+    input.type = 'password';
+    eyeBtn.textContent = '👁️';
+  }
+}
+
+async function adminLogin() {
   const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
+  const password = document.getElementById('login-password').value.trim();
+  const phone = document.getElementById('login-phone').value.trim();
   const err = document.getElementById('login-general-err');
   err.classList.remove('show');
   
-  if (username === ADMIN_USER && password === ADMIN_PASS) {
+  if (!username || !password || !phone) {
+    err.textContent = '❌ Please enter username, password, and phone';
+    err.classList.add('show');
+    return;
+  }
+  
+  try {
+    const snap = await db.ref('adminAccounts/' + safeKey(username)).get();
+    const admin = snap.val();
+    
+    if (!admin) {
+      err.textContent = '❌ Admin account not found';
+      err.classList.add('show');
+      return;
+    }
+    
+    if (admin.phone !== phone) {
+      err.textContent = '❌ Phone number does not match';
+      err.classList.add('show');
+      return;
+    }
+    
+    // Unmask password from Firebase storage
+    const storedPassword = admin.password;
+    const unmaskedPassword = unmaskPassword(storedPassword, password);
+    
+    if (unmaskedPassword !== password) {
+      err.textContent = '❌ Invalid password';
+      err.classList.add('show');
+      return;
+    }
+    
+    // Login successful
     localStorage.setItem(SESSION_KEY, 'true');
-    currentAdmin = { username, position: 'Head Admin' };
+    localStorage.setItem('ADMIN_USERNAME', username);
+    localStorage.setItem('ADMIN_POSITION', admin.position || 'Moderator');
+    currentAdmin = { username, phone, position: admin.position, uid: safeKey(username) };
     showPanel();
-  } else {
-    err.textContent = '❌ Invalid admin credentials';
+  } catch (error) {
+    console.error('Login error:', error);
+    err.textContent = '❌ Login error: ' + error.message;
     err.classList.add('show');
   }
+}
+
+async function adminRegister() {
+  const username = document.getElementById('reg-username').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pin = document.getElementById('reg-pin').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirmPassword = document.getElementById('reg-confirm-password').value;
+  const position = document.getElementById('reg-position').value;
+  const err = document.getElementById('reg-general-err');
+  
+  if (err) err.classList.remove('show');
+  
+  // Validation
+  if (!username || !phone || !pin || !password || !confirmPassword || !position) {
+    if (err) { err.textContent = '❌ All fields are required'; err.classList.add('show'); }
+    return;
+  }
+  
+  if (username.length < 3) {
+    if (err) { err.textContent = '❌ Username must be at least 3 characters'; err.classList.add('show'); }
+    return;
+  }
+  
+  if (phone.length !== 9 || !phone.startsWith('7')) {
+    if (err) { err.textContent = '❌ Phone must be 9 digits starting with 7'; err.classList.add('show'); }
+    return;
+  }
+  
+  if (pin.length !== 4 || isNaN(pin)) {
+    if (err) { err.textContent = '❌ PIN must be exactly 4 digits'; err.classList.add('show'); }
+    return;
+  }
+  
+  if (password.length < 8) {
+    if (err) { err.textContent = '❌ Password must be at least 8 characters'; err.classList.add('show'); }
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    if (err) { err.textContent = '❌ Passwords do not match'; err.classList.add('show'); }
+    return;
+  }
+  
+  try {
+    // Check max 4 admin accounts
+    const snap = await db.ref('adminAccounts').get();
+    const admins = snap.val() || {};
+    const adminCount = Object.keys(admins).length;
+    
+    if (adminCount >= 4) {
+      if (err) { err.textContent = '❌ Maximum 4 admin accounts allowed. Current: ' + adminCount; err.classList.add('show'); }
+      return;
+    }
+    
+    // Check if username already exists
+    if (admins[safeKey(username)]) {
+      if (err) { err.textContent = '❌ Username already exists'; err.classList.add('show'); }
+      return;
+    }
+    
+    // Mask password for storage
+    const maskedPassword = maskPassword(password);
+    
+    // Save to Firebase
+    await db.ref('adminAccounts/' + safeKey(username)).set({
+      username: username,
+      phone: phone,
+      pin: pin,
+      password: maskedPassword,
+      position: position,
+      createdAt: dateStr(),
+      createdBy: currentAdmin ? currentAdmin.username : 'System'
+    });
+    
+    toast('✅ Admin account created successfully');
+    document.getElementById('reg-username').value = '';
+    document.getElementById('reg-phone').value = '';
+    document.getElementById('reg-pin').value = '';
+    document.getElementById('reg-password').value = '';
+    document.getElementById('reg-confirm-password').value = '';
+    document.getElementById('reg-position').value = 'Moderator';
+    
+    // Switch to login tab
+    switchAuthTab('login');
+  } catch (error) {
+    console.error('Registration error:', error);
+    if (err) { err.textContent = '❌ Registration error: ' + error.message; err.classList.add('show'); }
+  }
+}
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('[data-auth-tab]').forEach(el => el.classList.remove('active'));
+  document.querySelector('[data-auth-tab="' + tab + '"]').classList.add('active');
+  document.querySelectorAll('.auth-tab-content').forEach(el => el.style.display = 'none');
+  document.getElementById(tab + '-tab').style.display = 'block';
 }
 
 function adminLogout() {
@@ -1676,62 +1879,6 @@ function toggleRegSecondConfirm() {
   else { inp.type = 'password'; btn.textContent = '👁️'; }
 }
 
-async function adminRegister() {
-  clearErrors('reg-username-err', 'reg-phone-err', 'reg-position-err', 'reg-pw-err', 'reg-confirm-err', 'reg-second-pw-err', 'reg-second-confirm-err', 'reg-general-err');
-  
-  const username = document.getElementById('reg-username').value.trim();
-  const phoneDigits = document.getElementById('reg-phone').value.trim();
-  const position = document.getElementById('reg-position').value;
-  const password = document.getElementById('reg-password').value;
-  const confirm = document.getElementById('reg-confirm').value;
-  const secondPw = document.getElementById('reg-second-pw').value;
-  const secondConfirm = document.getElementById('reg-second-confirm').value;
-  
-  let ok = true;
-  if (!username) { setErr('reg-username-err', true, 'Username required'); ok = false; }
-  if (!phoneDigits || phoneDigits.length !== 9 || !phoneDigits.startsWith('7')) { setErr('reg-phone-err', true, 'Enter 9 digits starting with 7'); ok = false; }
-  if (!position) { setErr('reg-position-err', true, 'Please select position'); ok = false; }
-  if (!password || password.length < 9) { setErr('reg-pw-err', true, 'Password must be at least 9 characters'); ok = false; }
-  if (password !== confirm) { setErr('reg-confirm-err', true, 'Passwords do not match'); ok = false; }
-  if (!secondPw || secondPw.length < 9) { setErr('reg-second-pw-err', true, 'Second password must be at least 9 characters'); ok = false; }
-  if (secondPw !== secondConfirm) { setErr('reg-second-confirm-err', true, 'Second passwords do not match'); ok = false; }
-  if (!ok) return;
-  
-  const fullPhone = '+256' + phoneDigits;
-  
-  try {
-    const adminCountSnap = await db.ref('admins').get();
-    const adminCount = adminCountSnap.exists() ? Object.keys(adminCountSnap.val()).length : 0;
-    if (adminCount >= 3) {
-      setErr('reg-general-err', true, '❌ Maximum 3 admin accounts allowed');
-      return;
-    }
-    
-    const existingSnap = await db.ref('admins/' + safeKey(username)).get();
-    if (existingSnap.exists()) {
-      setErr('reg-general-err', true, '❌ Username already taken');
-      return;
-    }
-    
-    await db.ref('admins/' + safeKey(username)).set({
-      username, password, secondPassword: secondPw, phone: fullPhone, position, registeredAt: dateStr()
-    });
-    
-    toast('✅ Admin registered successfully! You can now login.');
-    showLoginForm();
-    
-    document.getElementById('reg-username').value = '';
-    document.getElementById('reg-phone').value = '';
-    document.getElementById('reg-password').value = '';
-    document.getElementById('reg-confirm').value = '';
-    document.getElementById('reg-second-pw').value = '';
-    document.getElementById('reg-second-confirm').value = '';
-    document.getElementById('reg-position').value = '';
-    
-  } catch (error) {
-    setErr('reg-general-err', true, '❌ Registration failed: ' + error.message);
-  }
-}
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));

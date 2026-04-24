@@ -429,7 +429,7 @@ input[type="password"]{padding-right:46px;}
   </div>
   <div class="auth-card">
     <div class="auth-title">Create Account</div>
-    <div class="auth-subtitle">Get UGX 5,000 registration bonus 🎁</div>
+    <div class="auth-subtitle">Get UGX 4,000 registration bonus 🎁</div>
     <div class="field-group">
       <label class="field-label">Username</label>
       <div class="field-wrap"><span class="field-icon">👤</span><input type="text" id="reg-username" placeholder="Choose a username"></div>
@@ -1872,10 +1872,10 @@ async function doRegister() {
   const now = dateStr();
   const todayKey = getDateKey(new Date());
   const newUser = {
-    username, password, country, phone: fullPhone, stake: 0, balance: 5000, withdrawn: 0, refEarned: 0,
+    username, password, country, phone: fullPhone, stake: 0, balance: 4000, withdrawn: 0, refEarned: 0,
     activated: false, locked: false, referredBy: refCode, joinedDate: new Date().getFullYear().toString(),
     lastProfitDate: todayKey,
-    transactions: { t0: { type: 'Bonus', amount: 5000, note: 'Registration Bonus 🎁', date: now, status: 'completed' } },
+    transactions: { t0: { type: 'Bonus', amount: 4000, note: 'Registration Bonus 🎁', date: now, status: 'completed' } },
     referrals: {}, deposits: {}, activeInvestment: null
   };
   await db.ref('users/' + safeKey(username)).set(newUser);
