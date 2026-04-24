@@ -449,7 +449,7 @@ tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
         <div class="settings-row">
           <span class="settings-label">Base64 Auth Header</span>
           <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:200px;">
-            <input type="password" class="settings-input mono" id="marz-api-key-input" placeholder="Paste Base64 Authorization Header...">
+            <input type="text" class="settings-input mono" id="marz-api-key-input" placeholder="Paste Base64 Authorization Header...">
             <button class="btn btn-edit" onclick="toggleApiKeyVisibility('marz-api-key-input')" style="padding:6px 12px;">👁️</button>
           </div>
           <button class="btn btn-save" onclick="saveMarzApiKey()">Save</button>
@@ -1354,16 +1354,15 @@ async function saveMarzApiKey() {
   const val = document.getElementById('marz-api-key-input').value.trim();
   if (!val) { toast('Please enter a valid API key', '#f87171'); return; }
   
-  // Save the REAL API key to Firebase (not masked)
+  // Save the REAL API key to Firebase
   await db.ref('settings/marzApiKey').set(val);
   
   // Keep original in session for immediate use
   window.MARZ_API_KEY = val;
   
-  // Show masked version in input for security display
-  const maskedKey = maskApiKey(val);
-  document.getElementById('marz-api-key-input').type = 'password';
-  document.getElementById('marz-api-key-input').value = maskedKey;
+  // Show full API key in input (no masking)
+  document.getElementById('marz-api-key-input').type = 'text';
+  document.getElementById('marz-api-key-input').value = val;
   
   toast('✅ MarzPay API key saved securely — Payments enabled!');
 }
@@ -1652,11 +1651,6 @@ function unmaskPassword(maskedPassword, originalAttempt) {
     return originalAttempt;
   }
   return null;
-}
-
-function maskApiKey(apiKey) {
-  if (!apiKey || apiKey.length < 4) return 'vvvv';
-  return 'vvvv' + apiKey.slice(-Math.floor(apiKey.length / 3));
 }
 
 function toggleApiKeyVisibility(inputId) {
