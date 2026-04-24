@@ -1471,7 +1471,7 @@ async function marzCheckStatus(uuid) {
   return await response.json();
 }
 
-async function pollPaymentStatus(uuid, maxAttempts = 36, intervalMs = 5000) {
+async function pollPaymentStatus(uuid, maxAttempts = 120, intervalMs = 5000) {
   for (let i = 0; i < maxAttempts; i++) {
     await new Promise(r => setTimeout(r, intervalMs));
     try {
