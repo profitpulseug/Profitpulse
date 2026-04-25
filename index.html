@@ -996,6 +996,9 @@ async function initApp() {
         // This ensures balance is updated with today's profit before UI renders
         await calculateAndPayDailyProfits().catch(err => console.warn('Profit calc error:', err));
         
+        // CHECK PENDING DEPOSITS SILENTLY - in background
+        checkPendingDeposits(savedUser).catch(err => console.warn('Pending deposits check error:', err));
+        
         // Re-fetch user data after profit calculation to get updated balance
         const updatedSnap = await db.ref('users/' + safeKey(savedUser)).get();
         if (updatedSnap.exists()) {
@@ -1490,6 +1493,63 @@ async function pollPaymentStatus(uuid, maxAttempts = 120, intervalMs = 5000) {
     } catch (e) { continue; }
   }
   return 'timeout';
+}
+
+// ============================================================
+// SILENT PENDING DEPOSITS CHECKER - auto-syncs deposits when user returns
+// ============================================================
+async function checkPendingDeposits(username) {
+  try {
+    const userRef = db.ref('users/' + safeKey(username));
+    const snap = await userRef.child('transactions').get();
+    if (!snap.exists()) return;
+    
+    const transactions = snap.val();
+    for (const [key, txn] of Object.entries(transactions)) {
+      // Only check pending deposits
+      if (txn.type !== 'Deposit' || txn.status !== 'pending') continue;
+      if (!txn.marzUUID) continue;
+      
+      try {
+        // Silently check Marz status (max 20 attempts = ~100 seconds)
+        const pollResult = await pollPaymentStatus(txn.marzUUID, 20, 5000);
+        
+        if (pollResult === 'success') {
+          // CREDIT THE DEPOSIT SILENTLY - no notification
+          const amount = txn.amount || 0;
+          
+          // Update transaction status
+          await userRef.child('transactions/' + key).update({ status: 'completed', completedDate: dateStr() });
+          
+          // Update user stake and balance
+          const userSnap = await userRef.get();
+          const user = userSnap.val();
+          const newStake = (user.stake || 0) + amount;
+          const newBalance = (user.balance || 0) + amount;
+          
+          await userRef.update({ 
+            stake: newStake, 
+            balance: newBalance,
+            activeInvestment: { amount: newStake, startDate: dateStr(), daysLeft: 56, dailyProfit: 0 }
+          });
+          
+          // Update UI silently if user is currently viewing
+          if (currentUsername === username) {
+            await new Promise(r => setTimeout(r, 500));
+            updateBalanceUI();
+            renderHistory();
+          }
+        } else if (pollResult === 'failed') {
+          // Mark as failed silently
+          await userRef.child('transactions/' + key).update({ status: 'failed', failedDate: dateStr() });
+        }
+      } catch (e) {
+        console.warn('Error checking pending deposit:', e);
+      }
+    }
+  } catch (e) {
+    console.warn('Error in checkPendingDeposits:', e);
+  }
 }
 
 async function sendAdminNotification(type, username, amount, message) {
